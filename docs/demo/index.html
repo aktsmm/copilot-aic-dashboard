@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Copilot ローカル AIC ダッシュボード</title>
+<script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 24px 28px 64px;
+  background: var(--cp-bg);
+  color: var(--cp-text);
+  font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 16px; margin: 0 0 2px; }
+.sub { color: var(--cp-text-muted); font-size: 12.5px; margin: 0; }
+
+.wrap { max-width: 1480px; margin: 0 auto; }
+.head { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.head-actions { display: flex; gap: 8px; align-items: center; }
+
+.card {
+  background: var(--cp-surface);
+  border: 1px solid var(--cp-border);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.section { margin-top: 22px; }
+.section > .card { box-shadow: var(--cp-shadow); }
+.section-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 12px; }
+.kpi { background: var(--cp-surface); border: 1px solid var(--cp-border); border-radius: 12px; padding: 13px 15px; }
+.kpi.hot { border-color: var(--cp-accent); background: var(--cp-accent-soft); }
+.kpi .label { font-size: 11.5px; color: var(--cp-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.kpi .value { font-size: 25px; font-weight: 650; margin-top: 3px; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.kpi .foot { font-size: 11.5px; color: var(--cp-text-soft); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.up { color: var(--cp-danger); }
+.down { color: var(--cp-success); }
+
+.meter { height: 6px; border-radius: 999px; background: var(--cp-surface-soft); margin-top: 8px; overflow: hidden; border: 1px solid var(--cp-border); }
+.meter > span { display: block; height: 100%; background: var(--cp-accent); }
+.meter.warn > span { background: var(--cp-warning); }
+.meter.danger > span { background: var(--cp-danger); }
+
+button, select, input[type="search"] {
+  font: inherit;
+  color: var(--cp-text);
+  background: var(--cp-surface);
+  border: 1px solid var(--cp-border);
+  border-radius: 8px;
+  padding: 6px 11px;
+}
+button { cursor: pointer; }
+button:hover { border-color: var(--cp-border-strong); }
+button.primary { background: var(--cp-accent); color: var(--cp-accent-fg); border-color: var(--cp-accent); }
+button.primary:hover { background: var(--cp-accent-hover); }
+button.primary:disabled { opacity: .6; cursor: progress; }
+.link-btn { border: none; background: none; padding: 0 2px; font-size: 12px; color: var(--cp-accent); text-decoration: underline; }
+.link-btn:hover { border-color: transparent; opacity: .8; }
+.chip { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; border: 1px solid transparent; margin-right: 6px; }
+.chip-fresh { color: var(--cp-success); border-color: var(--cp-success); background: color-mix(in srgb, var(--cp-success) 12%, transparent); }
+.chip-stale { color: var(--cp-warning); border-color: var(--cp-warning); background: color-mix(in srgb, var(--cp-warning) 14%, transparent); }
+.banner { margin: 0 0 14px; padding: 12px 16px; border-radius: 10px; font-size: 13px; line-height: 1.7; border: 1px solid; }
+.banner ul { margin: 6px 0; padding-left: 22px; }
+.banner-warn { color: var(--cp-text); border-color: var(--cp-warning); background: color-mix(in srgb, var(--cp-warning) 10%, transparent); }
+.banner-info { color: var(--cp-text); border-color: var(--cp-border-strong); background: var(--cp-surface-2, transparent); }
+.seg { display: inline-flex; border: 1px solid var(--cp-border); border-radius: 8px; overflow: hidden; }
+.seg button { border: none; border-radius: 0; background: transparent; padding: 5px 11px; font-size: 12.5px; }
+.seg button + button { border-left: 1px solid var(--cp-border); }
+.seg button[aria-pressed="true"] { background: var(--cp-accent); color: var(--cp-accent-fg); }
+
+svg { display: block; width: 100%; overflow: visible; }
+.bar { fill: var(--cp-accent); }
+.bar.dim { fill: var(--cp-text-muted); opacity: 0.45; }
+.bar:hover { fill: var(--cp-accent-hover); }
+.gap-band { fill: var(--cp-warning); opacity: 0.16; }
+.gap-band:hover { opacity: 0.3; }
+.warn-mark { color: var(--cp-warning); cursor: help; }
+.grid-line { stroke: var(--cp-border); stroke-width: 1; }
+.axis-text { fill: var(--cp-text-muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+.ref-line { stroke: var(--cp-warning); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.ma-line { stroke: var(--cp-link); stroke-width: 2; fill: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11.5px; color: var(--cp-text-muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 600; font-size: 11.5px; color: var(--cp-text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding: 7px 10px; border-bottom: 1px solid var(--cp-border); white-space: nowrap; }
+td { padding: 8px 10px; border-bottom: 1px solid var(--cp-border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mono { font-family: "Cascadia Mono", Consolas, monospace; font-size: 12px; }
+.muted { color: var(--cp-text-muted); }
+.soft { color: var(--cp-text-soft); font-size: 12px; }
+.trunc { max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; border: 1px solid var(--cp-border); color: var(--cp-text-muted); background: var(--cp-surface-soft); white-space: nowrap; }
+.tag.app { border-color: var(--cp-accent); color: var(--cp-accent); background: var(--cp-accent-soft); }
+
+.mini { position: relative; background: var(--cp-surface-soft); border-radius: 4px; height: 16px; min-width: 60px; border: 1px solid var(--cp-border); }
+.mini > span { display: block; height: 100%; background: var(--cp-accent); border-radius: 3px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+
+.hm { display: grid; grid-template-columns: 34px repeat(24, 1fr); gap: 2px; }
+.hm div { font-size: 10px; text-align: center; color: var(--cp-text-muted); }
+.hm .cell { height: 20px; border-radius: 3px; background: var(--cp-surface-soft); cursor: default; border: 1px solid transparent; }
+.hm .cell:hover { border-color: var(--cp-border-strong); }
+.hm .rowlab { text-align: right; padding-right: 5px; line-height: 20px; }
+
+.expander { cursor: pointer; user-select: none; color: var(--cp-accent); font-size: 11.5px; margin-top: 4px; display: inline-block; }
+.kids { margin-top: 6px; border-left: 2px solid var(--cp-border); padding-left: 10px; }
+.kid { display: flex; gap: 10px; font-size: 12px; color: var(--cp-text-muted); padding: 2px 0; }
+.kid b { color: var(--cp-text); font-variant-numeric: tabular-nums; }
+.hide { display: none; }
+
+.note { background: var(--cp-accent-soft); border: 1px solid var(--cp-accent); border-radius: 10px; padding: 12px 15px; font-size: 12.5px; }
+.note b { color: var(--cp-accent); }
+.err { padding: 40px; text-align: center; color: var(--cp-danger); }
+.tip { position: fixed; pointer-events: none; z-index: 9; background: var(--cp-panel-strong); border: 1px solid var(--cp-border-strong); border-radius: 8px; padding: 7px 10px; font-size: 12px; box-shadow: var(--cp-shadow); white-space: pre; opacity: 0; transition: opacity 0.1s; font-variant-numeric: tabular-nums; }
+.tip.on { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="err">読み込み中…</div></div>
+<div class="tip" id="tip"></div>
+
+<script src="data/usage.js"></script>
+<script>
+"use strict";
+
+let D = window.AIC_DATA;
+let m = null;
+const app = document.getElementById("app");
+const tip = document.getElementById("tip");
+
+const fmt = (n, d = 0) =>
+  (n == null ? "—" : Number(n).toLocaleString("ja-JP", { minimumFractionDigits: d, maximumFractionDigits: d }));
+const usd = (n) => "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+if (!D) {
+  app.innerHTML =
+    '<div class="err">data/usage.js が見つかりません。<br><code>python aic_collect.py</code> を実行してください。</div>';
+  throw new Error("no data");
+}
+
+// ---------------------------------------------------------------- tooltip
+function bindTip(el, text) {
+  el.addEventListener("mousemove", (e) => {
+    tip.textContent = text;
+    tip.classList.add("on");
+    const pad = 14;
+    let x = e.clientX + pad;
+    let y = e.clientY + pad;
+    const box = tip.getBoundingClientRect();
+    if (x + box.width > window.innerWidth - 8) x = e.clientX - box.width - pad;
+    if (y + box.height > window.innerHeight - 8) y = e.clientY - box.height - pad;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  });
+  el.addEventListener("mouseleave", () => tip.classList.remove("on"));
+}
+
+// ---------------------------------------------------------------- charts
+function barChart(target, rows, opts) {
+  const o = Object.assign({ height: 190, refLine: null, refLabel: "", maLine: false, labelEvery: 6 }, opts);
+  const W = 1000, H = o.height, padL = 52, padR = 12, padT = 12, padB = 26;
+  const max = Math.max(1, ...rows.map((r) => r.value), o.refLine || 0);
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const bw = iw / rows.length;
+  const y = (v) => padT + ih - (v / max) * ih;
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.style.height = H + "px";
+
+  const add = (tag, attrs, cls) => {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    if (cls) el.setAttribute("class", cls);
+    svg.appendChild(el);
+    return el;
+  };
+
+  for (let i = 0; i <= 4; i++) {
+    const v = (max / 4) * i;
+    add("line", { x1: padL, x2: W - padR, y1: y(v), y2: y(v) }, "grid-line");
+    const t = add("text", { x: padL - 7, y: y(v) + 3.5, "text-anchor": "end" }, "axis-text");
+    t.textContent = v >= 1000 ? (v / 1000).toFixed(1) + "k" : Math.round(v);
+  }
+
+  rows.forEach((r, i) => {
+    if (i % o.labelEvery === 0) {
+      const t = add("text", { x: padL + i * bw + bw / 2, y: H - 8, "text-anchor": "middle" }, "axis-text");
+      t.textContent = r.label;
+    }
+    // 記録が無い期間は「消費 0」ではないので、バーではなく網掛け帯で示す
+    if (r.incomplete) {
+      const band = add("rect", {
+        x: padL + i * bw, y: padT, width: Math.max(1, bw), height: ih,
+      }, "gap-band");
+      bindTip(band, r.tip);
+      return;
+    }
+    const h = Math.max(r.value > 0 ? 1.5 : 0, (r.value / max) * ih);
+    const rect = add("rect", {
+      x: padL + i * bw + bw * 0.12,
+      y: padT + ih - h,
+      width: Math.max(1, bw * 0.76),
+      height: h,
+    }, "bar" + (r.dim ? " dim" : ""));
+    bindTip(rect, r.tip);
+  });
+
+  if (o.refLine) {
+    add("line", { x1: padL, x2: W - padR, y1: y(o.refLine), y2: y(o.refLine) }, "ref-line");
+    const t = add("text", { x: padL + 4, y: y(o.refLine) - 5, "text-anchor": "start" }, "axis-text");
+    t.setAttribute("fill", "var(--cp-warning)");
+    t.textContent = o.refLabel;
+  }
+
+  if (o.maLine) {
+    const pts = rows.map((r, i) => `${padL + i * bw + bw / 2},${y(r.ma ?? 0)}`).join(" ");
+    add("polyline", { points: pts }, "ma-line");
+  }
+
+  target.appendChild(svg);
+}
+
+// ---------------------------------------------------------------- sections
+function kpiSection() {
+  const k = D.kpi, m = D.meta;
+  // 記録が欠けた区間を含む集計値には印を付ける（0 消費と誤読させない）
+  const partial = new Set(k.partial || []);
+  const pm = (key) => partial.has(key)
+    ? ` <span class="warn-mark" title="記録が欠けている期間を含むため、実際の消費はこれより多い可能性があります">⚠</span>`
+    : "";
+  const dod = k.dod_pct == null ? "" :
+    `<span class="${k.dod_pct >= 0 ? "up" : "down"}">${k.dod_pct >= 0 ? "▲" : "▼"} ${fmt(Math.abs(k.dod_pct), 1)}%</span> 前日比`;
+  const budgetPct = Math.min(100, k.daily_budget_pct ?? 0);
+  const bClass = budgetPct >= 100 ? "danger" : budgetPct >= 70 ? "warn" : "";
+  const mPct = Math.min(100, k.month_pct_of_included ?? 0);
+  const mClass = mPct >= 100 ? "danger" : mPct >= 70 ? "warn" : "";
+
+  return `
+  <div class="kpis">
+    <div class="kpi hot">
+      <div class="label">今日 (${esc(m.tz_label)})</div>
+      <div class="value">${fmt(k.today)}</div>
+      <div class="foot">${usd(k.today_usd)} · ${dod}</div>
+      <div class="meter ${bClass}"><span style="width:${budgetPct}%"></span></div>
+      <div class="foot">日次目安 ${fmt(m.daily_budget_aic)} AIC の ${fmt(k.daily_budget_pct, 1)}%</div>
+    </div>
+    <div class="kpi">
+      <div class="label">直近 1 時間</div>
+      <div class="value">${fmt(k.last_1h)}</div>
+      <div class="foot">警戒ライン ${fmt(m.hourly_alert_aic)} AIC</div>
+    </div>
+    <div class="kpi">
+      <div class="label">直近 24 時間${pm("last_24h")}</div>
+      <div class="value">${fmt(k.last_24h)}</div>
+      <div class="foot">7日平均 ${fmt(k.avg_daily_7d)} / 日${pm("last_7d")}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">今月累計</div>
+      <div class="value">${fmt(k.month)}</div>
+      <div class="foot">${usd(k.month_usd)}</div>
+      <div class="meter ${mClass}"><span style="width:${mPct}%"></span></div>
+      <div class="foot">含有 ${fmt(m.monthly_included_aic)} AIC の ${fmt(k.month_pct_of_included, 1)}%</div>
+    </div>
+    <div class="kpi">
+      <div class="label">ピーク 1h (ローリング)</div>
+      <div class="value">${fmt(k.peak_1h)}</div>
+      <div class="foot">全期間で最も密な連続1時間<br>${esc(k.peak_1h_at ?? "—")}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">ピーク 24h (ローリング)</div>
+      <div class="value">${fmt(k.peak_24h)}</div>
+      <div class="foot">全期間で最も密な連続24時間<br>${esc(k.peak_24h_at ?? "—")}</div>
+    </div>
+    <div class="kpi">
+      <div class="label">期間合計</div>
+      <div class="value">${fmt(m.total_aic)}</div>
+      <div class="foot">${usd(m.total_usd)} · ${fmt(m.event_count)} 呼出</div>
+    </div>
+  </div>`;
+}
+
+const GAP_NOTE = {
+  before_archive: "アーカイブ開始前のため記録がありません",
+  gap_high: "記録が取りこぼされた可能性が高い区間です",
+  gap_low: "連続性を確認できない区間です",
+};
+
+function hourlySection() {
+  const rows = D.hourly.map((h) => ({
+    label: h.short,
+    value: h.aic,
+    dim: h.aic === 0,
+    incomplete: h.incomplete,
+    tip: h.incomplete
+      ? `${h.label}\n${GAP_NOTE[h.incomplete] || "記録なし"}`
+      : `${h.label}\n${fmt(h.aic, 1)} AIC / ${h.calls} 呼出` + (h.top_model ? `\n最多: ${h.top_model}` : ""),
+  }));
+  const peak = Math.max(...D.hourly.filter((h) => !h.incomplete).map((h) => h.aic), 0);
+  return { rows, peak };
+}
+
+function dailySection() {
+  return D.daily.map((d) => ({
+    label: d.label,
+    value: d.aic,
+    ma: d.ma7,
+    dim: d.is_weekend,
+    incomplete: d.incomplete,
+    tip: d.incomplete
+      ? `${d.date} (${d.weekday})\n${GAP_NOTE[d.incomplete] || "記録なし"}`
+      : `${d.date} (${d.weekday})\n${fmt(d.aic, 1)} AIC / ${d.calls} 呼出 / ${d.sessions} セッション\n7日平均 ${fmt(d.ma7, 1)}` +
+        (d.peak_hour != null ? `\n最大時間帯 ${String(d.peak_hour).padStart(2, "0")}時 ${fmt(d.peak_hour_aic, 1)} AIC` : ""),
+  }));
+}
+
+function heatmap() {
+  const grid = {};
+  let max = 0;
+  D.heatmap.forEach((c) => {
+    grid[c.weekday + "," + c.hour] = c;
+    if (c.aic > max) max = c.aic;
+  });
+  const labels = ["月", "火", "水", "木", "金", "土", "日"];
+  let html = '<div class="hm"><div></div>';
+  for (let h = 0; h < 24; h++) html += `<div>${h % 3 === 0 ? h : ""}</div>`;
+  for (let w = 0; w < 7; w++) {
+    html += `<div class="rowlab">${labels[w]}</div>`;
+    for (let h = 0; h < 24; h++) {
+      const c = grid[w + "," + h];
+      const v = c ? c.aic : 0;
+      const a = max ? Math.pow(v / max, 0.55) : 0;
+      const style = v > 0
+        ? `background: color-mix(in srgb, var(--cp-accent) ${Math.round(a * 100)}%, var(--cp-surface-soft))`
+        : "";
+      html += `<div class="cell" style="${style}" data-tip="${labels[w]}曜 ${String(h).padStart(2, "0")}時&#10;${fmt(v, 1)} AIC / ${c ? c.calls : 0} 呼出"></div>`;
+    }
+  }
+  return html + "</div>";
+}
+
+function breakdownTable(items, nameHead, extraCols) {
+  const max = Math.max(1, ...items.map((i) => i.aic));
+  const head = extraCols ? extraCols.map((c) => `<th class="num">${c[0]}</th>`).join("") : "";
+  const rows = items.map((i) => `
+    <tr>
+      <td class="trunc" title="${esc(i.name)}">${esc(i.name)}</td>
+      <td class="num"><b>${fmt(i.aic)}</b></td>
+      <td style="width:120px"><div class="mini"><span style="width:${(i.aic / max) * 100}%"></span></div></td>
+      <td class="num muted">${fmt(i.share_pct, 1)}%</td>
+      <td class="num muted">${fmt(i.calls)}</td>
+      <td class="num muted">${fmt(i.aic_per_call, 2)}</td>
+      ${extraCols ? extraCols.map((c) => `<td class="num muted">${c[1](i)}</td>`).join("") : ""}
+    </tr>`).join("");
+  return `<table>
+    <thead><tr><th>${nameHead}</th><th class="num">AIC</th><th></th><th class="num">比率</th><th class="num">呼出</th><th class="num">AIC/回</th>${head}</tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function sessionsTable() {
+  const max = Math.max(1, ...D.sessions.map((s) => s.aic));
+  return D.sessions.map((s, idx) => {
+    const kids = s.children.length
+      ? `<div class="expander" data-toggle="k${idx}">▶ 子エージェント ${s.child_count} 件 (${fmt(s.child_aic)} AIC)</div>
+         <div class="kids hide" id="k${idx}">${s.children.map((c) =>
+           `<div class="kid"><span class="mono">${esc(c.id)}</span><span>${esc(c.model)}</span><span class="tag">${esc(c.initiator)}</span><b>${fmt(c.aic)} AIC</b><span>${c.calls} 呼出</span></div>`
+         ).join("")}</div>`
+      : "";
+    const title = s.summary || s.branch || "(no summary)";
+    return `<tr data-search="${esc((s.repository + " " + s.branch + " " + s.summary + " " + s.host).toLowerCase())}">
+      <td class="soft">${esc(s.start)}</td>
+      <td>
+        <div><b>${esc(title)}</b></div>
+        <div class="soft mono">${esc(s.repository)}${s.branch ? " · " + esc(s.branch) : ""}</div>
+        ${kids}
+      </td>
+      <td><span class="tag ${s.host === "App / Scout" ? "app" : ""}">${esc(s.host)}</span></td>
+      <td class="num"><b>${fmt(s.aic)}</b><div class="mini" style="margin-top:4px"><span style="width:${(s.aic / max) * 100}%"></span></div></td>
+      <td class="num muted">${fmt(s.aic_per_hour)}</td>
+      <td class="num muted">${fmt(s.calls)}</td>
+      <td class="num muted">${fmt(s.out_tok)}</td>
+      <td class="num soft">${s.minutes >= 60 ? Math.floor(s.minutes / 60) + "時間" + (s.minutes % 60) + "分" : s.minutes + "分"}</td>
+      <td class="soft mono">${esc(s.top_model)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function efficiencyCards() {
+  const e = D.efficiency;
+  const items = [
+    ["入力トークン", fmt(e.in_tok), "うち cache read " + fmt(e.cache_read)],
+    ["キャッシュヒット率", fmt(e.cache_hit_pct, 1) + "%", "高いほど入力コスト効率が良い"],
+    ["出力トークン", fmt(e.out_tok), "reasoning " + fmt(e.reasoning_share_pct, 1) + "%"],
+    ["AIC / 入力100万tok", fmt(e.aic_per_mtok_in, 1), "入力単価の実効値"],
+    ["AIC / 出力1千tok", fmt(e.aic_per_ktok_out, 2), "出力単価の実効値"],
+    ["累計処理時間", fmt(e.total_hours, 1) + " 時間", "1回あたり平均 " + fmt(e.avg_sec_per_call, 1) + " 秒"],
+  ];
+  return `<div class="grid3">${items.map(([l, v, f]) =>
+    `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div><div class="foot">${f}</div></div>`
+  ).join("")}</div>`;
+}
+
+// ---------------------------------------------------------------- 警告バナー
+function banners() {
+  const out = [];
+
+  if (D.meta.demo) {
+    out.push(`<div class="banner banner-info">
+      <b>デモモード</b> — これは <span class="mono">tools/make_sample_db.py</span> が生成した
+      合成データです。実在の利用実績ではありません。
+      自分のデータで見るには <span class="mono">.\\run-dashboard.ps1</span> を実行してください。
+    </div>`);
+  }
+
+  // 収集を回す前にライブ DB が消された可能性のある区間。
+  // イベント時刻だけでは「消された」のか「使っていなかった」のか断定できないため、
+  // ソースファイルの世代が変わったかどうかで確度を分けて表示する。
+  const gaps = D.meta.gaps || [];
+  const high = gaps.filter((g) => g.confidence === "high");
+  const low = gaps.filter((g) => g.confidence !== "high");
+
+  const list = (arr) => arr.map((g) =>
+    `<li><span class="mono">${esc(g.from)}</span> 〜 <span class="mono">${esc(g.to)}</span></li>`).join("");
+
+  if (high.length) {
+    out.push(`<div class="banner banner-warn">
+      <b>記録が取りこぼされた可能性が高い期間があります（${high.length} 件）</b>
+      <ul>${list(high)}</ul>
+      この区間はローカル DB が作り直された形跡があり、消費実績を取得できていません。
+      グラフでは網掛けで表示し、平均値の計算からも除外しています。
+      取りこぼしを防ぐには <span class="mono">.\\run-dashboard.ps1 -InstallTask</span> で自動収集を有効にしてください。
+    </div>`);
+  }
+  if (low.length) {
+    out.push(`<div class="banner banner-info">
+      <b>連続性を確認できない期間があります（${low.length} 件）</b>
+      <ul>${list(low)}</ul>
+      記録が途切れていますが、単に Copilot を使っていなかっただけの可能性もあります。
+      ローカル DB が作り直された形跡は見つかっていません。
+    </div>`);
+  }
+
+  if (D.meta.archive_last_run_status && D.meta.archive_last_run_status !== "ok") {
+    out.push(`<div class="banner banner-warn">
+      <b>直近の収集が失敗しています</b> — status=<span class="mono">${esc(D.meta.archive_last_run_status)}</span>
+      （${esc(D.meta.archive_last_run_at || "")}）。表示は前回までのアーカイブです。
+    </div>`);
+  }
+
+  if (D.meta.archive_quarantined) {
+    out.push(`<div class="banner banner-info">
+      <b>${D.meta.archive_quarantined} 行を隔離しました</b> —
+      created_at が取れず安全に集計できない行です。アーカイブの
+      <span class="mono">quarantine_events</span> に保管してあります。
+    </div>`);
+  }
+
+  if (D.meta.live_db_present === false) {
+    out.push(`<div class="banner banner-info">
+      <b>ライブ DB が見つかりません</b> — アーカイブ済みのデータだけを表示しています。
+      新しい消費は記録されません。<span class="mono">${esc(D.meta.live_db_path || "")}</span>
+    </div>`);
+  }
+  return out.join("");
+}
+
+// ---------------------------------------------------------------- 鮮度表示
+// 「再読み込み」は data/usage.js を読み直すだけで、DB からの再集計はしない。
+// 集計時刻がどれくらい古いかを常に見せて、再集計が必要かどうかを判断できるようにする。
+function freshness() {
+  const gen = new Date(String(m.generated_at).replace(" ", "T"));
+  if (isNaN(gen)) return { label: esc(m.generated_at), stale: false, mins: 0 };
+  const mins = Math.max(0, Math.round((Date.now() - gen.getTime()) / 60000));
+  const rel = mins < 1 ? "たった今"
+    : mins < 60 ? `${mins} 分前`
+    : mins < 1440 ? `${Math.floor(mins / 60)} 時間前`
+    : `${Math.floor(mins / 1440)} 日前`;
+  return { label: `${esc(m.generated_at)}（${rel}）`, stale: mins >= 30, mins };
+}
+
+// ---------------------------------------------------------------- render
+function render() {
+  m = D.meta;
+  const hourly = hourlySection();
+  const fresh = freshness();
+
+  app.innerHTML = `
+  <div class="head">
+    <div>
+      <h1>Copilot ローカル AIC ダッシュボード</h1>
+      <p class="sub">
+        ${esc(m.first_event)} 〜 ${esc(m.last_event)} (${esc(m.tz_label)}) ·
+        ${fmt(m.event_count)} 呼出 / ${fmt(m.session_count)} セッション
+      </p>
+      <p class="sub">
+        <span class="chip ${fresh.stale ? "chip-stale" : "chip-fresh"}" id="freshChip">
+          ${fresh.stale ? "● 集計が古い" : "● 集計済み"} ${fresh.label}
+        </span>
+        <span class="soft">再集計するには <code>python aic_collect.py</code></span>
+        <button class="link-btn" id="copyCmd">コマンドをコピー</button>
+      </p>
+    </div>
+    <div class="head-actions">
+      <div class="seg" id="themeSeg">
+        <button data-theme-set="light">ライト</button>
+        <button data-theme-set="dark">ダーク</button>
+      </div>
+      <button class="primary" id="reloadBtn" title="data/usage.js を読み直します（DB からの再集計は行いません）">↻ 再読み込み</button>
+    </div>
+  </div>
+
+  ${banners()}
+  ${kpiSection()}
+  <div class="section"><div class="card">
+    <div class="section-head">
+      <div>
+        <h2>バーンレート（1時間バケット・直近 ${D.hourly.length} 時間）</h2>
+        <p class="sub">レート制限は時間単位で見られている可能性がある。1時間あたりどこまで振り切れているかを確認する。</p>
+      </div>
+      <div class="soft">直近 ${D.hourly.length}h の最大 <b>${fmt(hourly.peak)}</b> AIC/h</div>
+    </div>
+    <div id="hourlyChart"></div>
+    <div class="legend">
+      <span><i style="background:var(--cp-accent)"></i>1時間あたり AIC</span>
+      <span><i style="background:var(--cp-warning)"></i>警戒ライン ${fmt(m.hourly_alert_aic)} AIC/h</span>
+      <span><i style="background:var(--cp-text-muted);opacity:.45"></i>消費なし</span>
+      <span><i style="background:var(--cp-warning);opacity:.16"></i>記録なし（取りこぼし）</span>
+    </div>
+  </div></div>
+
+  <div class="section"><div class="card">
+    <div class="section-head">
+      <div>
+        <h2>日次推移（直近 ${D.daily.length} 日）</h2>
+        <p class="sub">薄いバーは週末。青線は 7 日移動平均。</p>
+      </div>
+      <div class="soft">日次目安 <b>${fmt(m.daily_budget_aic)}</b> AIC</div>
+    </div>
+    <div id="dailyChart"></div>
+    <div class="legend">
+      <span><i style="background:var(--cp-accent)"></i>日次 AIC</span>
+      <span><i style="background:var(--cp-link)"></i>7日移動平均</span>
+      <span><i style="background:var(--cp-warning)"></i>日次目安ライン</span>
+      <span><i style="background:var(--cp-warning);opacity:.16"></i>記録なし（取りこぼし）</span>
+    </div>
+  </div></div>
+
+  <div class="grid2 section">
+    <div class="card">
+      <div class="section-head"><div><h2>曜日 × 時刻ヒートマップ</h2><p class="sub">全期間の合計。濃いほど消費が集中している。</p></div></div>
+      ${heatmap()}
+    </div>
+    <div class="card">
+      <div class="section-head"><div><h2>実行元 (initiator) 別</h2><p class="sub">compaction / sub-agent は「意図せず膨らむコスト」になりやすい。</p></div></div>
+      ${breakdownTable(D.initiators, "実行元")}
+      <div style="margin-top:14px"></div>
+      <div class="section-head"><div><h2>クライアント別</h2></div></div>
+      ${breakdownTable(D.hosts, "クライアント")}
+    </div>
+  </div>
+
+  <div class="grid2 section">
+    <div class="card">
+      <div class="section-head"><div><h2>モデル別</h2><p class="sub">multiplier はローカル DB の request_multiplier の平均。</p></div></div>
+      ${breakdownTable(D.models, "モデル", [["倍率", (i) => fmt(i.avg_mult, 2)], ["平均秒", (i) => fmt(i.avg_sec, 1)]])}
+    </div>
+    <div class="card">
+      <div class="section-head"><div><h2>reasoning_effort 別</h2><p class="sub">effort を下げるだけで削れるコストがあるかを見る。</p></div></div>
+      ${breakdownTable(D.efforts, "effort")}
+    </div>
+  </div>
+
+  <div class="section"><div class="card">
+    <div class="section-head"><div><h2>リポジトリ別</h2></div></div>
+    ${breakdownTable(D.repos, "リポジトリ")}
+  </div></div>
+
+  <div class="section"><div class="card">
+    <div class="section-head">
+      <div>
+        <h2>セッション別 AIC（上位 ${D.sessions.length} 件）</h2>
+        <p class="sub">AIC/h は「そのセッションの燃焼速度」。子エージェント行は展開して確認できる。</p>
+      </div>
+      <input type="search" id="q" placeholder="セッション・リポジトリ・ブランチを検索" style="min-width:280px" />
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr>
+          <th>開始</th><th>セッション</th><th>種別</th>
+          <th class="num">AIC</th><th class="num">AIC/h</th><th class="num">呼出</th>
+          <th class="num">出力tok</th><th class="num">経過</th><th>主モデル</th>
+        </tr></thead>
+        <tbody id="sessRows">${sessionsTable()}</tbody>
+      </table>
+    </div>
+  </div></div>
+
+  <div class="section"><div class="card">
+    <div class="section-head"><div><h2>効率メトリクス</h2><p class="sub">同じ成果をより少ない AIC で出せているかの指標。</p></div></div>
+    ${efficiencyCards()}
+  </div></div>
+
+  <div class="section">
+    <div class="note">
+      <b>データの範囲について</b><br>
+      集計元は <b>追記専用アーカイブ</b> <span class="mono">${esc(m.db_path || "")}</span> です。
+      実行のたびに <span class="mono">${esc(m.live_db_path || "session-store.db")}</span> から差分を取り込み、
+      <b>過去分は削除しません</b>。ローカル DB を消しても、取り込み済みの履歴は残ります
+      （これまで ${fmt(m.archive_runs || 0)} 回収集 / 初回 ${esc(m.archive_since || "—")}）。<br>
+      対象はこの PC の Copilot CLI / Copilot App セッションのみで、他端末や cloud agent 単独実行の消費は含まれません。
+      アーカイブを始める前に消えた日（例: 2026-07-12）は復元できません。
+      <span class="mono">total_nano_aiu ÷ 1e9</span> を AIU とし、現在の換算係数は
+      <b>1 AIU = ${m.aiu_to_aic} AIC</b>（<span class="mono">config.json</span> の <span class="mono">aiu_to_aic</span>）です。
+      公式請求額との突合手順は README を参照してください。
+    </div>
+  </div>
+`;
+
+  barChart(document.getElementById("hourlyChart"), hourly.rows, {
+    height: 200, refLine: m.hourly_alert_aic, refLabel: `警戒 ${fmt(m.hourly_alert_aic)}`, labelEvery: 6,
+  });
+  barChart(document.getElementById("dailyChart"), dailySection(), {
+    height: 210, refLine: m.daily_budget_aic, refLabel: `目安 ${fmt(m.daily_budget_aic)}`, maLine: true, labelEvery: 3,
+  });
+
+  document.querySelectorAll(".hm .cell").forEach((el) => {
+    const t = el.getAttribute("data-tip");
+    if (t) bindTip(el, t.replace(/&#10;/g, "\n"));
+  });
+
+  document.querySelectorAll("[data-toggle]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const target = document.getElementById(el.getAttribute("data-toggle"));
+      const open = target.classList.toggle("hide") === false;
+      el.textContent = (open ? "▼" : "▶") + el.textContent.slice(1);
+    });
+  });
+
+  document.getElementById("q").addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll("#sessRows tr").forEach((tr) => {
+      tr.style.display = !q || (tr.dataset.search || "").includes(q) ? "" : "none";
+    });
+  });
+
+  const themeSeg = document.getElementById("themeSeg");
+  function syncTheme() {
+    const cur = document.documentElement.getAttribute("data-theme");
+    themeSeg.querySelectorAll("button").forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.themeSet === cur)));
+  }
+  themeSeg.addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    document.documentElement.setAttribute("data-theme", b.dataset.themeSet);
+    localStorage.setItem("aic-theme", b.dataset.themeSet);
+    syncTheme();
+  });
+  syncTheme();
+
+  document.getElementById("reloadBtn").addEventListener("click", reloadData);
+
+  const copyBtn = document.getElementById("copyCmd");
+  copyBtn.addEventListener("click", async () => {
+    const cmd = `cd "${(m.project_dir || ".").replace(/\\/g, "\\\\")}"; python aic_collect.py`;
+    try {
+      await navigator.clipboard.writeText(cmd);
+      copyBtn.textContent = "コピーしました";
+    } catch {
+      copyBtn.textContent = "コピー不可（手動で実行）";
+    }
+    setTimeout(() => (copyBtn.textContent = "コマンドをコピー"), 2000);
+  });
+}
+
+// data/usage.js を読み直して再描画する。
+// script タグを差し替えるのでキャッシュを避けられ、file:// でも動く（fetch は file:// で不可）。
+function reloadData() {
+  const btn = document.getElementById("reloadBtn");
+  if (btn) { btn.disabled = true; btn.textContent = "↻ 読み込み中…"; }
+  const s = document.createElement("script");
+  s.src = "data/usage.js?ts=" + Date.now();
+  s.onload = () => {
+    D = window.AIC_DATA;
+    s.remove();
+    render();
+  };
+  s.onerror = () => {
+    if (btn) { btn.disabled = false; btn.textContent = "↻ 再読み込み"; }
+    alert("data/usage.js を読み込めませんでした。python aic_collect.py を実行してください。");
+  };
+  document.body.appendChild(s);
+}
+
+const savedTheme = localStorage.getItem("aic-theme");
+if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+
+render();
+</script>
+</body>
+</html>

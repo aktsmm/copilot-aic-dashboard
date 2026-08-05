@@ -1,0 +1,3709 @@
+{
+ "meta": {
+  "generated_at": "2026-08-05 17:36:56",
+  "tz_label": "JST",
+  "tz_offset_hours": 9,
+  "first_event": "2026-07-06 18:59",
+  "last_event": "2026-08-05 07:47",
+  "event_count": 2989,
+  "session_count": 224,
+  "total_aic": 15558.1,
+  "total_usd": 155.58,
+  "aiu_to_aic": 1.0,
+  "usd_per_aic": 0.01,
+  "monthly_included_aic": 3000,
+  "daily_budget_aic": 5000,
+  "hourly_alert_aic": 1000,
+  "db_path": "(redacted)",
+  "live_db_path": "(redacted)",
+  "live_db_present": true,
+  "project_dir": "(redacted)",
+  "gaps": [],
+  "archive_runs": 1,
+  "archive_failed_runs": 0,
+  "archive_quarantined": 0,
+  "archive_last_run_at": "2026-08-05T08:36:56Z",
+  "archive_last_run_status": "ok",
+  "archive_since": "2026-07-06T09:59:11.000Z",
+  "ingested": {
+   "source_rows": 2989,
+   "inserted": 2989,
+   "changed": 0,
+   "existing": 0,
+   "quarantined": 0,
+   "archive_rows": 2989,
+   "live_min": "2026-07-06T09:59:11.000Z",
+   "live_max": "2026-08-04T22:47:35.000Z",
+   "archive_max_before": null
+  },
+  "demo": true
+ },
+ "kpi": {
+  "today": 116.1,
+  "today_usd": 1.16,
+  "yesterday": 793.6,
+  "dod_pct": -85.4,
+  "last_1h": 0.0,
+  "last_24h": 116.1,
+  "last_7d": 3050.2,
+  "avg_daily_7d": 435.7,
+  "month": 2482.6,
+  "month_usd": 24.83,
+  "month_pct_of_included": 82.8,
+  "peak_1h": 296.2,
+  "peak_1h_at": "08-04 00:27",
+  "peak_24h": 1918.1,
+  "peak_24h_at": "07-17 12:39",
+  "daily_budget_pct": 2.3
+ },
+ "hourly": [
+  {
+   "label": "08/01 18:00",
+   "short": "18",
+   "date": "08/01",
+   "ts": "2026-08-01T18:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/01 19:00",
+   "short": "19",
+   "date": "08/01",
+   "ts": "2026-08-01T19:00:00+09:00",
+   "aic": 2.7,
+   "calls": 1,
+   "top_model": "demo-medium"
+  },
+  {
+   "label": "08/01 20:00",
+   "short": "20",
+   "date": "08/01",
+   "ts": "2026-08-01T20:00:00+09:00",
+   "aic": 95.0,
+   "calls": 17,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/01 21:00",
+   "short": "21",
+   "date": "08/01",
+   "ts": "2026-08-01T21:00:00+09:00",
+   "aic": 5.3,
+   "calls": 2,
+   "top_model": "demo-medium"
+  },
+  {
+   "label": "08/01 22:00",
+   "short": "22",
+   "date": "08/01",
+   "ts": "2026-08-01T22:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/01 23:00",
+   "short": "23",
+   "date": "08/01",
+   "ts": "2026-08-01T23:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 00:00",
+   "short": "00",
+   "date": "08/02",
+   "ts": "2026-08-02T00:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 01:00",
+   "short": "01",
+   "date": "08/02",
+   "ts": "2026-08-02T01:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 02:00",
+   "short": "02",
+   "date": "08/02",
+   "ts": "2026-08-02T02:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 03:00",
+   "short": "03",
+   "date": "08/02",
+   "ts": "2026-08-02T03:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 04:00",
+   "short": "04",
+   "date": "08/02",
+   "ts": "2026-08-02T04:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 05:00",
+   "short": "05",
+   "date": "08/02",
+   "ts": "2026-08-02T05:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 06:00",
+   "short": "06",
+   "date": "08/02",
+   "ts": "2026-08-02T06:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 07:00",
+   "short": "07",
+   "date": "08/02",
+   "ts": "2026-08-02T07:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 08:00",
+   "short": "08",
+   "date": "08/02",
+   "ts": "2026-08-02T08:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 09:00",
+   "short": "09",
+   "date": "08/02",
+   "ts": "2026-08-02T09:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 10:00",
+   "short": "10",
+   "date": "08/02",
+   "ts": "2026-08-02T10:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 11:00",
+   "short": "11",
+   "date": "08/02",
+   "ts": "2026-08-02T11:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 12:00",
+   "short": "12",
+   "date": "08/02",
+   "ts": "2026-08-02T12:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 13:00",
+   "short": "13",
+   "date": "08/02",
+   "ts": "2026-08-02T13:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 14:00",
+   "short": "14",
+   "date": "08/02",
+   "ts": "2026-08-02T14:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 15:00",
+   "short": "15",
+   "date": "08/02",
+   "ts": "2026-08-02T15:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 16:00",
+   "short": "16",
+   "date": "08/02",
+   "ts": "2026-08-02T16:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 17:00",
+   "short": "17",
+   "date": "08/02",
+   "ts": "2026-08-02T17:00:00+09:00",
+   "aic": 20.8,
+   "calls": 4,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/02 18:00",
+   "short": "18",
+   "date": "08/02",
+   "ts": "2026-08-02T18:00:00+09:00",
+   "aic": 16.0,
+   "calls": 3,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/02 19:00",
+   "short": "19",
+   "date": "08/02",
+   "ts": "2026-08-02T19:00:00+09:00",
+   "aic": 51.8,
+   "calls": 14,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/02 20:00",
+   "short": "20",
+   "date": "08/02",
+   "ts": "2026-08-02T20:00:00+09:00",
+   "aic": 45.5,
+   "calls": 7,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/02 21:00",
+   "short": "21",
+   "date": "08/02",
+   "ts": "2026-08-02T21:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/02 22:00",
+   "short": "22",
+   "date": "08/02",
+   "ts": "2026-08-02T22:00:00+09:00",
+   "aic": 19.2,
+   "calls": 4,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/02 23:00",
+   "short": "23",
+   "date": "08/02",
+   "ts": "2026-08-02T23:00:00+09:00",
+   "aic": 84.9,
+   "calls": 15,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 00:00",
+   "short": "00",
+   "date": "08/03",
+   "ts": "2026-08-03T00:00:00+09:00",
+   "aic": 22.4,
+   "calls": 3,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 01:00",
+   "short": "01",
+   "date": "08/03",
+   "ts": "2026-08-03T01:00:00+09:00",
+   "aic": 15.8,
+   "calls": 4,
+   "top_model": "demo-medium"
+  },
+  {
+   "label": "08/03 02:00",
+   "short": "02",
+   "date": "08/03",
+   "ts": "2026-08-03T02:00:00+09:00",
+   "aic": 65.0,
+   "calls": 11,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 03:00",
+   "short": "03",
+   "date": "08/03",
+   "ts": "2026-08-03T03:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 04:00",
+   "short": "04",
+   "date": "08/03",
+   "ts": "2026-08-03T04:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 05:00",
+   "short": "05",
+   "date": "08/03",
+   "ts": "2026-08-03T05:00:00+09:00",
+   "aic": 55.4,
+   "calls": 12,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 06:00",
+   "short": "06",
+   "date": "08/03",
+   "ts": "2026-08-03T06:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 07:00",
+   "short": "07",
+   "date": "08/03",
+   "ts": "2026-08-03T07:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 08:00",
+   "short": "08",
+   "date": "08/03",
+   "ts": "2026-08-03T08:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 09:00",
+   "short": "09",
+   "date": "08/03",
+   "ts": "2026-08-03T09:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 10:00",
+   "short": "10",
+   "date": "08/03",
+   "ts": "2026-08-03T10:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 11:00",
+   "short": "11",
+   "date": "08/03",
+   "ts": "2026-08-03T11:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 12:00",
+   "short": "12",
+   "date": "08/03",
+   "ts": "2026-08-03T12:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 13:00",
+   "short": "13",
+   "date": "08/03",
+   "ts": "2026-08-03T13:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 14:00",
+   "short": "14",
+   "date": "08/03",
+   "ts": "2026-08-03T14:00:00+09:00",
+   "aic": 14.2,
+   "calls": 3,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 15:00",
+   "short": "15",
+   "date": "08/03",
+   "ts": "2026-08-03T15:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 16:00",
+   "short": "16",
+   "date": "08/03",
+   "ts": "2026-08-03T16:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 17:00",
+   "short": "17",
+   "date": "08/03",
+   "ts": "2026-08-03T17:00:00+09:00",
+   "aic": 9.3,
+   "calls": 1,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 18:00",
+   "short": "18",
+   "date": "08/03",
+   "ts": "2026-08-03T18:00:00+09:00",
+   "aic": 45.5,
+   "calls": 8,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 19:00",
+   "short": "19",
+   "date": "08/03",
+   "ts": "2026-08-03T19:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/03 20:00",
+   "short": "20",
+   "date": "08/03",
+   "ts": "2026-08-03T20:00:00+09:00",
+   "aic": 136.7,
+   "calls": 23,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 21:00",
+   "short": "21",
+   "date": "08/03",
+   "ts": "2026-08-03T21:00:00+09:00",
+   "aic": 118.8,
+   "calls": 19,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 22:00",
+   "short": "22",
+   "date": "08/03",
+   "ts": "2026-08-03T22:00:00+09:00",
+   "aic": 62.6,
+   "calls": 13,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/03 23:00",
+   "short": "23",
+   "date": "08/03",
+   "ts": "2026-08-03T23:00:00+09:00",
+   "aic": 274.4,
+   "calls": 41,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 00:00",
+   "short": "00",
+   "date": "08/04",
+   "ts": "2026-08-04T00:00:00+09:00",
+   "aic": 168.5,
+   "calls": 30,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 01:00",
+   "short": "01",
+   "date": "08/04",
+   "ts": "2026-08-04T01:00:00+09:00",
+   "aic": 67.5,
+   "calls": 13,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 02:00",
+   "short": "02",
+   "date": "08/04",
+   "ts": "2026-08-04T02:00:00+09:00",
+   "aic": 115.6,
+   "calls": 20,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 03:00",
+   "short": "03",
+   "date": "08/04",
+   "ts": "2026-08-04T03:00:00+09:00",
+   "aic": 126.7,
+   "calls": 24,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 04:00",
+   "short": "04",
+   "date": "08/04",
+   "ts": "2026-08-04T04:00:00+09:00",
+   "aic": 118.3,
+   "calls": 21,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 05:00",
+   "short": "05",
+   "date": "08/04",
+   "ts": "2026-08-04T05:00:00+09:00",
+   "aic": 88.6,
+   "calls": 17,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 06:00",
+   "short": "06",
+   "date": "08/04",
+   "ts": "2026-08-04T06:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 07:00",
+   "short": "07",
+   "date": "08/04",
+   "ts": "2026-08-04T07:00:00+09:00",
+   "aic": 14.5,
+   "calls": 2,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 08:00",
+   "short": "08",
+   "date": "08/04",
+   "ts": "2026-08-04T08:00:00+09:00",
+   "aic": 93.9,
+   "calls": 16,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/04 09:00",
+   "short": "09",
+   "date": "08/04",
+   "ts": "2026-08-04T09:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 10:00",
+   "short": "10",
+   "date": "08/04",
+   "ts": "2026-08-04T10:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 11:00",
+   "short": "11",
+   "date": "08/04",
+   "ts": "2026-08-04T11:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 12:00",
+   "short": "12",
+   "date": "08/04",
+   "ts": "2026-08-04T12:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 13:00",
+   "short": "13",
+   "date": "08/04",
+   "ts": "2026-08-04T13:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 14:00",
+   "short": "14",
+   "date": "08/04",
+   "ts": "2026-08-04T14:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 15:00",
+   "short": "15",
+   "date": "08/04",
+   "ts": "2026-08-04T15:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 16:00",
+   "short": "16",
+   "date": "08/04",
+   "ts": "2026-08-04T16:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 17:00",
+   "short": "17",
+   "date": "08/04",
+   "ts": "2026-08-04T17:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 18:00",
+   "short": "18",
+   "date": "08/04",
+   "ts": "2026-08-04T18:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 19:00",
+   "short": "19",
+   "date": "08/04",
+   "ts": "2026-08-04T19:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 20:00",
+   "short": "20",
+   "date": "08/04",
+   "ts": "2026-08-04T20:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 21:00",
+   "short": "21",
+   "date": "08/04",
+   "ts": "2026-08-04T21:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 22:00",
+   "short": "22",
+   "date": "08/04",
+   "ts": "2026-08-04T22:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/04 23:00",
+   "short": "23",
+   "date": "08/04",
+   "ts": "2026-08-04T23:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 00:00",
+   "short": "00",
+   "date": "08/05",
+   "ts": "2026-08-05T00:00:00+09:00",
+   "aic": 53.9,
+   "calls": 14,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/05 01:00",
+   "short": "01",
+   "date": "08/05",
+   "ts": "2026-08-05T01:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 02:00",
+   "short": "02",
+   "date": "08/05",
+   "ts": "2026-08-05T02:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 03:00",
+   "short": "03",
+   "date": "08/05",
+   "ts": "2026-08-05T03:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 04:00",
+   "short": "04",
+   "date": "08/05",
+   "ts": "2026-08-05T04:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 05:00",
+   "short": "05",
+   "date": "08/05",
+   "ts": "2026-08-05T05:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 06:00",
+   "short": "06",
+   "date": "08/05",
+   "ts": "2026-08-05T06:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 07:00",
+   "short": "07",
+   "date": "08/05",
+   "ts": "2026-08-05T07:00:00+09:00",
+   "aic": 62.2,
+   "calls": 11,
+   "top_model": "demo-large"
+  },
+  {
+   "label": "08/05 08:00",
+   "short": "08",
+   "date": "08/05",
+   "ts": "2026-08-05T08:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 09:00",
+   "short": "09",
+   "date": "08/05",
+   "ts": "2026-08-05T09:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 10:00",
+   "short": "10",
+   "date": "08/05",
+   "ts": "2026-08-05T10:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 11:00",
+   "short": "11",
+   "date": "08/05",
+   "ts": "2026-08-05T11:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 12:00",
+   "short": "12",
+   "date": "08/05",
+   "ts": "2026-08-05T12:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 13:00",
+   "short": "13",
+   "date": "08/05",
+   "ts": "2026-08-05T13:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 14:00",
+   "short": "14",
+   "date": "08/05",
+   "ts": "2026-08-05T14:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 15:00",
+   "short": "15",
+   "date": "08/05",
+   "ts": "2026-08-05T15:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 16:00",
+   "short": "16",
+   "date": "08/05",
+   "ts": "2026-08-05T16:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 17:00",
+   "short": "17",
+   "date": "08/05",
+   "ts": "2026-08-05T17:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  }
+ ],
+ "daily": [
+  {
+   "date": "2026-07-06",
+   "label": "07/06",
+   "weekday": "月",
+   "is_weekend": false,
+   "aic": 237.9,
+   "calls": 40,
+   "sessions": 2,
+   "peak_hour": 22,
+   "peak_hour_aic": 103.2,
+   "ma7": 34.0
+  },
+  {
+   "date": "2026-07-07",
+   "label": "07/07",
+   "weekday": "火",
+   "is_weekend": false,
+   "aic": 351.4,
+   "calls": 69,
+   "sessions": 5,
+   "peak_hour": 3,
+   "peak_hour_aic": 62.6,
+   "ma7": 84.2
+  },
+  {
+   "date": "2026-07-08",
+   "label": "07/08",
+   "weekday": "水",
+   "is_weekend": false,
+   "aic": 333.6,
+   "calls": 70,
+   "sessions": 6,
+   "peak_hour": 1,
+   "peak_hour_aic": 152.7,
+   "ma7": 131.8
+  },
+  {
+   "date": "2026-07-09",
+   "label": "07/09",
+   "weekday": "木",
+   "is_weekend": false,
+   "aic": 266.9,
+   "calls": 54,
+   "sessions": 4,
+   "peak_hour": 21,
+   "peak_hour_aic": 63.3,
+   "ma7": 170.0
+  },
+  {
+   "date": "2026-07-10",
+   "label": "07/10",
+   "weekday": "金",
+   "is_weekend": false,
+   "aic": 536.4,
+   "calls": 108,
+   "sessions": 9,
+   "peak_hour": 7,
+   "peak_hour_aic": 129.1,
+   "ma7": 246.6
+  },
+  {
+   "date": "2026-07-11",
+   "label": "07/11",
+   "weekday": "土",
+   "is_weekend": true,
+   "aic": 871.1,
+   "calls": 164,
+   "sessions": 17,
+   "peak_hour": 21,
+   "peak_hour_aic": 178.6,
+   "ma7": 371.0
+  },
+  {
+   "date": "2026-07-12",
+   "label": "07/12",
+   "weekday": "日",
+   "is_weekend": true,
+   "aic": 541.0,
+   "calls": 94,
+   "sessions": 8,
+   "peak_hour": 0,
+   "peak_hour_aic": 135.1,
+   "ma7": 448.3
+  },
+  {
+   "date": "2026-07-13",
+   "label": "07/13",
+   "weekday": "月",
+   "is_weekend": false,
+   "aic": 23.8,
+   "calls": 5,
+   "sessions": 1,
+   "peak_hour": 1,
+   "peak_hour_aic": 23.8,
+   "ma7": 417.7
+  },
+  {
+   "date": "2026-07-14",
+   "label": "07/14",
+   "weekday": "火",
+   "is_weekend": false,
+   "aic": 239.5,
+   "calls": 43,
+   "sessions": 2,
+   "peak_hour": 22,
+   "peak_hour_aic": 73.5,
+   "ma7": 401.8
+  },
+  {
+   "date": "2026-07-15",
+   "label": "07/15",
+   "weekday": "水",
+   "is_weekend": false,
+   "aic": 728.5,
+   "calls": 151,
+   "sessions": 9,
+   "peak_hour": 2,
+   "peak_hour_aic": 151.7,
+   "ma7": 458.2
+  },
+  {
+   "date": "2026-07-16",
+   "label": "07/16",
+   "weekday": "木",
+   "is_weekend": false,
+   "aic": 896.7,
+   "calls": 166,
+   "sessions": 12,
+   "peak_hour": 21,
+   "peak_hour_aic": 215.1,
+   "ma7": 548.1
+  },
+  {
+   "date": "2026-07-17",
+   "label": "07/17",
+   "weekday": "金",
+   "is_weekend": false,
+   "aic": 1609.0,
+   "calls": 306,
+   "sessions": 28,
+   "peak_hour": 1,
+   "peak_hour_aic": 220.9,
+   "ma7": 701.4
+  },
+  {
+   "date": "2026-07-18",
+   "label": "07/18",
+   "weekday": "土",
+   "is_weekend": true,
+   "aic": 742.4,
+   "calls": 141,
+   "sessions": 10,
+   "peak_hour": 1,
+   "peak_hour_aic": 184.9,
+   "ma7": 683.0
+  },
+  {
+   "date": "2026-07-19",
+   "label": "07/19",
+   "weekday": "日",
+   "is_weekend": true,
+   "aic": 724.6,
+   "calls": 132,
+   "sessions": 8,
+   "peak_hour": 20,
+   "peak_hour_aic": 106.3,
+   "ma7": 709.2
+  },
+  {
+   "date": "2026-07-20",
+   "label": "07/20",
+   "weekday": "月",
+   "is_weekend": false,
+   "aic": 293.6,
+   "calls": 60,
+   "sessions": 4,
+   "peak_hour": 11,
+   "peak_hour_aic": 69.2,
+   "ma7": 747.8
+  },
+  {
+   "date": "2026-07-21",
+   "label": "07/21",
+   "weekday": "火",
+   "is_weekend": false,
+   "aic": 172.4,
+   "calls": 34,
+   "sessions": 4,
+   "peak_hour": 19,
+   "peak_hour_aic": 57.4,
+   "ma7": 738.2
+  },
+  {
+   "date": "2026-07-22",
+   "label": "07/22",
+   "weekday": "水",
+   "is_weekend": false,
+   "aic": 247.4,
+   "calls": 58,
+   "sessions": 5,
+   "peak_hour": 23,
+   "peak_hour_aic": 85.2,
+   "ma7": 669.4
+  },
+  {
+   "date": "2026-07-23",
+   "label": "07/23",
+   "weekday": "木",
+   "is_weekend": false,
+   "aic": 398.7,
+   "calls": 85,
+   "sessions": 7,
+   "peak_hour": 0,
+   "peak_hour_aic": 103.4,
+   "ma7": 598.3
+  },
+  {
+   "date": "2026-07-24",
+   "label": "07/24",
+   "weekday": "金",
+   "is_weekend": false,
+   "aic": 648.2,
+   "calls": 134,
+   "sessions": 9,
+   "peak_hour": 7,
+   "peak_hour_aic": 113.1,
+   "ma7": 461.0
+  },
+  {
+   "date": "2026-07-25",
+   "label": "07/25",
+   "weekday": "土",
+   "is_weekend": true,
+   "aic": 512.2,
+   "calls": 93,
+   "sessions": 8,
+   "peak_hour": 1,
+   "peak_hour_aic": 144.2,
+   "ma7": 428.2
+  },
+  {
+   "date": "2026-07-26",
+   "label": "07/26",
+   "weekday": "日",
+   "is_weekend": true,
+   "aic": 906.7,
+   "calls": 181,
+   "sessions": 14,
+   "peak_hour": 21,
+   "peak_hour_aic": 163.2,
+   "ma7": 454.2
+  },
+  {
+   "date": "2026-07-27",
+   "label": "07/27",
+   "weekday": "月",
+   "is_weekend": false,
+   "aic": 519.3,
+   "calls": 105,
+   "sessions": 9,
+   "peak_hour": 3,
+   "peak_hour_aic": 178.3,
+   "ma7": 486.4
+  },
+  {
+   "date": "2026-07-28",
+   "label": "07/28",
+   "weekday": "火",
+   "is_weekend": false,
+   "aic": 404.1,
+   "calls": 85,
+   "sessions": 5,
+   "peak_hour": 4,
+   "peak_hour_aic": 106.5,
+   "ma7": 519.5
+  },
+  {
+   "date": "2026-07-29",
+   "label": "07/29",
+   "weekday": "水",
+   "is_weekend": false,
+   "aic": 366.2,
+   "calls": 62,
+   "sessions": 5,
+   "peak_hour": 3,
+   "peak_hour_aic": 152.0,
+   "ma7": 536.5
+  },
+  {
+   "date": "2026-07-30",
+   "label": "07/30",
+   "weekday": "木",
+   "is_weekend": false,
+   "aic": 126.7,
+   "calls": 26,
+   "sessions": 3,
+   "peak_hour": 17,
+   "peak_hour_aic": 41.0,
+   "ma7": 497.6
+  },
+  {
+   "date": "2026-07-31",
+   "label": "07/31",
+   "weekday": "金",
+   "is_weekend": false,
+   "aic": 377.2,
+   "calls": 74,
+   "sessions": 6,
+   "peak_hour": 1,
+   "peak_hour_aic": 104.8,
+   "ma7": 458.9
+  },
+  {
+   "date": "2026-08-01",
+   "label": "08/01",
+   "weekday": "土",
+   "is_weekend": true,
+   "aic": 514.7,
+   "calls": 96,
+   "sessions": 7,
+   "peak_hour": 7,
+   "peak_hour_aic": 122.4,
+   "ma7": 459.3
+  },
+  {
+   "date": "2026-08-02",
+   "label": "08/02",
+   "weekday": "日",
+   "is_weekend": true,
+   "aic": 238.3,
+   "calls": 47,
+   "sessions": 4,
+   "peak_hour": 23,
+   "peak_hour_aic": 84.9,
+   "ma7": 363.8
+  },
+  {
+   "date": "2026-08-03",
+   "label": "08/03",
+   "weekday": "月",
+   "is_weekend": false,
+   "aic": 819.9,
+   "calls": 138,
+   "sessions": 14,
+   "peak_hour": 23,
+   "peak_hour_aic": 274.4,
+   "ma7": 406.7
+  },
+  {
+   "date": "2026-08-04",
+   "label": "08/04",
+   "weekday": "火",
+   "is_weekend": false,
+   "aic": 793.6,
+   "calls": 143,
+   "sessions": 10,
+   "peak_hour": 0,
+   "peak_hour_aic": 168.5,
+   "ma7": 462.4
+  },
+  {
+   "date": "2026-08-05",
+   "label": "08/05",
+   "weekday": "水",
+   "is_weekend": false,
+   "aic": 116.1,
+   "calls": 25,
+   "sessions": 2,
+   "peak_hour": 7,
+   "peak_hour_aic": 62.2,
+   "ma7": 426.6
+  }
+ ],
+ "heatmap": [
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 0,
+   "aic": 35.4,
+   "calls": 7
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 1,
+   "aic": 163.4,
+   "calls": 33
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 2,
+   "aic": 220.9,
+   "calls": 42
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 3,
+   "aic": 182.2,
+   "calls": 35
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 4,
+   "aic": 61.4,
+   "calls": 14
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 5,
+   "aic": 55.4,
+   "calls": 12
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 6,
+   "aic": 85.4,
+   "calls": 18
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 7,
+   "aic": 31.8,
+   "calls": 8
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 11,
+   "aic": 69.2,
+   "calls": 13
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 12,
+   "aic": 11.3,
+   "calls": 3
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 14,
+   "aic": 14.2,
+   "calls": 3
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 17,
+   "aic": 44.3,
+   "calls": 9
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 18,
+   "aic": 98.6,
+   "calls": 17
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 19,
+   "aic": 86.0,
+   "calls": 15
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 20,
+   "aic": 175.9,
+   "calls": 31
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 21,
+   "aic": 118.8,
+   "calls": 19
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 22,
+   "aic": 165.8,
+   "calls": 28
+  },
+  {
+   "weekday": 0,
+   "weekday_label": "月",
+   "hour": 23,
+   "aic": 274.4,
+   "calls": 41
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 0,
+   "aic": 253.0,
+   "calls": 46
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 1,
+   "aic": 161.0,
+   "calls": 35
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 2,
+   "aic": 186.3,
+   "calls": 33
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 3,
+   "aic": 320.3,
+   "calls": 63
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 4,
+   "aic": 263.4,
+   "calls": 51
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 5,
+   "aic": 88.6,
+   "calls": 17
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 7,
+   "aic": 40.0,
+   "calls": 9
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 8,
+   "aic": 93.9,
+   "calls": 16
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 17,
+   "aic": 60.1,
+   "calls": 10
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 18,
+   "aic": 37.7,
+   "calls": 5
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 19,
+   "aic": 57.4,
+   "calls": 8
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 20,
+   "aic": 59.1,
+   "calls": 12
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 22,
+   "aic": 120.2,
+   "calls": 24
+  },
+  {
+   "weekday": 1,
+   "weekday_label": "火",
+   "hour": 23,
+   "aic": 220.2,
+   "calls": 45
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 0,
+   "aic": 106.1,
+   "calls": 27
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 1,
+   "aic": 342.7,
+   "calls": 72
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 2,
+   "aic": 231.9,
+   "calls": 46
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 3,
+   "aic": 226.6,
+   "calls": 41
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 4,
+   "aic": 26.9,
+   "calls": 4
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 5,
+   "aic": 83.6,
+   "calls": 14
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 7,
+   "aic": 62.2,
+   "calls": 11
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 15,
+   "aic": 42.8,
+   "calls": 7
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 16,
+   "aic": 57.0,
+   "calls": 15
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 17,
+   "aic": 39.9,
+   "calls": 9
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 18,
+   "aic": 104.5,
+   "calls": 20
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 19,
+   "aic": 106.1,
+   "calls": 22
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 20,
+   "aic": 36.8,
+   "calls": 8
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 21,
+   "aic": 89.2,
+   "calls": 17
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 22,
+   "aic": 78.0,
+   "calls": 19
+  },
+  {
+   "weekday": 2,
+   "weekday_label": "水",
+   "hour": 23,
+   "aic": 157.6,
+   "calls": 34
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 0,
+   "aic": 128.2,
+   "calls": 28
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 1,
+   "aic": 77.7,
+   "calls": 18
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 2,
+   "aic": 25.5,
+   "calls": 6
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 3,
+   "aic": 49.8,
+   "calls": 10
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 4,
+   "aic": 69.7,
+   "calls": 14
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 6,
+   "aic": 59.1,
+   "calls": 11
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 7,
+   "aic": 32.1,
+   "calls": 6
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 16,
+   "aic": 31.2,
+   "calls": 7
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 17,
+   "aic": 225.1,
+   "calls": 46
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 18,
+   "aic": 209.8,
+   "calls": 36
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 19,
+   "aic": 134.3,
+   "calls": 23
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 20,
+   "aic": 133.9,
+   "calls": 25
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 21,
+   "aic": 278.4,
+   "calls": 59
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 22,
+   "aic": 137.4,
+   "calls": 26
+  },
+  {
+   "weekday": 3,
+   "weekday_label": "木",
+   "hour": 23,
+   "aic": 96.7,
+   "calls": 16
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 0,
+   "aic": 275.1,
+   "calls": 53
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 1,
+   "aic": 325.7,
+   "calls": 61
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 2,
+   "aic": 129.8,
+   "calls": 20
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 3,
+   "aic": 192.9,
+   "calls": 43
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 4,
+   "aic": 200.9,
+   "calls": 37
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 5,
+   "aic": 19.7,
+   "calls": 3
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 6,
+   "aic": 103.4,
+   "calls": 22
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 7,
+   "aic": 395.7,
+   "calls": 79
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 8,
+   "aic": 102.7,
+   "calls": 18
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 12,
+   "aic": 60.4,
+   "calls": 12
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 16,
+   "aic": 99.7,
+   "calls": 18
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 17,
+   "aic": 101.8,
+   "calls": 25
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 18,
+   "aic": 59.8,
+   "calls": 8
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 19,
+   "aic": 296.8,
+   "calls": 62
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 20,
+   "aic": 161.6,
+   "calls": 32
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 21,
+   "aic": 219.3,
+   "calls": 47
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 22,
+   "aic": 170.4,
+   "calls": 34
+  },
+  {
+   "weekday": 4,
+   "weekday_label": "金",
+   "hour": 23,
+   "aic": 255.1,
+   "calls": 48
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 0,
+   "aic": 237.3,
+   "calls": 40
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 1,
+   "aic": 532.7,
+   "calls": 99
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 2,
+   "aic": 147.1,
+   "calls": 30
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 3,
+   "aic": 69.7,
+   "calls": 14
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 4,
+   "aic": 64.9,
+   "calls": 12
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 5,
+   "aic": 55.9,
+   "calls": 10
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 6,
+   "aic": 70.9,
+   "calls": 13
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 7,
+   "aic": 122.4,
+   "calls": 19
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 10,
+   "aic": 42.0,
+   "calls": 8
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 11,
+   "aic": 25.8,
+   "calls": 5
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 16,
+   "aic": 125.6,
+   "calls": 32
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 17,
+   "aic": 144.9,
+   "calls": 22
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 18,
+   "aic": 40.9,
+   "calls": 13
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 19,
+   "aic": 68.4,
+   "calls": 14
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 20,
+   "aic": 225.3,
+   "calls": 40
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 21,
+   "aic": 317.4,
+   "calls": 54
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 22,
+   "aic": 233.1,
+   "calls": 47
+  },
+  {
+   "weekday": 5,
+   "weekday_label": "土",
+   "hour": 23,
+   "aic": 116.2,
+   "calls": 22
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 0,
+   "aic": 265.4,
+   "calls": 50
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 1,
+   "aic": 56.2,
+   "calls": 9
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 2,
+   "aic": 10.6,
+   "calls": 2
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 3,
+   "aic": 119.1,
+   "calls": 21
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 4,
+   "aic": 192.1,
+   "calls": 32
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 5,
+   "aic": 170.8,
+   "calls": 33
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 6,
+   "aic": 141.7,
+   "calls": 24
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 7,
+   "aic": 107.4,
+   "calls": 21
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 8,
+   "aic": 20.8,
+   "calls": 4
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 16,
+   "aic": 145.9,
+   "calls": 28
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 17,
+   "aic": 109.1,
+   "calls": 20
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 18,
+   "aic": 140.4,
+   "calls": 24
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 19,
+   "aic": 119.4,
+   "calls": 24
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 20,
+   "aic": 188.0,
+   "calls": 40
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 21,
+   "aic": 257.5,
+   "calls": 52
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 22,
+   "aic": 123.3,
+   "calls": 24
+  },
+  {
+   "weekday": 6,
+   "weekday_label": "日",
+   "hour": 23,
+   "aic": 242.9,
+   "calls": 46
+  }
+ ],
+ "models": [
+  {
+   "name": "demo-large",
+   "aic": 11900.7,
+   "calls": 1642,
+   "aic_per_call": 7.25,
+   "share_pct": 76.5,
+   "in_tok": 188596899,
+   "out_tok": 4969844,
+   "avg_mult": 1.0,
+   "avg_sec": 45.6
+  },
+  {
+   "name": "demo-medium",
+   "aic": 2996.9,
+   "calls": 906,
+   "aic_per_call": 3.31,
+   "share_pct": 19.3,
+   "in_tok": 108564405,
+   "out_tok": 2740893,
+   "avg_mult": 1.0,
+   "avg_sec": 45.8
+  },
+  {
+   "name": "demo-small",
+   "aic": 660.5,
+   "calls": 441,
+   "aic_per_call": 1.5,
+   "share_pct": 4.2,
+   "in_tok": 51916961,
+   "out_tok": 1368078,
+   "avg_mult": 1.0,
+   "avg_sec": 45.0
+  }
+ ],
+ "initiators": [
+  {
+   "name": "user",
+   "aic": 7818.0,
+   "calls": 1491,
+   "aic_per_call": 5.24,
+   "share_pct": 50.3,
+   "in_tok": 176218982,
+   "out_tok": 4551344,
+   "avg_mult": 1.0,
+   "avg_sec": 46.0
+  },
+  {
+   "name": "agent",
+   "aic": 7740.1,
+   "calls": 1498,
+   "aic_per_call": 5.17,
+   "share_pct": 49.7,
+   "in_tok": 172859283,
+   "out_tok": 4527471,
+   "avg_mult": 1.0,
+   "avg_sec": 45.1
+  }
+ ],
+ "efforts": [
+  {
+   "name": "high",
+   "aic": 4098.1,
+   "calls": 771,
+   "aic_per_call": 5.32,
+   "share_pct": 26.3,
+   "in_tok": 90788680,
+   "out_tok": 2405222,
+   "avg_mult": 1.0,
+   "avg_sec": 45.5
+  },
+  {
+   "name": "medium",
+   "aic": 4015.3,
+   "calls": 767,
+   "aic_per_call": 5.24,
+   "share_pct": 25.8,
+   "in_tok": 89561145,
+   "out_tok": 2370065,
+   "avg_mult": 1.0,
+   "avg_sec": 45.6
+  },
+  {
+   "name": "low",
+   "aic": 3751.2,
+   "calls": 732,
+   "aic_per_call": 5.12,
+   "share_pct": 24.1,
+   "in_tok": 86137262,
+   "out_tok": 2100906,
+   "avg_mult": 1.0,
+   "avg_sec": 46.5
+  },
+  {
+   "name": "-",
+   "aic": 3693.5,
+   "calls": 719,
+   "aic_per_call": 5.14,
+   "share_pct": 23.7,
+   "in_tok": 82591178,
+   "out_tok": 2202622,
+   "avg_mult": 1.0,
+   "avg_sec": 44.9
+  }
+ ],
+ "hosts": [
+  {
+   "name": "CLI",
+   "aic": 15558.1,
+   "calls": 2989,
+   "aic_per_call": 5.21,
+   "share_pct": 100.0,
+   "in_tok": 349078265,
+   "out_tok": 9078815,
+   "avg_mult": 1.0,
+   "avg_sec": 45.6
+  }
+ ],
+ "repos": [
+  {
+   "name": "acme/web-frontend",
+   "aic": 3324.3,
+   "calls": 601,
+   "aic_per_call": 5.53,
+   "share_pct": 21.4,
+   "in_tok": 71293226,
+   "out_tok": 1879588,
+   "avg_mult": 1.0,
+   "avg_sec": 47.0
+  },
+  {
+   "name": "acme/mobile-app",
+   "aic": 2728.7,
+   "calls": 513,
+   "aic_per_call": 5.32,
+   "share_pct": 17.5,
+   "in_tok": 58984944,
+   "out_tok": 1597630,
+   "avg_mult": 1.0,
+   "avg_sec": 45.2
+  },
+  {
+   "name": "acme/data-pipeline",
+   "aic": 2599.5,
+   "calls": 501,
+   "aic_per_call": 5.19,
+   "share_pct": 16.7,
+   "in_tok": 59069135,
+   "out_tok": 1504370,
+   "avg_mult": 1.0,
+   "avg_sec": 44.4
+  },
+  {
+   "name": "(no repo)",
+   "aic": 2582.0,
+   "calls": 502,
+   "aic_per_call": 5.14,
+   "share_pct": 16.6,
+   "in_tok": 56647986,
+   "out_tok": 1481726,
+   "avg_mult": 1.0,
+   "avg_sec": 45.3
+  },
+  {
+   "name": "acme/infra-terraform",
+   "aic": 2268.1,
+   "calls": 454,
+   "aic_per_call": 5.0,
+   "share_pct": 14.6,
+   "in_tok": 54827878,
+   "out_tok": 1352744,
+   "avg_mult": 1.0,
+   "avg_sec": 46.4
+  },
+  {
+   "name": "acme/api-gateway",
+   "aic": 2055.6,
+   "calls": 418,
+   "aic_per_call": 4.92,
+   "share_pct": 13.2,
+   "in_tok": 48255096,
+   "out_tok": 1262757,
+   "avg_mult": 1.0,
+   "avg_sec": 45.0
+  }
+ ],
+ "sessions": [
+  {
+   "id": "c4eb98c0",
+   "repository": "acme/web-frontend",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 166.9,
+   "calls": 25,
+   "in_tok": 3344233,
+   "out_tok": 93614,
+   "start": "07/17 23:14",
+   "end": "07/18 00:31",
+   "minutes": 76,
+   "aic_per_hour": 131.8,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 12.4,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 8.0,
+     "calls": 1
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 4.4,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "b6132b39",
+   "repository": "acme/mobile-app",
+   "branch": "feature/checkout",
+   "host": "CLI",
+   "summary": "Upgrade to the latest framework major version",
+   "aic": 154.0,
+   "calls": 25,
+   "in_tok": 2982943,
+   "out_tok": 76115,
+   "start": "07/12 04:50",
+   "end": "07/12 06:06",
+   "minutes": 76,
+   "aic_per_hour": 121.6,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 62.9,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 30.5,
+     "calls": 4
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 18.7,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 13.7,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "ca82a5c8",
+   "repository": "acme/mobile-app",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Investigate slow queries on the reporting dashboard",
+   "aic": 151.7,
+   "calls": 24,
+   "in_tok": 2958893,
+   "out_tok": 91967,
+   "start": "07/26 18:15",
+   "end": "07/26 19:32",
+   "minutes": 76,
+   "aic_per_hour": 119.8,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 14.9,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 10.7,
+     "calls": 1
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 4.2,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "5bb7a0aa",
+   "repository": "acme/web-frontend",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Investigate slow queries on the reporting dashboard",
+   "aic": 148.5,
+   "calls": 25,
+   "in_tok": 3076621,
+   "out_tok": 78466,
+   "start": "07/25 21:03",
+   "end": "07/25 22:19",
+   "minutes": 75,
+   "aic_per_hour": 118.8,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 35.0,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 17.0,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 12.0,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 6.0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "d0696141",
+   "repository": "acme/web-frontend",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Add pagination to the search results endpoint",
+   "aic": 142.8,
+   "calls": 24,
+   "in_tok": 2822369,
+   "out_tok": 71621,
+   "start": "07/25 23:42",
+   "end": "07/26 00:58",
+   "minutes": 75,
+   "aic_per_hour": 114.3,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 11.2,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 9.6,
+     "calls": 2
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-small",
+     "initiator": "agent",
+     "aic": 1.6,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "1914f7fd",
+   "repository": "acme/mobile-app",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 141.6,
+   "calls": 23,
+   "in_tok": 2918980,
+   "out_tok": 78184,
+   "start": "07/29 02:35",
+   "end": "07/29 03:48",
+   "minutes": 73,
+   "aic_per_hour": 116.4,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 10.2,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 10.2,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "ab47524b",
+   "repository": "acme/mobile-app",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 134.9,
+   "calls": 21,
+   "in_tok": 2635250,
+   "out_tok": 73671,
+   "start": "07/14 22:26",
+   "end": "07/14 23:33",
+   "minutes": 66,
+   "aic_per_hour": 122.6,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 45.1,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 21.9,
+     "calls": 3
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 13.6,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 9.6,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "c8eeea37",
+   "repository": "acme/infra-terraform",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Migrate CI from self-hosted runners to hosted",
+   "aic": 134.7,
+   "calls": 25,
+   "in_tok": 3555391,
+   "out_tok": 73488,
+   "start": "07/06 18:59",
+   "end": "07/06 20:19",
+   "minutes": 80,
+   "aic_per_hour": 101.0,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 18.6,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-small",
+     "initiator": "agent",
+     "aic": 7.9,
+     "calls": 2
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-small",
+     "initiator": "user",
+     "aic": 7.7,
+     "calls": 3
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 3.0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "4daa6738",
+   "repository": "acme/web-frontend",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Add pagination to the search results endpoint",
+   "aic": 134.3,
+   "calls": 24,
+   "in_tok": 3018454,
+   "out_tok": 70144,
+   "start": "07/12 03:28",
+   "end": "07/12 04:42",
+   "minutes": 74,
+   "aic_per_hour": 108.9,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 31.0,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 21.1,
+     "calls": 3
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 9.9,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "b669943d",
+   "repository": "acme/data-pipeline",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 132.9,
+   "calls": 25,
+   "in_tok": 2407493,
+   "out_tok": 73010,
+   "start": "07/24 19:34",
+   "end": "07/24 21:04",
+   "minutes": 89,
+   "aic_per_hour": 89.6,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 12.5,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 12.5,
+     "calls": 3
+    }
+   ]
+  },
+  {
+   "id": "0c5baa2f",
+   "repository": "acme/data-pipeline",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Add pagination to the search results endpoint",
+   "aic": 132.5,
+   "calls": 25,
+   "in_tok": 2843172,
+   "out_tok": 92869,
+   "start": "08/04 01:16",
+   "end": "08/04 02:34",
+   "minutes": 78,
+   "aic_per_hour": 101.9,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 29.6,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 15.4,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 8.2,
+     "calls": 1
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 6.0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "e6030601",
+   "repository": "acme/web-frontend",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Add pagination to the search results endpoint",
+   "aic": 131.8,
+   "calls": 23,
+   "in_tok": 2976175,
+   "out_tok": 77654,
+   "start": "07/27 01:07",
+   "end": "07/27 02:50",
+   "minutes": 103,
+   "aic_per_hour": 76.8,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 21.7,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-small",
+     "initiator": "agent",
+     "aic": 8.5,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 7.4,
+     "calls": 1
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 5.8,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "5af0a80a",
+   "repository": "acme/data-pipeline",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Migrate CI from self-hosted runners to hosted",
+   "aic": 130.4,
+   "calls": 22,
+   "in_tok": 2874911,
+   "out_tok": 79367,
+   "start": "07/19 03:39",
+   "end": "07/19 05:00",
+   "minutes": 81,
+   "aic_per_hour": 96.6,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 37.8,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 21.6,
+     "calls": 4
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 15.2,
+     "calls": 3
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-small",
+     "initiator": "agent",
+     "aic": 1.0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "a6718130",
+   "repository": "acme/mobile-app",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Write unit tests for the retry middleware",
+   "aic": 129.5,
+   "calls": 24,
+   "in_tok": 2634362,
+   "out_tok": 77207,
+   "start": "07/17 07:23",
+   "end": "07/17 08:52",
+   "minutes": 88,
+   "aic_per_hour": 88.3,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 23.0,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 18.5,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 4.5,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "0e7eea12",
+   "repository": "acme/web-frontend",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Upgrade to the latest framework major version",
+   "aic": 129.1,
+   "calls": 23,
+   "in_tok": 2514681,
+   "out_tok": 58017,
+   "start": "07/11 21:20",
+   "end": "07/11 22:37",
+   "minutes": 77,
+   "aic_per_hour": 100.6,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 36.9,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 16.5,
+     "calls": 3
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 11.8,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 8.6,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "7a2ff915",
+   "repository": "acme/data-pipeline",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 128.3,
+   "calls": 21,
+   "in_tok": 2356498,
+   "out_tok": 65626,
+   "start": "07/16 23:23",
+   "end": "07/17 00:19",
+   "minutes": 56,
+   "aic_per_hour": 137.4,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 32.6,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 26.8,
+     "calls": 3
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 5.8,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "800581d6",
+   "repository": "acme/data-pipeline",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 126.8,
+   "calls": 18,
+   "in_tok": 2374110,
+   "out_tok": 51305,
+   "start": "08/03 20:32",
+   "end": "08/03 21:26",
+   "minutes": 54,
+   "aic_per_hour": 140.9,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 5.8,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 5.8,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "2428940f",
+   "repository": "acme/web-frontend",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 126.8,
+   "calls": 24,
+   "in_tok": 2697501,
+   "out_tok": 70469,
+   "start": "08/04 02:29",
+   "end": "08/04 03:56",
+   "minutes": 87,
+   "aic_per_hour": 87.4,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 25.1,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 19.8,
+     "calls": 3
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 5.3,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "71f6130c",
+   "repository": "acme/web-frontend",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Investigate slow queries on the reporting dashboard",
+   "aic": 124.4,
+   "calls": 22,
+   "in_tok": 2679074,
+   "out_tok": 75036,
+   "start": "07/15 01:35",
+   "end": "07/15 02:52",
+   "minutes": 76,
+   "aic_per_hour": 98.2,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 16.2,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 8.5,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 7.7,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "d01fa95a",
+   "repository": "acme/mobile-app",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 122.9,
+   "calls": 24,
+   "in_tok": 2486958,
+   "out_tok": 82150,
+   "start": "07/11 17:27",
+   "end": "07/11 18:42",
+   "minutes": 74,
+   "aic_per_hour": 99.6,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 20.8,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 10.8,
+     "calls": 3
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 10.0,
+     "calls": 3
+    }
+   ]
+  },
+  {
+   "id": "95d657dd",
+   "repository": "acme/infra-terraform",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 121.7,
+   "calls": 23,
+   "in_tok": 2503471,
+   "out_tok": 51195,
+   "start": "07/19 20:41",
+   "end": "07/19 21:55",
+   "minutes": 74,
+   "aic_per_hour": 98.7,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 51.8,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 22.0,
+     "calls": 3
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 16.0,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 13.8,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "02b8e4d3",
+   "repository": "(no repo)",
+   "branch": "",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 119.5,
+   "calls": 24,
+   "in_tok": 2418621,
+   "out_tok": 75208,
+   "start": "07/23 03:24",
+   "end": "07/23 04:45",
+   "minutes": 80,
+   "aic_per_hour": 89.6,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 25.6,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 12.6,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 10.0,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 3.0,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "c291baa7",
+   "repository": "acme/data-pipeline",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Upgrade to the latest framework major version",
+   "aic": 119.3,
+   "calls": 22,
+   "in_tok": 2799417,
+   "out_tok": 55782,
+   "start": "08/04 04:48",
+   "end": "08/04 05:48",
+   "minutes": 59,
+   "aic_per_hour": 121.3,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 9.2,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 9.2,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "1ae822b8",
+   "repository": "acme/data-pipeline",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 118.9,
+   "calls": 22,
+   "in_tok": 2383557,
+   "out_tok": 63239,
+   "start": "07/18 20:02",
+   "end": "07/18 21:08",
+   "minutes": 65,
+   "aic_per_hour": 109.7,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 18.2,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 18.2,
+     "calls": 3
+    }
+   ]
+  },
+  {
+   "id": "29f3a5d5",
+   "repository": "acme/data-pipeline",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Upgrade to the latest framework major version",
+   "aic": 117.3,
+   "calls": 17,
+   "in_tok": 2074754,
+   "out_tok": 59463,
+   "start": "08/03 22:50",
+   "end": "08/03 23:43",
+   "minutes": 52,
+   "aic_per_hour": 135.3,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 19.0,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 19.0,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "a830b7b8",
+   "repository": "acme/web-frontend",
+   "branch": "feature/checkout",
+   "host": "CLI",
+   "summary": "Investigate slow queries on the reporting dashboard",
+   "aic": 116.7,
+   "calls": 21,
+   "in_tok": 2319938,
+   "out_tok": 69021,
+   "start": "07/19 16:17",
+   "end": "07/19 17:28",
+   "minutes": 70,
+   "aic_per_hour": 100.1,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 23.3,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 20.5,
+     "calls": 4
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 2.8,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "3078a314",
+   "repository": "acme/data-pipeline",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Migrate CI from self-hosted runners to hosted",
+   "aic": 115.6,
+   "calls": 22,
+   "in_tok": 2796979,
+   "out_tok": 60445,
+   "start": "07/17 18:37",
+   "end": "07/17 19:45",
+   "minutes": 67,
+   "aic_per_hour": 103.5,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 13.7,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 11.1,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 2.6,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "328baa74",
+   "repository": "acme/api-gateway",
+   "branch": "fix/login-redirect",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 115.6,
+   "calls": 23,
+   "in_tok": 2501548,
+   "out_tok": 79487,
+   "start": "08/01 00:44",
+   "end": "08/01 01:57",
+   "minutes": 73,
+   "aic_per_hour": 95.0,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 11.6,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 9.7,
+     "calls": 1
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 1.9,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "f30e1e37",
+   "repository": "acme/web-frontend",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 115.2,
+   "calls": 17,
+   "in_tok": 1940193,
+   "out_tok": 61999,
+   "start": "07/12 00:15",
+   "end": "07/12 01:14",
+   "minutes": 59,
+   "aic_per_hour": 117.2,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 25.7,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 10.8,
+     "calls": 1
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 7.7,
+     "calls": 1
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 7.2,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "caecf615",
+   "repository": "acme/infra-terraform",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 115.0,
+   "calls": 23,
+   "in_tok": 2780091,
+   "out_tok": 60679,
+   "start": "07/24 06:50",
+   "end": "07/24 08:06",
+   "minutes": 75,
+   "aic_per_hour": 92.0,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 43.2,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 19.6,
+     "calls": 3
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 12.5,
+     "calls": 2
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 11.1,
+     "calls": 3
+    }
+   ]
+  },
+  {
+   "id": "6aade8fe",
+   "repository": "acme/api-gateway",
+   "branch": "feature/search",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 114.9,
+   "calls": 23,
+   "in_tok": 2601641,
+   "out_tok": 73215,
+   "start": "07/28 03:09",
+   "end": "07/28 04:20",
+   "minutes": 71,
+   "aic_per_hour": 97.1,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 7.7,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 7.7,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "f65362d8",
+   "repository": "(no repo)",
+   "branch": "",
+   "host": "CLI",
+   "summary": "Migrate CI from self-hosted runners to hosted",
+   "aic": 110.3,
+   "calls": 17,
+   "in_tok": 2017373,
+   "out_tok": 54653,
+   "start": "07/16 18:25",
+   "end": "07/16 19:21",
+   "minutes": 55,
+   "aic_per_hour": 120.3,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 21.3,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 7.9,
+     "calls": 1
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 6.8,
+     "calls": 1
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 6.6,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "f752c610",
+   "repository": "(no repo)",
+   "branch": "",
+   "host": "CLI",
+   "summary": "Investigate slow queries on the reporting dashboard",
+   "aic": 109.0,
+   "calls": 21,
+   "in_tok": 2401636,
+   "out_tok": 70814,
+   "start": "07/25 01:17",
+   "end": "07/25 02:28",
+   "minutes": 70,
+   "aic_per_hour": 93.4,
+   "top_model": "demo-large",
+   "child_count": 3,
+   "child_aic": 30.5,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 14.9,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 13.2,
+     "calls": 2
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-medium",
+     "initiator": "agent",
+     "aic": 2.4,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "948afafa",
+   "repository": "acme/web-frontend",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Write unit tests for the retry middleware",
+   "aic": 108.8,
+   "calls": 21,
+   "in_tok": 2335705,
+   "out_tok": 61411,
+   "start": "07/31 22:23",
+   "end": "07/31 23:34",
+   "minutes": 70,
+   "aic_per_hour": 93.3,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 6.0,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 4.9,
+     "calls": 1
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 1.1,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "d16207d0",
+   "repository": "(no repo)",
+   "branch": "",
+   "host": "CLI",
+   "summary": "Refactor the checkout flow to use the new pricing API",
+   "aic": 108.7,
+   "calls": 24,
+   "in_tok": 2280021,
+   "out_tok": 65259,
+   "start": "07/27 01:52",
+   "end": "07/27 03:23",
+   "minutes": 90,
+   "aic_per_hour": 72.5,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 23.0,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 17.5,
+     "calls": 4
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 5.5,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "bc0c18fb",
+   "repository": "acme/web-frontend",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 108.5,
+   "calls": 18,
+   "in_tok": 2361589,
+   "out_tok": 50448,
+   "start": "08/04 07:56",
+   "end": "08/04 08:52",
+   "minutes": 55,
+   "aic_per_hour": 118.3,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 32.5,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 22.9,
+     "calls": 3
+    },
+    {
+     "id": "agent-2",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 9.6,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "2756bb9d",
+   "repository": "acme/mobile-app",
+   "branch": "main",
+   "host": "CLI",
+   "summary": "Write unit tests for the retry middleware",
+   "aic": 107.0,
+   "calls": 19,
+   "in_tok": 2208929,
+   "out_tok": 49127,
+   "start": "07/15 00:54",
+   "end": "07/15 02:06",
+   "minutes": 72,
+   "aic_per_hour": 89.2,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 3.3,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 3.3,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "05e207e9",
+   "repository": "acme/mobile-app",
+   "branch": "chore/deps",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 105.9,
+   "calls": 19,
+   "in_tok": 2310073,
+   "out_tok": 66589,
+   "start": "07/18 04:31",
+   "end": "07/18 05:34",
+   "minutes": 62,
+   "aic_per_hour": 102.5,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 33.0,
+   "children": [
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 17.1,
+     "calls": 4
+    },
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "agent",
+     "aic": 15.9,
+     "calls": 2
+    }
+   ]
+  },
+  {
+   "id": "67af3cf5",
+   "repository": "acme/infra-terraform",
+   "branch": "feature/checkout",
+   "host": "CLI",
+   "summary": "Fix flaky integration tests in the auth module",
+   "aic": 105.2,
+   "calls": 19,
+   "in_tok": 2354132,
+   "out_tok": 64697,
+   "start": "07/16 18:21",
+   "end": "07/16 19:27",
+   "minutes": 65,
+   "aic_per_hour": 97.1,
+   "top_model": "demo-large",
+   "child_count": 2,
+   "child_aic": 14.3,
+   "children": [
+    {
+     "id": "agent-2",
+     "model": "demo-medium",
+     "initiator": "user",
+     "aic": 9.1,
+     "calls": 2
+    },
+    {
+     "id": "agent-3",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 5.2,
+     "calls": 1
+    }
+   ]
+  },
+  {
+   "id": "66fc388e",
+   "repository": "(no repo)",
+   "branch": "",
+   "host": "CLI",
+   "summary": "Document the deployment runbook",
+   "aic": 105.0,
+   "calls": 21,
+   "in_tok": 1974963,
+   "out_tok": 65402,
+   "start": "07/10 22:36",
+   "end": "07/10 23:51",
+   "minutes": 74,
+   "aic_per_hour": 85.2,
+   "top_model": "demo-large",
+   "child_count": 1,
+   "child_aic": 9.6,
+   "children": [
+    {
+     "id": "agent-1",
+     "model": "demo-large",
+     "initiator": "user",
+     "aic": 9.6,
+     "calls": 3
+    }
+   ]
+  }
+ ],
+ "efficiency": {
+  "in_tok": 349078265,
+  "out_tok": 9078815,
+  "cache_read": 273865752,
+  "cache_write": 29794692,
+  "reasoning_tok": 2722740,
+  "cache_hit_pct": 78.5,
+  "aic_per_mtok_in": 44.6,
+  "aic_per_ktok_out": 1.71,
+  "reasoning_share_pct": 30.0,
+  "total_hours": 37.9,
+  "avg_sec_per_call": 45.6
+ }
+}

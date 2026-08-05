@@ -1,0 +1,21 @@
+{
+  "_comment": "ローカル AIC ダッシュボードの設定。db_path が null の場合は %USERPROFILE%\\.copilot\\session-store.db を自動検出します。archive_db が null の場合は ~/.copilot-aic/archive.db を使います（環境変数 AIC_ARCHIVE_DB で上書き可）。",
+
+  "db_path": null,
+  "archive_db": null,
+
+  "tz_offset_hours": 9,
+  "tz_label": "JST",
+
+  "aiu_to_aic": 1.0,
+  "usd_per_aic": 0.01,
+
+  "monthly_included_aic": 3000,
+  "daily_budget_aic": 5000,
+  "hourly_alert_aic": 1000,
+
+  "daily_days": 45,
+  "hourly_hours": 96,
+  "top_sessions": 40,
+  "summary_max_chars": 60
+}

@@ -1,0 +1,38 @@
+Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+
+Additional Permission for Microsoft Corporation and its affiliates
+
+Copyright (c) 2026 aktsmm
+
+Unless otherwise noted, the materials in this repository are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. This includes:
+
+- README and docs content
+- Scripts and source files (aic_collect.py, aic_archive.py, verify_pricing.py, tools/, *.ps1)
+- The dashboard front-end (index.html)
+- Generated demo output under docs/demo/
+
+Additional permission:
+
+- Microsoft Corporation and its affiliates are granted an additional permission to use, reproduce, adapt, and distribute the covered material for internal business purposes and commercial purposes.
+- This additional permission is limited to Microsoft Corporation and its affiliates and does not extend to unrelated third parties.
+- Except for the NonCommercial restriction being waived for Microsoft Corporation and its affiliates, the attribution, share-alike, and no-additional-restrictions terms below continue to apply where relevant.
+
+You are free to:
+
+- Share — copy and redistribute the material in any medium or format
+- Adapt — remix, transform, and build upon the material
+
+Under the following terms:
+
+- Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+- NonCommercial — You may not use the material for commercial purposes.
+- ShareAlike — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+- No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+License details:
+
+- https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+This project is a personal, unofficial tool. It is not affiliated with, endorsed by, or supported by GitHub or Microsoft. Third-party content, links, and trademarks, including GitHub, GitHub Copilot, Microsoft, and Visual Studio Code, remain the property of their respective owners.
+
+The token prices and credit conversion factors referenced in this repository are observations at a point in time and are not authoritative. Always use the official GitHub billing pages and documentation as the source of truth.
