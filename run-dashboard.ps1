@@ -43,9 +43,17 @@ $taskName = 'CopilotAicCollect'
 function Get-PythonExe {
     foreach ($c in 'python', 'python3', 'py') {
         $cmd = Get-Command $c -ErrorAction SilentlyContinue
-        if ($cmd) { return $cmd.Source }
+        if (-not $cmd) { continue }
+        # Microsoft Store のエイリアスは実体が無くても Get-Command に出るので、
+        # 実際に起動してバージョンが取れたものだけを採用する。
+        $ver = & $cmd.Source -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>$null
+        if ($LASTEXITCODE -ne 0 -or -not $ver) { continue }
+        $ver = "$ver".Trim()
+        if ($ver -notmatch '^\d+\.\d+$') { continue }
+        if ([version]$ver -lt [version]'3.9') { continue }
+        return $cmd.Source
     }
-    throw 'python が見つかりません。PATH を確認してください。'
+    throw 'Python 3.9 以上が見つかりません。https://www.python.org/downloads/ からインストールし、PATH を通してください。'
 }
 $python = Get-PythonExe
 
@@ -124,11 +132,13 @@ switch ($true) {
 
     { [bool]$ExportCsv } {
         & $python (Join-Path $here 'aic_archive.py') --export-csv $ExportCsv
+        if ($LASTEXITCODE -ne 0) { throw "CSV 出力に失敗しました (exit $LASTEXITCODE)" }
         return
     }
 
     { [bool]$BackupTo } {
         & $python (Join-Path $here 'aic_archive.py') --backup-to $BackupTo
+        if ($LASTEXITCODE -ne 0) { throw "バックアップに失敗しました (exit $LASTEXITCODE)" }
         return
     }
 }
@@ -136,6 +146,7 @@ switch ($true) {
 # ---------------------------------------------------------------- 通常実行
 if ($Stats) {
     & $python (Join-Path $here 'aic_archive.py') --stats
+    if ($LASTEXITCODE -ne 0) { throw "統計の取得に失敗しました (exit $LASTEXITCODE)" }
     return
 }
 
@@ -145,6 +156,7 @@ if ($LASTEXITCODE -ne 0) { throw "集計に失敗しました (exit $LASTEXITCOD
 if ($Verify) {
     Write-Host ''
     & $python (Join-Path $here 'verify_pricing.py')
+    if ($LASTEXITCODE -ne 0) { throw "換算検証に失敗しました (exit $LASTEXITCODE)" }
 }
 
 if (-not $NoOpen) {

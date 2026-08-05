@@ -226,12 +226,39 @@ class ProcessLock:
 
 # --------------------------------------------------------------------------- ライブ DB
 def source_identity(path: Path):
-    """ファイル世代の識別子。作り直されると変わる。"""
+    """ファイル世代の識別子。作り直されると変わる。
+
+    st_size は普通の書き込みでも増減するので識別子に含めない。
+    含めるとファイルが育っただけで「作り直された」と誤判定し、
+    ギャップを不当に high へ格上げしてしまう。
+
+    Windows では st_ino / st_dev が 0 になる環境があるため、その場合は
+    None を返し、呼び出し側で「世代を判定できない」として扱う。
+    """
     try:
         st = path.stat()
     except OSError:
         return None
-    return f"{getattr(st, 'st_ino', 0)}:{int(getattr(st, 'st_ctime', 0))}:{st.st_size}"
+    ino = getattr(st, "st_ino", 0)
+    dev = getattr(st, "st_dev", 0)
+    if not ino:
+        return None
+    return f"{dev}:{ino}"
+
+
+# 一時的で再試行に意味があるのはロック競合だけ。
+# スキーマ変更（no such table 等）は何度試しても直らないので即座に区別する。
+_RETRYABLE = ("database is locked", "database table is locked", "database schema is locked")
+
+
+def _is_retryable(exc: sqlite3.Error) -> bool:
+    if isinstance(exc, sqlite3.OperationalError):
+        return any(m in str(exc).lower() for m in _RETRYABLE)
+    return False
+
+
+class UnsupportedSchema(Exception):
+    """ライブ DB のスキーマが想定と違う（Copilot 側の変更が疑われる）。"""
 
 
 def connect_readonly(path: Path, attempts: int = 5):
@@ -245,17 +272,23 @@ def connect_readonly(path: Path, attempts: int = 5):
     delay = 0.5
     last = None
     for i in range(attempts):
+        con = None
         try:
             con = sqlite3.connect(f"file:{path.as_posix()}?mode=ro", uri=True, timeout=10)
             con.execute("PRAGMA query_only=ON")
             con.execute("SELECT 1 FROM assistant_usage_events LIMIT 1")
             return con
         except sqlite3.Error as e:
+            if con is not None:
+                con.close()
             last = e
+            if not _is_retryable(e):
+                # 再試行しても直らない類。ロック扱いにすると誤った対処を促すので分ける。
+                raise UnsupportedSchema(str(e)) from e
             if i < attempts - 1:
                 time.sleep(delay)
                 delay = min(delay * 2, 8.0)
-    print(f"[warn] ライブ DB を開けませんでした（{attempts} 回試行）: {last}", file=sys.stderr)
+    print(f"[warn] ライブ DB がロックされています（{attempts} 回試行）: {last}", file=sys.stderr)
     return None
 
 
@@ -587,7 +620,18 @@ def ingest(src_path: Path, arc: sqlite3.Connection, quiet: bool = False):
         log_failed_run(arc, "source_missing", str(src_path))
         return None
 
-    live = connect_readonly(src_path)
+    try:
+        live = connect_readonly(src_path)
+    except UnsupportedSchema as e:
+        # Copilot 側の内部スキーマは非公開で、予告なく変わりうる。
+        # ロック扱いにすると「待てば直る」という誤った期待を与えるので分ける。
+        if not quiet:
+            print(f"[warn] ライブ DB のスキーマが想定と異なります: {e}", file=sys.stderr)
+            print("       Copilot 側の内部形式が変わった可能性があります。", file=sys.stderr)
+            print("       アーカイブ済みのデータは無事です。ツールの更新を確認してください。", file=sys.stderr)
+        log_failed_run(arc, "unsupported_schema", str(src_path), str(e)[:500])
+        return None
+
     if live is None:
         if not quiet:
             print("[warn] ライブ DB がロックされています。今回の取り込みは見送ります。")
@@ -618,6 +662,17 @@ def main() -> int:
 
     arc_path = Path(args.archive)
     src_path = Path(args.source)
+
+    # 読み取り専用の操作でアーカイブを新規作成してはいけない。
+    # パスを間違えたまま --backup-to が「成功」すると、空 DB を保存して
+    # 履歴を守れたと誤解させることになる。
+    read_only_mode = bool(args.export_csv or args.backup_to or args.stats)
+    if read_only_mode and not arc_path.exists():
+        print(f"[error] アーカイブ DB がありません: {arc_path}", file=sys.stderr)
+        print("        パスが正しいか確認してください。", file=sys.stderr)
+        print("        まだ作成していない場合は、先に python aic_archive.py を実行してください。",
+              file=sys.stderr)
+        return 1
 
     arc = open_archive(arc_path)
     try:

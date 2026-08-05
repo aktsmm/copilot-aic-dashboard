@@ -41,7 +41,15 @@ cd copilot-aic-dashboard
 .\setup.ps1
 ```
 
-`setup.ps1` checks prerequisites, picks an archive location (default `~/.copilot-aic/archive.db`), runs the first collection, and registers an hourly scheduled task so nothing is lost.
+`setup.ps1` checks prerequisites, picks an archive location (default `~/.copilot-aic/archive.db`), runs the first collection, and registers an hourly scheduled task so nothing is lost. It writes your machine-specific path to `config.local.json` and leaves the tracked `config.json` untouched.
+
+If PowerShell refuses to run the script (`... is not digitally signed`), allow it for this session only:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Scheduled-task registration can fail on locked-down machines. That is not fatal — the archive still works, and you can re-try later with `.\run-dashboard.ps1 -InstallTask` from an elevated prompt, or skip it entirely with `.\setup.ps1 -SkipTask`.
 
 Just want to see what it looks like, with no data of your own?
 
@@ -56,7 +64,7 @@ Just want to see what it looks like, with no data of your own?
 .\run-dashboard.ps1 -Stats               # archive statistics only
 .\run-dashboard.ps1 -Verify              # also re-verify the AIU→AIC conversion
 .\run-dashboard.ps1 -BackupTo D:\backup  # safe online backup of the archive
-.\run-dashboard.ps1 -ExportCsv .\out.csv # export every archived event
+.\run-dashboard.ps1 -ExportCsv .\export\usage.csv # export every archived event
 .\run-dashboard.ps1 -UninstallTask       # stop automatic collection
 ```
 
@@ -136,7 +144,23 @@ AIC = ( (input_tokens − cache_read − cache_write) × input_price
       + output_tokens × output_price ) / 1e6 × 100
 ```
 
-Note that `input_tokens` **includes** the cached portions. `verify_pricing.py` re-derives this from your own data and prints the per-model deviation; a persistent deviation usually means the model's price changed during the period, not that the formula is wrong.
+Note that `input_tokens` **includes** the cached portions. `verify_pricing.py` re-derives this from your own archive and prints the per-model deviation; a persistent deviation usually means the model's price changed during the period, not that the formula is wrong.
+
+<details>
+<summary>Worked example: a deviation that turned out to be a price cut</summary>
+
+Running the verifier over the author's own archive (~11k events; aggregate counts only, no identifiers) matched official prices within 2% for nearly every model — except one, which sat around 20% off. Grouping that model's ratio by day showed a **staircase, not noise**:
+
+| Period | observed / current official price |
+| --- | ---: |
+| through 2026-07-14 | ×1.36 – 1.46 |
+| 2026-07-15 – 07-29 | ×1.250 (flat) |
+| 2026-07-30 | ×1.016 (transition day) |
+| from 2026-08-03 | ×1.000 (exact match) |
+
+So the formula was right; the historical rows were simply billed at the older, higher rate. The dashboard uses the stored `total_nano_aiu` directly, so it stays accurate across price changes. Residual 1–2% deviations on other models trace to the long-context tier boundary (prices double above the threshold).
+
+</details>
 
 > These figures are observations, not official guarantees. Your invoice is the source of truth.
 
@@ -144,16 +168,26 @@ Note that `input_tokens` **includes** the cached portions. `verify_pricing.py` r
 
 ## Where are the rate limits?
 
-Short answer: **GitHub does not publish the numbers.** The documentation states only that rate limits exist and are temporary. What the docs *do* say is worth knowing:
+Short answer: **GitHub does not publish the numbers.** As of 2026-08-05, the documentation states only that rate limits exist and are temporary — neither the thresholds nor the window (hourly? daily? rolling?) are public.
 
-- Limits are applied to protect the service, and "if you're making frequent or automated requests, consider adjusting your usage pattern."
-- Running out of **credits** (budget/quota exhaustion) is a different thing from being **rate limited**.
-- For Business/Enterprise, credits are pooled across all licensed seats.
-- Official visibility stops at **daily** granularity, and there is no built-in threshold alerting.
+What the docs *do* say, and why it matters here:
 
-That is exactly the gap this dashboard fills: it lets you see your own hourly peaks, so you can correlate them with the throttling you actually experience.
+- The stated reasons for rate limiting are **capacity, high usage, fairness, and abuse mitigation**. The recommended response is to wait, upgrade, or *"if you're making frequent or automated requests (for example, rapid-fire completions or large-scale usage), consider adjusting your usage pattern."* Heavy parallel-agent workflows are explicitly in scope.
+- Running out of **credits** is a different state (`blocked`) from being **rate limited**. Overage is billed at $0.01/AIC and is **on by default**; the budget hard-stop is **off by default** except for user-level budgets.
+- **There is no threshold alerting.** You find out by being blocked. That alone justifies watching it locally.
+- For Business/Enterprise, included credits are **pooled across all licensed seats**, not per person.
 
-See [README.ja.md](README.ja.md#7-どのくらいで制限か--公式ドキュメントの回答) for the detailed documentation walkthrough, and the [official references](#official-references) below.
+| Plan | Included per user/month | Promotional (2026-06-01 – 09-01) |
+| --- | ---: | ---: |
+| Copilot Business | 1,900 AIC | **3,000 AIC** |
+| Copilot Enterprise | 3,900 AIC | **7,000 AIC** |
+| Copilot Pro | 1,500 AIC | — |
+| Copilot Pro+ | 7,000 AIC | — |
+| Copilot Max | 20,000 AIC | — |
+
+Official reporting stops at **daily** granularity in every channel — the summarized report, the detailed report, the AI usage report CSV (`date` / `model` / `username` / `quantity` / …), and the REST metrics API. **No hourly view exists officially.** That is exactly the gap this dashboard fills: you can see your own hourly peaks and correlate them with the throttling you actually experience.
+
+[README.ja.md](README.ja.md#7-どのくらいで制限か--公式ドキュメントの回答) has the full documentation walkthrough in Japanese, including what could *not* be confirmed. See also the [official references](#official-references) below.
 
 ---
 
@@ -164,6 +198,7 @@ See [README.ja.md](README.ja.md#7-どのくらいで制限か--公式ドキュ�
 | `db_path` | `null` | `null` auto-detects `%USERPROFILE%\.copilot\session-store.db` |
 | `archive_db` | `~/.copilot-aic/archive.db` | Append-only archive. Override with the `AIC_ARCHIVE_DB` env var. |
 | `tz_offset_hours` / `tz_label` | `9` / `"JST"` | Timezone used for bucketing |
+| `aiu_to_aic` | `1.0` | AIU→AIC conversion factor. Verified empirically; you should not need to change it. |
 | `usd_per_aic` | `0.01` | USD per credit |
 | `monthly_included_aic` | `3000` | Credits included in your plan |
 | `daily_budget_aic` | `5000` | Dashed guideline on the daily chart |
@@ -206,6 +241,7 @@ AGENTS.md              instructions for AI coding agents working on this repo
 ## Limitations
 
 - **This machine only.** Other devices, and cloud agent work that never touched this machine, are not included.
+- **It reads an undocumented internal schema.** `~/.copilot/session-store.db` is a private implementation detail of GitHub Copilot. Its tables, columns, and the meaning of `total_nano_aiu` are not documented, not guaranteed, and can change or disappear in any Copilot update without notice. When that happens the tool reports `unsupported_schema` and stops ingesting — your existing archive is untouched, but new data will not be collected until the tool is updated.
 - **History before your first collection cannot be recovered.** Whatever the local DB had already pruned is gone.
 - **If you delete the local DB while collection is not running**, that window is lost — the dashboard will flag it rather than hide it. Keep the scheduled task enabled.
 - Numbers will not match an organization invoice exactly. Use GitHub's billing pages for anything financial.
@@ -230,5 +266,7 @@ AGENTS.md              instructions for AI coding agents working on this repo
 ## License
 
 [CC BY-NC-SA 4.0](LICENSE), with an additional permission for Microsoft Corporation and its affiliates.
+
+This is **source-available, not OSI open source** — non-commercial use only, and derivatives must be shared alike. Creative Commons does not recommend its licenses for software, so if you need a conventional open-source license for reuse, open an issue rather than assuming one.
 
 This is a personal, unofficial tool. It is not affiliated with, endorsed by, or supported by GitHub or Microsoft.

@@ -15,13 +15,15 @@ A local-only dashboard that archives and visualizes **GitHub Copilot AI Credits 
 Violating any of these is a correctness/data-loss bug, not a style preference.
 
 1. **Never write to the live Copilot DB.** Open it only as `file:...?mode=ro` with `PRAGMA query_only=ON`. Do not add migrations, `VACUUM`, or any statement that touches it.
-2. **Never copy the `db` / `-wal` / `-shm` trio of a live database.** Sequential copies can interleave with a checkpoint and produce an inconsistent snapshot. If the DB is locked, retry with backoff and then skip ingestion.
+2. **Never copy the `db` / `-wal` / `-shm` trio of a live database.** Sequential copies can interleave with a checkpoint and produce an inconsistent snapshot. If the DB is locked, retry with backoff and then skip ingestion. All live-DB reads go through `aic_archive.connect_readonly()` — do not add a second path. `verify_pricing.py` deliberately reads the **archive**, not the live DB.
 3. **The archive is append-only.** No `DELETE` or `DROP` on `usage_events`, `sessions`, `collect_runs`, or `quarantine_events`. Schema changes must rename the old table aside (see `migrate()`), never drop it.
-4. **Do not change the archive primary key** `(session_id, id, created_at)` without reading §4.1 of `README.ja.md`. `id` is `AUTOINCREMENT` and restarts at 1 when the DB is recreated; weaker keys silently destroy history.
-5. **No network calls.** Nothing in this repo may contact a remote host at runtime.
-6. **Never commit real usage data.** `data/`, `export/`, `sample/`, and `*.db` are gitignored. Screenshots and demo output must come from `tools/make_sample_db.py`, never from a real archive.
-7. **Missing data is not zero.** Buckets with no coverage must render as shaded bands and be excluded from averages. Do not "simplify" this into zero-valued bars.
-8. **Do not overstate gap detection.** Timestamps alone cannot prove deletion. Keep the `high` / `low` confidence distinction and the hedged wording.
+4. **Read-only commands must not create the archive.** `--stats` / `--backup-to` / `--export-csv` fail when the archive is absent. A backup that silently succeeds against a freshly created empty DB is worse than an error.
+5. **Do not change the archive primary key** `(session_id, id, created_at)` without reading §4.1 of `README.ja.md`. `id` is `AUTOINCREMENT` and restarts at 1 when the DB is recreated; weaker keys silently destroy history.
+6. **No network calls.** Nothing in this repo may contact a remote host at runtime.
+7. **Never commit real usage data.** `data/`, `export/`, `sample/`, `*.db`, `*.csv`, `docs/*.png`, and `config.local.json` are gitignored. Screenshots and demo output must come from `tools/make_sample_db.py`, never from a real archive.
+8. **Missing data is not zero.** Buckets with no coverage must render as shaded bands, be excluded from moving averages and `avg_daily_7d`, and break the MA polyline rather than dropping it to zero. Do not "simplify" this into zero-valued bars.
+9. **Do not overstate gap detection.** Timestamps alone cannot prove deletion. Keep the `high` / `low` confidence distinction and the hedged wording. `source_identity()` must stay size-independent, and must return `None` when the filesystem cannot supply a stable inode — an unknown generation may never be promoted to `high`.
+10. **Distinguish "locked" from "schema changed".** Only BUSY/LOCKED errors are retried; anything else raises `UnsupportedSchema` and is logged as such. Telling a user to "wait and retry" when Copilot changed its internal schema sends them down the wrong path.
 
 ## Layout
 
@@ -38,8 +40,9 @@ Violating any of these is a correctness/data-loss bug, not a style preference.
 ## Conventions
 
 - **Python:** 3.9+ compatible, standard library only, 4-space indent, type hints where they clarify. Comments explain *why*, not *what*. Japanese comments are the norm in `aic_*.py`.
-- **JavaScript:** no framework, no bundler. `index.html` must keep working from `file://` — that is why data is loaded via `<script src="data/usage.js">` rather than `fetch()`.
-- **PowerShell:** use `$PSScriptRoot`, not `Split-Path -LiteralPath ... -Parent` (parameter-set ambiguity). Avoid `[CmdletBinding(DefaultParameterSetName=...)]` with multiple sets; use plain switches plus `switch ($true)`.
+- **JavaScript:** no framework, no bundler. `index.html` must keep working from `file://` — that is why data is loaded via `<script src="data/usage.js">` (which assigns `window.AIC_DATA`) rather than `fetch()`.
+- **PowerShell:** use `$PSScriptRoot`, not `Split-Path -LiteralPath ... -Parent` (parameter-set ambiguity). Avoid `[CmdletBinding(DefaultParameterSetName=...)]` with multiple sets; use plain switches plus `switch ($true)`. Check `$LASTEXITCODE` after every Python invocation. Write files with `[System.IO.File]::WriteAllText(..., UTF8Encoding($false))` — `Set-Content -Encoding UTF8` emits a BOM on PowerShell 5.1 that Python's `json.loads` rejects.
+- **Config:** `config.json` is tracked and shared. Machine-specific values belong in `config.local.json` (gitignored). Never write user paths into `config.json`.
 - **Output files** must be written to a temp file in the same directory and swapped in with `os.replace()`.
 - **Docs:** `README.md` (English) and `README.ja.md` (Japanese) are both first-class. Any user-facing change must update **both**.
 
@@ -67,9 +70,12 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 
 - `Split-Path -LiteralPath $x -Parent` throws `AmbiguousParameterSet`, and the error points at the caller's line rather than the real cause.
 - PowerShell output is cp932 by default; set `$env:PYTHONIOENCODING='utf-8'` before invoking Python.
+- `Set-Content -Encoding UTF8` writes a BOM on PowerShell 5.1, which breaks Python JSON parsing.
+- `Get-Command python` can return the Microsoft Store alias in `WindowsApps` even when Python is not installed. Always execute the candidate and validate its reported version before selecting it.
 - Playwright cannot call `inner_text()` on SVG `<text>`; use `text_content()`.
 - `CREATE TABLE IF NOT EXISTS` will not add columns to a table created by an older version — use the `_ensure_columns()` helper.
 - `New-ScheduledTaskTrigger -AtLogOn` has no repetition parameter. Register two triggers (`-AtLogOn` and `-Once ... -RepetitionInterval`) rather than grafting `.Repetition` onto the CIM object, and omit `RepetitionDuration` to mean "indefinitely".
+- A `<polyline>` with `null` values coerced to `0` reads as a real drop to zero. Break the line into segments instead.
 
 ## Out of scope
 

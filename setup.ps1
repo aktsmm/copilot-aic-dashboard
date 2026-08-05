@@ -49,14 +49,27 @@ Write-Step 1 '前提条件を確認します'
 $python = $null
 foreach ($c in 'python', 'python3', 'py') {
     $cmd = Get-Command $c -ErrorAction SilentlyContinue
-    if ($cmd) { $python = $cmd.Source; break }
+    if (-not $cmd) { continue }
+    # Microsoft Store のエイリアス (WindowsApps\python.exe) は実体が無くても
+    # Get-Command に引っかかる。実際に起動してバージョンが取れたものだけ採用する。
+    $ver = & $cmd.Source -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $ver) { continue }
+    $ver = "$ver".Trim()
+    if ($ver -notmatch '^\d+\.\d+$') { continue }
+    if ([version]$ver -lt [version]'3.9') {
+        Write-Warn2 "$($cmd.Source) は Python $ver です（3.9 以上が必要）。次の候補を試します。"
+        continue
+    }
+    $python = $cmd.Source
+    $pyVer = $ver
+    break
 }
 if (-not $python) {
-    throw 'python が見つかりません。https://www.python.org/downloads/ からインストールし、PATH を通してください。'
-}
-$pyVer = (& $python -c 'import sys; print("%d.%d" % sys.version_info[:2])').Trim()
-if ([version]$pyVer -lt [version]'3.9') {
-    throw "Python 3.9 以上が必要です（検出: $pyVer）"
+    throw @'
+使用可能な Python 3.9 以上が見つかりません。
+  https://www.python.org/downloads/ からインストールし、"Add python.exe to PATH" を有効にしてください。
+  ストア版のエイリアスだけが存在する場合は、設定 > アプリ > アプリ実行エイリアス で python を無効にしてください。
+'@
 }
 Write-Ok "Python $pyVer ($python)"
 
@@ -84,12 +97,15 @@ if ($archiveDir -like "$env:USERPROFILE\.copilot*" -and $archiveDir -notlike "$e
     Write-Warn2 'アーカイブを ~/.copilot 配下に置くと、ローカル DB の掃除で一緒に消える恐れがあります。'
 }
 
-$cfgPath = Join-Path $here 'config.json'
-$cfg = Get-Content -LiteralPath $cfgPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$cfg | Add-Member -NotePropertyName archive_db -NotePropertyValue $ArchiveDb -Force
-$cfg | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $cfgPath -Encoding UTF8
+# 共有される config.json は触らず、環境固有の値は config.local.json に書く。
+# Set-Content -Encoding UTF8 は PowerShell 5.1 で BOM を付けてしまい、
+# Python 側の json.loads が落ちるため .NET の UTF8Encoding($false) を使う。
+$cfgPath = Join-Path $here 'config.local.json'
+$local = [ordered]@{ archive_db = $ArchiveDb }
+$json = $local | ConvertTo-Json -Depth 5
+[System.IO.File]::WriteAllText($cfgPath, $json, (New-Object System.Text.UTF8Encoding($false)))
 Write-Ok "アーカイブ: $ArchiveDb"
-Write-Ok "設定を書き込みました: $cfgPath"
+Write-Ok "設定を書き込みました: $cfgPath (config.json は変更していません)"
 
 # ---------------------------------------------------------------- 3. 初回収集
 Write-Step 3 '初回の収集を実行します'
@@ -104,7 +120,16 @@ if ($SkipTask) {
 else {
     Write-Step 4 "自動収集を登録します（$IntervalMinutes 分ごと）"
     Write-Host '    ローカル DB が消される前に取り込むための保険です。'
-    & (Join-Path $here 'run-dashboard.ps1') -InstallTask -IntervalMinutes $IntervalMinutes
+    try {
+        & (Join-Path $here 'run-dashboard.ps1') -InstallTask -IntervalMinutes $IntervalMinutes
+        if ($LASTEXITCODE -ne 0) { throw "exit $LASTEXITCODE" }
+    }
+    catch {
+        # アーカイブの初期化まで終わっているので、ここで全体を失敗にはしない。
+        Write-Warn2 "自動収集の登録に失敗しました: $($_.Exception.Message)"
+        Write-Warn2 'アーカイブ自体は使える状態です。手動なら .\run-dashboard.ps1 で収集できます。'
+        Write-Warn2 '管理者権限の PowerShell で .\run-dashboard.ps1 -InstallTask を実行すると登録できる場合があります。'
+    }
 }
 
 Write-Host "`nセットアップ完了。" -ForegroundColor Green

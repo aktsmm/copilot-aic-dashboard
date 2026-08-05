@@ -41,7 +41,15 @@ cd copilot-aic-dashboard
 .\setup.ps1
 ```
 
-`setup.ps1` は前提確認 → アーカイブ保存先の決定（既定 `~/.copilot-aic/archive.db`）→ 初回収集 → 1 時間ごとの自動収集タスク登録まで行います。
+`setup.ps1` は前提確認 → アーカイブ保存先の決定（既定 `~/.copilot-aic/archive.db`）→ 初回収集 → 1 時間ごとの自動収集タスク登録まで行います。環境固有のパスは `config.local.json` に書き、追跡対象の `config.json` は変更しません。
+
+スクリプトの実行が拒否される場合（`... はデジタル署名されていません` 等）は、そのセッションだけ許可してください。
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+タスク登録は権限によって失敗することがありますが、致命的ではありません。アーカイブ自体は動くので、後から管理者権限で `.\run-dashboard.ps1 -InstallTask` を実行するか、`.\setup.ps1 -SkipTask` で登録を省略できます。
 
 自分のデータなしで見た目だけ試すなら:
 
@@ -56,7 +64,7 @@ cd copilot-aic-dashboard
 .\run-dashboard.ps1 -Stats               # アーカイブの統計だけ表示
 .\run-dashboard.ps1 -Verify              # AIU→AIC 換算の再検証も実行
 .\run-dashboard.ps1 -BackupTo D:\backup  # アーカイブを安全に複製
-.\run-dashboard.ps1 -ExportCsv .\out.csv # 全イベントを CSV 出力
+.\run-dashboard.ps1 -ExportCsv .\export\usage.csv # 全イベントを CSV 出力
 .\run-dashboard.ps1 -UninstallTask       # 自動収集を解除
 ```
 
@@ -143,7 +151,9 @@ AGENTS.md              このリポジトリを扱う AI エージェント向�
 
 **結論: `total_nano_aiu ÷ 1e9` は AI Credits そのもの。1 AIC = $0.01。**
 
-`verify_pricing.py` で、GitHub 公式のモデル別トークン単価から AIC を再計算し、DB の値と突合しました（10,955 件）。
+`verify_pricing.py` で、GitHub 公式のモデル別トークン単価から AIC を再計算し、アーカイブの値と突合しました（10,955 件）。
+
+> 以下の数値は筆者自身のアーカイブから出した**集計値のみ**です。セッション名・リポジトリ名・ユーザー識別子は含みません。手元で `.\run-dashboard.ps1 -Verify` を実行すれば、同じ表を自分のデータで再現できます。
 
 確定した課金式:
 
@@ -295,6 +305,7 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 ## 9. 制約
 
 - **この PC のセッションのみ**が対象です。他端末や、cloud agent が GitHub 側だけで動いた分は含まれません。
+- **非公開の内部スキーマに依存しています。** `~/.copilot/session-store.db` は GitHub Copilot の実装詳細であり、テーブル構成も列名も `total_nano_aiu` の意味も公式には文書化されていません。Copilot の更新で予告なく変わったり無くなったりします。その場合は `unsupported_schema` として取り込みを停止します（既存のアーカイブは無傷ですが、ツールを更新するまで新しいデータは貯まりません）。
 - **アーカイブを始める前に消えた分は復元できません。** ローカル DB が既に刈り取っていた期間は取得できません。
 - **収集を回していない間にローカル DB が消されると、その区間は取りこぼします。** `setup.ps1` / `-InstallTask` の定期実行を有効にしておいてください。取りこぼしはバナーと網掛けで表示されます。
 - 組織全体の請求額とは一致しません。金額の正は Billing 画面 / AI usage report です。
@@ -319,5 +330,7 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 ## ライセンス
 
 [CC BY-NC-SA 4.0](LICENSE)（Microsoft Corporation とその関連会社への追加許諾付き）。
+
+**source-available であって OSI 準拠のオープンソースではありません**。非商用に限り、改変物は同一条件で共有してください。Creative Commons はソフトウェアへの CC ライセンス適用を推奨していないため、通常のオープンソースライセンスが必要な場合は Issue で相談してください。
 
 これは個人の非公式ツールです。GitHub / Microsoft による提供・保証・サポートはありません。

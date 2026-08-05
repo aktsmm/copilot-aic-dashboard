@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """AIU -> AIC 換算の検証スクリプト。
 
-GitHub 公式のモデル別トークン単価から AIC を再計算し、ローカル DB の
+GitHub 公式のモデル別トークン単価から AIC を再計算し、アーカイブ DB の
 total_nano_aiu と突合する。一致すれば「1 AIU = 1 AI Credit = $0.01」が
 実測で裏付けられる。
+
+ライブ DB は参照しない（読み取り経路は aic_archive に一本化している）。
 
 公式単価: https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing
 
@@ -18,12 +20,13 @@ total_nano_aiu と突合する。一致すれば「1 AIU = 1 AI Credit = $0.01�
 
 from __future__ import annotations
 
-import shutil
+import argparse
 import sqlite3
+import sys
 from collections import defaultdict
 from pathlib import Path
 
-from aic_collect import connect_readonly, load_config, resolve_db_path
+import aic_archive
 
 HERE = Path(__file__).resolve().parent
 TOLERANCE = 0.02
@@ -55,7 +58,7 @@ PRICING = {
 QUERY = """
 SELECT substr(created_at, 1, 10) AS day, model, input_tokens, output_tokens,
        cache_read_tokens, cache_write_tokens, total_nano_aiu
-FROM assistant_usage_events
+FROM usage_events
 WHERE total_nano_aiu IS NOT NULL AND total_nano_aiu > 0
 ORDER BY created_at
 """
@@ -81,13 +84,25 @@ def price_aic(model: str, in_tok: int, out_tok: int, cache_r: int, cache_w: int)
 
 
 def main() -> int:
-    cfg = load_config(HERE / "config.json")
-    conn, tmpdir = connect_readonly(resolve_db_path(cfg))
+    cfg = aic_archive.load_config(HERE)
+    ap = argparse.ArgumentParser(description="AIU -> AIC 換算をアーカイブ上で検証する")
+    ap.add_argument("--archive", default=cfg["archive_db"], help="アーカイブ DB のパス")
+    args = ap.parse_args()
+
+    # ライブ DB ではなくアーカイブを読む。ライブ DB を触る経路を 1 本に絞ることで、
+    # db/-wal/-shm のコピーのような危険な読み方が紛れ込む余地をなくす。
+    archive_path = Path(args.archive)
+    if not archive_path.exists():
+        print(f"[error] アーカイブ DB がありません: {archive_path}", file=sys.stderr)
+        print("        先に python aic_archive.py を実行してください。", file=sys.stderr)
+        return 1
+
+    conn = sqlite3.connect(f"file:{archive_path.as_posix()}?mode=ro", uri=True, timeout=10)
     conn.row_factory = sqlite3.Row
-    rows = conn.execute(QUERY).fetchall()
-    conn.close()
-    if tmpdir:
-        shutil.rmtree(tmpdir, ignore_errors=True)
+    try:
+        rows = conn.execute(QUERY).fetchall()
+    finally:
+        conn.close()
 
     stats = defaultdict(lambda: {"n": 0, "ok": 0, "actual": 0.0, "calc": 0.0})
     drift = defaultdict(lambda: defaultdict(lambda: [0, 0.0, 0.0]))
@@ -117,12 +132,18 @@ def main() -> int:
     tot_a = sum(s["actual"] for s in stats.values())
     tot_c = sum(s["calc"] for s in stats.values())
 
+    if tot_n == 0 or tot_a <= 0:
+        print("[warn] 突合できる行がありません。", file=sys.stderr)
+        print(f"       アーカイブ {len(rows):,} 行のうち、単価表に無いモデルが {skipped:,} 行。", file=sys.stderr)
+        print("       PRICING テーブルにモデルを追加するか、しばらく使ってから再実行してください。", file=sys.stderr)
+        return 1
+
     print("=" * 78)
-    print("AIU -> AIC 換算検証  (公式トークン単価から再計算し DB の total_nano_aiu と突合)")
+    print("AIU -> AIC 換算検証  (公式トークン単価から再計算し total_nano_aiu と突合)")
     print("=" * 78)
     print(f"対象 {tot_n:,} 件 (単価未登録モデル {skipped} 件スキップ)")
     print(f"誤差 {TOLERANCE:.0%} 以内で一致: {tot_ok:,} / {tot_n:,} = {tot_ok / tot_n * 100:.1f}%")
-    print(f"DB 合計 {tot_a:,.1f} AIC   公式単価での再計算 {tot_c:,.1f} AIC "
+    print(f"アーカイブ合計 {tot_a:,.1f} AIC   公式単価での再計算 {tot_c:,.1f} AIC "
           f"(差 {(tot_c - tot_a) / tot_a * 100:+.2f}%)\n")
 
     print(f"{'model':24}{'件数':>7}{'一致率':>9}{'DB AIC':>13}{'計算 AIC':>13}{'差':>9}")

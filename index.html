@@ -289,8 +289,22 @@ function barChart(target, rows, opts) {
   }
 
   if (o.maLine) {
-    const pts = rows.map((r, i) => `${padL + i * bw + bw / 2},${y(r.ma ?? 0)}`).join(" ");
-    add("polyline", { points: pts }, "ma-line");
+    // ma が無い期間（記録なし）は線をつながない。0 に落とすと
+    // 「使用量が落ち込んだ」ように見えてしまうため、区間を分断する。
+    let seg = [];
+    const flush = () => {
+      if (seg.length >= 2) add("polyline", { points: seg.join(" ") }, "ma-line");
+      else if (seg.length === 1) {
+        const [cx, cy] = seg[0].split(",");
+        add("circle", { cx, cy, r: 2 }, "ma-line");
+      }
+      seg = [];
+    };
+    rows.forEach((r, i) => {
+      if (r.ma == null) { flush(); return; }
+      seg.push(`${padL + i * bw + bw / 2},${y(r.ma)}`);
+    });
+    flush();
   }
 
   target.appendChild(svg);
@@ -328,7 +342,9 @@ function kpiSection() {
     <div class="kpi">
       <div class="label">直近 24 時間${pm("last_24h")}</div>
       <div class="value">${fmt(k.last_24h)}</div>
-      <div class="foot">7日平均 ${fmt(k.avg_daily_7d)} / 日${pm("last_7d")}</div>
+      <div class="foot">${k.avg_daily_7d == null
+        ? "7日平均 — (記録のある日がありません)"
+        : `${k.avg_daily_7d_days === 7 ? "7日平均" : `直近${k.avg_daily_7d_days}日平均`} ${fmt(k.avg_daily_7d)} / 日`}${pm("avg_daily_7d")}</div>
     </div>
     <div class="kpi">
       <div class="label">今月累計</div>
@@ -384,7 +400,8 @@ function dailySection() {
     incomplete: d.incomplete,
     tip: d.incomplete
       ? `${d.date} (${d.weekday})\n${GAP_NOTE[d.incomplete] || "記録なし"}`
-      : `${d.date} (${d.weekday})\n${fmt(d.aic, 1)} AIC / ${d.calls} 呼出 / ${d.sessions} セッション\n7日平均 ${fmt(d.ma7, 1)}` +
+      : `${d.date} (${d.weekday})\n${fmt(d.aic, 1)} AIC / ${d.calls} 呼出 / ${d.sessions} セッション\n${
+          d.ma7 == null ? "7日平均 —" : `7日平均 ${fmt(d.ma7, 1)}${d.ma7_partial ? "（記録のある日のみ）" : ""}`}` +
         (d.peak_hour != null ? `\n最大時間帯 ${String(d.peak_hour).padStart(2, "0")}時 ${fmt(d.peak_hour_aic, 1)} AIC` : ""),
   }));
 }

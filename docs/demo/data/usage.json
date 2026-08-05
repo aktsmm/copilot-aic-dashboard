@@ -1,9 +1,9 @@
 {
  "meta": {
-  "generated_at": "2026-08-05 17:36:56",
+  "generated_at": "2026-08-05 22:22:25",
   "tz_label": "JST",
   "tz_offset_hours": 9,
-  "first_event": "2026-07-06 18:59",
+  "first_event": "2026-07-06 18:58",
   "last_event": "2026-08-05 07:47",
   "event_count": 2989,
   "session_count": 224,
@@ -22,9 +22,9 @@
   "archive_runs": 1,
   "archive_failed_runs": 0,
   "archive_quarantined": 0,
-  "archive_last_run_at": "2026-08-05T08:36:56Z",
+  "archive_last_run_at": "2026-08-05T13:22:24Z",
   "archive_last_run_status": "ok",
-  "archive_since": "2026-07-06T09:59:11.000Z",
+  "archive_since": "2026-07-06T09:58:39.000Z",
   "ingested": {
    "source_rows": 2989,
    "inserted": 2989,
@@ -32,8 +32,8 @@
    "existing": 0,
    "quarantined": 0,
    "archive_rows": 2989,
-   "live_min": "2026-07-06T09:59:11.000Z",
-   "live_max": "2026-08-04T22:47:35.000Z",
+   "live_min": "2026-07-06T09:58:39.000Z",
+   "live_max": "2026-08-04T22:47:03.000Z",
    "archive_max_before": null
   },
   "demo": true
@@ -45,63 +45,19 @@
   "dod_pct": -85.4,
   "last_1h": 0.0,
   "last_24h": 116.1,
-  "last_7d": 3050.2,
-  "avg_daily_7d": 435.7,
+  "last_7d": 2986.5,
+  "avg_daily_7d": 426.6,
   "month": 2482.6,
   "month_usd": 24.83,
   "month_pct_of_included": 82.8,
   "peak_1h": 296.2,
-  "peak_1h_at": "08-04 00:27",
+  "peak_1h_at": "08-04 00:26",
   "peak_24h": 1918.1,
-  "peak_24h_at": "07-17 12:39",
-  "daily_budget_pct": 2.3
+  "peak_24h_at": "07-17 12:38",
+  "daily_budget_pct": 2.3,
+  "avg_daily_7d_days": 7
  },
  "hourly": [
-  {
-   "label": "08/01 18:00",
-   "short": "18",
-   "date": "08/01",
-   "ts": "2026-08-01T18:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
-  {
-   "label": "08/01 19:00",
-   "short": "19",
-   "date": "08/01",
-   "ts": "2026-08-01T19:00:00+09:00",
-   "aic": 2.7,
-   "calls": 1,
-   "top_model": "demo-medium"
-  },
-  {
-   "label": "08/01 20:00",
-   "short": "20",
-   "date": "08/01",
-   "ts": "2026-08-01T20:00:00+09:00",
-   "aic": 95.0,
-   "calls": 17,
-   "top_model": "demo-large"
-  },
-  {
-   "label": "08/01 21:00",
-   "short": "21",
-   "date": "08/01",
-   "ts": "2026-08-01T21:00:00+09:00",
-   "aic": 5.3,
-   "calls": 2,
-   "top_model": "demo-medium"
-  },
-  {
-   "label": "08/01 22:00",
-   "short": "22",
-   "date": "08/01",
-   "ts": "2026-08-01T22:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
   {
    "label": "08/01 23:00",
    "short": "23",
@@ -485,8 +441,8 @@
    "short": "17",
    "date": "08/03",
    "ts": "2026-08-03T17:00:00+09:00",
-   "aic": 9.3,
-   "calls": 1,
+   "aic": 10.4,
+   "calls": 2,
    "top_model": "demo-large"
   },
   {
@@ -494,8 +450,8 @@
    "short": "18",
    "date": "08/03",
    "ts": "2026-08-03T18:00:00+09:00",
-   "aic": 45.5,
-   "calls": 8,
+   "aic": 44.4,
+   "calls": 7,
    "top_model": "demo-large"
   },
   {
@@ -521,8 +477,8 @@
    "short": "21",
    "date": "08/03",
    "ts": "2026-08-03T21:00:00+09:00",
-   "aic": 118.8,
-   "calls": 19,
+   "aic": 119.8,
+   "calls": 20,
    "top_model": "demo-large"
   },
   {
@@ -530,8 +486,8 @@
    "short": "22",
    "date": "08/03",
    "ts": "2026-08-03T22:00:00+09:00",
-   "aic": 62.6,
-   "calls": 13,
+   "aic": 61.5,
+   "calls": 12,
    "top_model": "demo-large"
   },
   {
@@ -566,8 +522,8 @@
    "short": "02",
    "date": "08/04",
    "ts": "2026-08-04T02:00:00+09:00",
-   "aic": 115.6,
-   "calls": 20,
+   "aic": 117.3,
+   "calls": 21,
    "top_model": "demo-large"
   },
   {
@@ -575,8 +531,8 @@
    "short": "03",
    "date": "08/04",
    "ts": "2026-08-04T03:00:00+09:00",
-   "aic": 126.7,
-   "calls": 24,
+   "aic": 124.9,
+   "calls": 23,
    "top_model": "demo-large"
   },
   {
@@ -920,6 +876,51 @@
    "aic": 0.0,
    "calls": 0,
    "top_model": null
+  },
+  {
+   "label": "08/05 18:00",
+   "short": "18",
+   "date": "08/05",
+   "ts": "2026-08-05T18:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 19:00",
+   "short": "19",
+   "date": "08/05",
+   "ts": "2026-08-05T19:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 20:00",
+   "short": "20",
+   "date": "08/05",
+   "ts": "2026-08-05T20:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 21:00",
+   "short": "21",
+   "date": "08/05",
+   "ts": "2026-08-05T21:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/05 22:00",
+   "short": "22",
+   "date": "08/05",
+   "ts": "2026-08-05T22:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
   }
  ],
  "daily": [
@@ -933,7 +934,9 @@
    "sessions": 2,
    "peak_hour": 22,
    "peak_hour_aic": 103.2,
-   "ma7": 34.0
+   "ma7": null,
+   "incomplete": "before_archive",
+   "ma7_partial": true
   },
   {
    "date": "2026-07-07",
@@ -945,7 +948,8 @@
    "sessions": 5,
    "peak_hour": 3,
    "peak_hour_aic": 62.6,
-   "ma7": 84.2
+   "ma7": 351.4,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-08",
@@ -957,7 +961,8 @@
    "sessions": 6,
    "peak_hour": 1,
    "peak_hour_aic": 152.7,
-   "ma7": 131.8
+   "ma7": 342.5,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-09",
@@ -969,7 +974,8 @@
    "sessions": 4,
    "peak_hour": 21,
    "peak_hour_aic": 63.3,
-   "ma7": 170.0
+   "ma7": 317.3,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-10",
@@ -981,7 +987,8 @@
    "sessions": 9,
    "peak_hour": 7,
    "peak_hour_aic": 129.1,
-   "ma7": 246.6
+   "ma7": 372.1,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-11",
@@ -992,8 +999,9 @@
    "calls": 164,
    "sessions": 17,
    "peak_hour": 21,
-   "peak_hour_aic": 178.6,
-   "ma7": 371.0
+   "peak_hour_aic": 176.8,
+   "ma7": 471.9,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-12",
@@ -1005,7 +1013,8 @@
    "sessions": 8,
    "peak_hour": 0,
    "peak_hour_aic": 135.1,
-   "ma7": 448.3
+   "ma7": 483.4,
+   "ma7_partial": true
   },
   {
    "date": "2026-07-13",
@@ -1017,7 +1026,8 @@
    "sessions": 1,
    "peak_hour": 1,
    "peak_hour_aic": 23.8,
-   "ma7": 417.7
+   "ma7": 417.7,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-14",
@@ -1028,8 +1038,9 @@
    "calls": 43,
    "sessions": 2,
    "peak_hour": 22,
-   "peak_hour_aic": 73.5,
-   "ma7": 401.8
+   "peak_hour_aic": 78.1,
+   "ma7": 401.8,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-15",
@@ -1041,7 +1052,8 @@
    "sessions": 9,
    "peak_hour": 2,
    "peak_hour_aic": 151.7,
-   "ma7": 458.2
+   "ma7": 458.2,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-16",
@@ -1053,7 +1065,8 @@
    "sessions": 12,
    "peak_hour": 21,
    "peak_hour_aic": 215.1,
-   "ma7": 548.1
+   "ma7": 548.1,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-17",
@@ -1064,8 +1077,9 @@
    "calls": 306,
    "sessions": 28,
    "peak_hour": 1,
-   "peak_hour_aic": 220.9,
-   "ma7": 701.4
+   "peak_hour_aic": 214.4,
+   "ma7": 701.4,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-18",
@@ -1077,7 +1091,8 @@
    "sessions": 10,
    "peak_hour": 1,
    "peak_hour_aic": 184.9,
-   "ma7": 683.0
+   "ma7": 683.0,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-19",
@@ -1089,7 +1104,8 @@
    "sessions": 8,
    "peak_hour": 20,
    "peak_hour_aic": 106.3,
-   "ma7": 709.2
+   "ma7": 709.2,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-20",
@@ -1101,7 +1117,8 @@
    "sessions": 4,
    "peak_hour": 11,
    "peak_hour_aic": 69.2,
-   "ma7": 747.8
+   "ma7": 747.8,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-21",
@@ -1113,7 +1130,8 @@
    "sessions": 4,
    "peak_hour": 19,
    "peak_hour_aic": 57.4,
-   "ma7": 738.2
+   "ma7": 738.2,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-22",
@@ -1125,7 +1143,8 @@
    "sessions": 5,
    "peak_hour": 23,
    "peak_hour_aic": 85.2,
-   "ma7": 669.4
+   "ma7": 669.4,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-23",
@@ -1137,7 +1156,8 @@
    "sessions": 7,
    "peak_hour": 0,
    "peak_hour_aic": 103.4,
-   "ma7": 598.3
+   "ma7": 598.3,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-24",
@@ -1149,7 +1169,8 @@
    "sessions": 9,
    "peak_hour": 7,
    "peak_hour_aic": 113.1,
-   "ma7": 461.0
+   "ma7": 461.0,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-25",
@@ -1161,7 +1182,8 @@
    "sessions": 8,
    "peak_hour": 1,
    "peak_hour_aic": 144.2,
-   "ma7": 428.2
+   "ma7": 428.2,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-26",
@@ -1172,8 +1194,9 @@
    "calls": 181,
    "sessions": 14,
    "peak_hour": 21,
-   "peak_hour_aic": 163.2,
-   "ma7": 454.2
+   "peak_hour_aic": 158.6,
+   "ma7": 454.2,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-27",
@@ -1183,9 +1206,10 @@
    "aic": 519.3,
    "calls": 105,
    "sessions": 9,
-   "peak_hour": 3,
-   "peak_hour_aic": 178.3,
-   "ma7": 486.4
+   "peak_hour": 2,
+   "peak_hour_aic": 168.4,
+   "ma7": 486.4,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-28",
@@ -1197,7 +1221,8 @@
    "sessions": 5,
    "peak_hour": 4,
    "peak_hour_aic": 106.5,
-   "ma7": 519.5
+   "ma7": 519.5,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-29",
@@ -1209,7 +1234,8 @@
    "sessions": 5,
    "peak_hour": 3,
    "peak_hour_aic": 152.0,
-   "ma7": 536.5
+   "ma7": 536.5,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-30",
@@ -1221,7 +1247,8 @@
    "sessions": 3,
    "peak_hour": 17,
    "peak_hour_aic": 41.0,
-   "ma7": 497.6
+   "ma7": 497.6,
+   "ma7_partial": false
   },
   {
    "date": "2026-07-31",
@@ -1233,7 +1260,8 @@
    "sessions": 6,
    "peak_hour": 1,
    "peak_hour_aic": 104.8,
-   "ma7": 458.9
+   "ma7": 458.9,
+   "ma7_partial": false
   },
   {
    "date": "2026-08-01",
@@ -1245,7 +1273,8 @@
    "sessions": 7,
    "peak_hour": 7,
    "peak_hour_aic": 122.4,
-   "ma7": 459.3
+   "ma7": 459.3,
+   "ma7_partial": false
   },
   {
    "date": "2026-08-02",
@@ -1257,7 +1286,8 @@
    "sessions": 4,
    "peak_hour": 23,
    "peak_hour_aic": 84.9,
-   "ma7": 363.8
+   "ma7": 363.8,
+   "ma7_partial": false
   },
   {
    "date": "2026-08-03",
@@ -1269,7 +1299,8 @@
    "sessions": 14,
    "peak_hour": 23,
    "peak_hour_aic": 274.4,
-   "ma7": 406.7
+   "ma7": 406.7,
+   "ma7_partial": false
   },
   {
    "date": "2026-08-04",
@@ -1281,7 +1312,8 @@
    "sessions": 10,
    "peak_hour": 0,
    "peak_hour_aic": 168.5,
-   "ma7": 462.4
+   "ma7": 462.4,
+   "ma7_partial": false
   },
   {
    "date": "2026-08-05",
@@ -1293,7 +1325,8 @@
    "sessions": 2,
    "peak_hour": 7,
    "peak_hour_aic": 62.2,
-   "ma7": 426.6
+   "ma7": 426.6,
+   "ma7_partial": false
   }
  ],
  "heatmap": [
@@ -1315,15 +1348,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 2,
-   "aic": 220.9,
-   "calls": 42
+   "aic": 233.4,
+   "calls": 43
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 3,
-   "aic": 182.2,
-   "calls": 35
+   "aic": 169.7,
+   "calls": 34
   },
   {
    "weekday": 0,
@@ -1343,15 +1376,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 6,
-   "aic": 85.4,
-   "calls": 18
+   "aic": 86.8,
+   "calls": 19
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 7,
-   "aic": 31.8,
-   "calls": 8
+   "aic": 30.5,
+   "calls": 7
   },
   {
    "weekday": 0,
@@ -1378,15 +1411,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 17,
-   "aic": 44.3,
-   "calls": 9
+   "aic": 45.4,
+   "calls": 10
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 18,
-   "aic": 98.6,
-   "calls": 17
+   "aic": 97.4,
+   "calls": 16
   },
   {
    "weekday": 0,
@@ -1406,15 +1439,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 21,
-   "aic": 118.8,
-   "calls": 19
+   "aic": 119.8,
+   "calls": 20
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 22,
-   "aic": 165.8,
-   "calls": 28
+   "aic": 164.7,
+   "calls": 27
   },
   {
    "weekday": 0,
@@ -1441,15 +1474,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 2,
-   "aic": 186.3,
-   "calls": 33
+   "aic": 188.0,
+   "calls": 34
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 3,
-   "aic": 320.3,
-   "calls": 63
+   "aic": 318.5,
+   "calls": 62
   },
   {
    "weekday": 1,
@@ -1511,15 +1544,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 22,
-   "aic": 120.2,
-   "calls": 24
+   "aic": 130.0,
+   "calls": 26
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 23,
-   "aic": 220.2,
-   "calls": 45
+   "aic": 210.4,
+   "calls": 43
   },
   {
    "weekday": 2,
@@ -1553,15 +1586,15 @@
    "weekday": 2,
    "weekday_label": "水",
    "hour": 4,
-   "aic": 26.9,
-   "calls": 4
+   "aic": 36.9,
+   "calls": 5
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 5,
-   "aic": 83.6,
-   "calls": 14
+   "aic": 73.6,
+   "calls": 13
   },
   {
    "weekday": 2,
@@ -1686,15 +1719,15 @@
    "weekday": 3,
    "weekday_label": "木",
    "hour": 16,
-   "aic": 31.2,
-   "calls": 7
+   "aic": 34.7,
+   "calls": 8
   },
   {
    "weekday": 3,
    "weekday_label": "木",
    "hour": 17,
-   "aic": 225.1,
-   "calls": 46
+   "aic": 221.6,
+   "calls": 45
   },
   {
    "weekday": 3,
@@ -1742,15 +1775,15 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 0,
-   "aic": 275.1,
-   "calls": 53
+   "aic": 281.5,
+   "calls": 54
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 1,
-   "aic": 325.7,
-   "calls": 61
+   "aic": 319.2,
+   "calls": 60
   },
   {
    "weekday": 4,
@@ -1791,15 +1824,15 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 7,
-   "aic": 395.7,
-   "calls": 79
+   "aic": 400.2,
+   "calls": 80
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 8,
-   "aic": 102.7,
-   "calls": 18
+   "aic": 98.2,
+   "calls": 17
   },
   {
    "weekday": 4,
@@ -1826,29 +1859,29 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 18,
-   "aic": 59.8,
-   "calls": 8
+   "aic": 62.0,
+   "calls": 9
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 19,
-   "aic": 296.8,
-   "calls": 62
+   "aic": 294.7,
+   "calls": 61
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 20,
-   "aic": 161.6,
-   "calls": 32
+   "aic": 164.6,
+   "calls": 33
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 21,
-   "aic": 219.3,
-   "calls": 47
+   "aic": 216.3,
+   "calls": 46
   },
   {
    "weekday": 4,
@@ -1938,15 +1971,15 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 16,
-   "aic": 125.6,
-   "calls": 32
+   "aic": 130.0,
+   "calls": 33
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 17,
-   "aic": 144.9,
-   "calls": 22
+   "aic": 140.5,
+   "calls": 21
   },
   {
    "weekday": 5,
@@ -1966,29 +1999,29 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 20,
-   "aic": 225.3,
-   "calls": 40
+   "aic": 227.1,
+   "calls": 41
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 21,
-   "aic": 317.4,
-   "calls": 54
+   "aic": 315.6,
+   "calls": 53
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 22,
-   "aic": 233.1,
-   "calls": 47
+   "aic": 239.1,
+   "calls": 48
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 23,
-   "aic": 116.2,
-   "calls": 22
+   "aic": 110.1,
+   "calls": 21
   },
   {
    "weekday": 6,
@@ -2036,15 +2069,15 @@
    "weekday": 6,
    "weekday_label": "日",
    "hour": 6,
-   "aic": 141.7,
-   "calls": 24
+   "aic": 145.9,
+   "calls": 25
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 7,
-   "aic": 107.4,
-   "calls": 21
+   "aic": 103.2,
+   "calls": 20
   },
   {
    "weekday": 6,
@@ -2085,29 +2118,29 @@
    "weekday": 6,
    "weekday_label": "日",
    "hour": 20,
-   "aic": 188.0,
-   "calls": 40
+   "aic": 192.5,
+   "calls": 41
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 21,
-   "aic": 257.5,
-   "calls": 52
+   "aic": 253.0,
+   "calls": 51
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 22,
-   "aic": 123.3,
-   "calls": 24
+   "aic": 127.4,
+   "calls": 25
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 23,
-   "aic": 242.9,
-   "calls": 46
+   "aic": 238.8,
+   "calls": 45
   }
  ],
  "models": [
@@ -2298,7 +2331,7 @@
  ],
  "sessions": [
   {
-   "id": "c4eb98c0",
+   "id": "e812e838",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -2308,7 +2341,7 @@
    "in_tok": 3344233,
    "out_tok": 93614,
    "start": "07/17 23:14",
-   "end": "07/18 00:31",
+   "end": "07/18 00:30",
    "minutes": 76,
    "aic_per_hour": 131.8,
    "top_model": "demo-large",
@@ -2332,7 +2365,7 @@
    ]
   },
   {
-   "id": "b6132b39",
+   "id": "0cefdc08",
    "repository": "acme/mobile-app",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -2341,8 +2374,8 @@
    "calls": 25,
    "in_tok": 2982943,
    "out_tok": 76115,
-   "start": "07/12 04:50",
-   "end": "07/12 06:06",
+   "start": "07/12 04:49",
+   "end": "07/12 06:05",
    "minutes": 76,
    "aic_per_hour": 121.6,
    "top_model": "demo-large",
@@ -2373,7 +2406,7 @@
    ]
   },
   {
-   "id": "ca82a5c8",
+   "id": "956d23f6",
    "repository": "acme/mobile-app",
    "branch": "feature/search",
    "host": "CLI",
@@ -2407,7 +2440,7 @@
    ]
   },
   {
-   "id": "5bb7a0aa",
+   "id": "976a470e",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2416,8 +2449,8 @@
    "calls": 25,
    "in_tok": 3076621,
    "out_tok": 78466,
-   "start": "07/25 21:03",
-   "end": "07/25 22:19",
+   "start": "07/25 21:02",
+   "end": "07/25 22:18",
    "minutes": 75,
    "aic_per_hour": 118.8,
    "top_model": "demo-large",
@@ -2448,7 +2481,7 @@
    ]
   },
   {
-   "id": "d0696141",
+   "id": "55e04fdd",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2457,8 +2490,8 @@
    "calls": 24,
    "in_tok": 2822369,
    "out_tok": 71621,
-   "start": "07/25 23:42",
-   "end": "07/26 00:58",
+   "start": "07/25 23:41",
+   "end": "07/26 00:57",
    "minutes": 75,
    "aic_per_hour": 114.3,
    "top_model": "demo-large",
@@ -2482,7 +2515,7 @@
    ]
   },
   {
-   "id": "1914f7fd",
+   "id": "a8583585",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2491,7 +2524,7 @@
    "calls": 23,
    "in_tok": 2918980,
    "out_tok": 78184,
-   "start": "07/29 02:35",
+   "start": "07/29 02:34",
    "end": "07/29 03:48",
    "minutes": 73,
    "aic_per_hour": 116.4,
@@ -2509,7 +2542,7 @@
    ]
   },
   {
-   "id": "ab47524b",
+   "id": "7dcb19d5",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2519,7 +2552,7 @@
    "in_tok": 2635250,
    "out_tok": 73671,
    "start": "07/14 22:26",
-   "end": "07/14 23:33",
+   "end": "07/14 23:32",
    "minutes": 66,
    "aic_per_hour": 122.6,
    "top_model": "demo-large",
@@ -2550,7 +2583,7 @@
    ]
   },
   {
-   "id": "c8eeea37",
+   "id": "1f7da58c",
    "repository": "acme/infra-terraform",
    "branch": "feature/search",
    "host": "CLI",
@@ -2559,8 +2592,8 @@
    "calls": 25,
    "in_tok": 3555391,
    "out_tok": 73488,
-   "start": "07/06 18:59",
-   "end": "07/06 20:19",
+   "start": "07/06 18:58",
+   "end": "07/06 20:18",
    "minutes": 80,
    "aic_per_hour": 101.0,
    "top_model": "demo-large",
@@ -2591,7 +2624,7 @@
    ]
   },
   {
-   "id": "4daa6738",
+   "id": "70f0f943",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2625,7 +2658,7 @@
    ]
   },
   {
-   "id": "b669943d",
+   "id": "aa4af6e6",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2635,7 +2668,7 @@
    "in_tok": 2407493,
    "out_tok": 73010,
    "start": "07/24 19:34",
-   "end": "07/24 21:04",
+   "end": "07/24 21:03",
    "minutes": 89,
    "aic_per_hour": 89.6,
    "top_model": "demo-large",
@@ -2652,7 +2685,7 @@
    ]
   },
   {
-   "id": "0c5baa2f",
+   "id": "33215cc3",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2661,7 +2694,7 @@
    "calls": 25,
    "in_tok": 2843172,
    "out_tok": 92869,
-   "start": "08/04 01:16",
+   "start": "08/04 01:15",
    "end": "08/04 02:34",
    "minutes": 78,
    "aic_per_hour": 101.9,
@@ -2693,7 +2726,7 @@
    ]
   },
   {
-   "id": "e6030601",
+   "id": "80854eec",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2702,7 +2735,7 @@
    "calls": 23,
    "in_tok": 2976175,
    "out_tok": 77654,
-   "start": "07/27 01:07",
+   "start": "07/27 01:06",
    "end": "07/27 02:50",
    "minutes": 103,
    "aic_per_hour": 76.8,
@@ -2734,7 +2767,7 @@
    ]
   },
   {
-   "id": "5af0a80a",
+   "id": "b41cb006",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2775,7 +2808,7 @@
    ]
   },
   {
-   "id": "a6718130",
+   "id": "953c812a",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2785,7 +2818,7 @@
    "in_tok": 2634362,
    "out_tok": 77207,
    "start": "07/17 07:23",
-   "end": "07/17 08:52",
+   "end": "07/17 08:51",
    "minutes": 88,
    "aic_per_hour": 88.3,
    "top_model": "demo-large",
@@ -2809,7 +2842,7 @@
    ]
   },
   {
-   "id": "0e7eea12",
+   "id": "6fdb0f09",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2818,7 +2851,7 @@
    "calls": 23,
    "in_tok": 2514681,
    "out_tok": 58017,
-   "start": "07/11 21:20",
+   "start": "07/11 21:19",
    "end": "07/11 22:37",
    "minutes": 77,
    "aic_per_hour": 100.6,
@@ -2850,7 +2883,7 @@
    ]
   },
   {
-   "id": "7a2ff915",
+   "id": "04dbc6fe",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2859,7 +2892,7 @@
    "calls": 21,
    "in_tok": 2356498,
    "out_tok": 65626,
-   "start": "07/16 23:23",
+   "start": "07/16 23:22",
    "end": "07/17 00:19",
    "minutes": 56,
    "aic_per_hour": 137.4,
@@ -2884,7 +2917,7 @@
    ]
   },
   {
-   "id": "800581d6",
+   "id": "c3f36910",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -2911,7 +2944,7 @@
    ]
   },
   {
-   "id": "2428940f",
+   "id": "4d04209a",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2920,8 +2953,8 @@
    "calls": 24,
    "in_tok": 2697501,
    "out_tok": 70469,
-   "start": "08/04 02:29",
-   "end": "08/04 03:56",
+   "start": "08/04 02:28",
+   "end": "08/04 03:55",
    "minutes": 87,
    "aic_per_hour": 87.4,
    "top_model": "demo-large",
@@ -2945,7 +2978,7 @@
    ]
   },
   {
-   "id": "71f6130c",
+   "id": "682eff14",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2954,8 +2987,8 @@
    "calls": 22,
    "in_tok": 2679074,
    "out_tok": 75036,
-   "start": "07/15 01:35",
-   "end": "07/15 02:52",
+   "start": "07/15 01:34",
+   "end": "07/15 02:51",
    "minutes": 76,
    "aic_per_hour": 98.2,
    "top_model": "demo-large",
@@ -2979,7 +3012,7 @@
    ]
   },
   {
-   "id": "d01fa95a",
+   "id": "edd7df97",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2989,7 +3022,7 @@
    "in_tok": 2486958,
    "out_tok": 82150,
    "start": "07/11 17:27",
-   "end": "07/11 18:42",
+   "end": "07/11 18:41",
    "minutes": 74,
    "aic_per_hour": 99.6,
    "top_model": "demo-large",
@@ -3013,7 +3046,7 @@
    ]
   },
   {
-   "id": "95d657dd",
+   "id": "fbcc5c1d",
    "repository": "acme/infra-terraform",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3054,7 +3087,7 @@
    ]
   },
   {
-   "id": "02b8e4d3",
+   "id": "72600a68",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3095,7 +3128,7 @@
    ]
   },
   {
-   "id": "c291baa7",
+   "id": "b558cc12",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -3122,7 +3155,7 @@
    ]
   },
   {
-   "id": "1ae822b8",
+   "id": "9815474c",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3149,7 +3182,7 @@
    ]
   },
   {
-   "id": "29f3a5d5",
+   "id": "ccdf085f",
    "repository": "acme/data-pipeline",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3176,7 +3209,7 @@
    ]
   },
   {
-   "id": "a830b7b8",
+   "id": "243e973a",
    "repository": "acme/web-frontend",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3186,7 +3219,7 @@
    "in_tok": 2319938,
    "out_tok": 69021,
    "start": "07/19 16:17",
-   "end": "07/19 17:28",
+   "end": "07/19 17:27",
    "minutes": 70,
    "aic_per_hour": 100.1,
    "top_model": "demo-large",
@@ -3210,7 +3243,7 @@
    ]
   },
   {
-   "id": "3078a314",
+   "id": "2b430b53",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -3220,7 +3253,7 @@
    "in_tok": 2796979,
    "out_tok": 60445,
    "start": "07/17 18:37",
-   "end": "07/17 19:45",
+   "end": "07/17 19:44",
    "minutes": 67,
    "aic_per_hour": 103.5,
    "top_model": "demo-large",
@@ -3244,7 +3277,7 @@
    ]
   },
   {
-   "id": "328baa74",
+   "id": "53aaee85",
    "repository": "acme/api-gateway",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3278,7 +3311,7 @@
    ]
   },
   {
-   "id": "f30e1e37",
+   "id": "2dced898",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3287,8 +3320,8 @@
    "calls": 17,
    "in_tok": 1940193,
    "out_tok": 61999,
-   "start": "07/12 00:15",
-   "end": "07/12 01:14",
+   "start": "07/12 00:14",
+   "end": "07/12 01:13",
    "minutes": 59,
    "aic_per_hour": 117.2,
    "top_model": "demo-large",
@@ -3319,7 +3352,7 @@
    ]
   },
   {
-   "id": "caecf615",
+   "id": "2449b4ec",
    "repository": "acme/infra-terraform",
    "branch": "main",
    "host": "CLI",
@@ -3328,8 +3361,8 @@
    "calls": 23,
    "in_tok": 2780091,
    "out_tok": 60679,
-   "start": "07/24 06:50",
-   "end": "07/24 08:06",
+   "start": "07/24 06:49",
+   "end": "07/24 08:05",
    "minutes": 75,
    "aic_per_hour": 92.0,
    "top_model": "demo-large",
@@ -3360,7 +3393,7 @@
    ]
   },
   {
-   "id": "6aade8fe",
+   "id": "7f30025d",
    "repository": "acme/api-gateway",
    "branch": "feature/search",
    "host": "CLI",
@@ -3369,7 +3402,7 @@
    "calls": 23,
    "in_tok": 2601641,
    "out_tok": 73215,
-   "start": "07/28 03:09",
+   "start": "07/28 03:08",
    "end": "07/28 04:20",
    "minutes": 71,
    "aic_per_hour": 97.1,
@@ -3387,7 +3420,7 @@
    ]
   },
   {
-   "id": "f65362d8",
+   "id": "8490ea5f",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3397,7 +3430,7 @@
    "in_tok": 2017373,
    "out_tok": 54653,
    "start": "07/16 18:25",
-   "end": "07/16 19:21",
+   "end": "07/16 19:20",
    "minutes": 55,
    "aic_per_hour": 120.3,
    "top_model": "demo-large",
@@ -3428,7 +3461,7 @@
    ]
   },
   {
-   "id": "f752c610",
+   "id": "2819e77b",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3438,7 +3471,7 @@
    "in_tok": 2401636,
    "out_tok": 70814,
    "start": "07/25 01:17",
-   "end": "07/25 02:28",
+   "end": "07/25 02:27",
    "minutes": 70,
    "aic_per_hour": 93.4,
    "top_model": "demo-large",
@@ -3469,7 +3502,7 @@
    ]
   },
   {
-   "id": "948afafa",
+   "id": "ea7a61db",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3478,8 +3511,8 @@
    "calls": 21,
    "in_tok": 2335705,
    "out_tok": 61411,
-   "start": "07/31 22:23",
-   "end": "07/31 23:34",
+   "start": "07/31 22:22",
+   "end": "07/31 23:33",
    "minutes": 70,
    "aic_per_hour": 93.3,
    "top_model": "demo-large",
@@ -3503,7 +3536,7 @@
    ]
   },
   {
-   "id": "d16207d0",
+   "id": "123b09db",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3513,7 +3546,7 @@
    "in_tok": 2280021,
    "out_tok": 65259,
    "start": "07/27 01:52",
-   "end": "07/27 03:23",
+   "end": "07/27 03:22",
    "minutes": 90,
    "aic_per_hour": 72.5,
    "top_model": "demo-large",
@@ -3537,7 +3570,7 @@
    ]
   },
   {
-   "id": "bc0c18fb",
+   "id": "9fc7d55f",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3547,7 +3580,7 @@
    "in_tok": 2361589,
    "out_tok": 50448,
    "start": "08/04 07:56",
-   "end": "08/04 08:52",
+   "end": "08/04 08:51",
    "minutes": 55,
    "aic_per_hour": 118.3,
    "top_model": "demo-large",
@@ -3571,7 +3604,7 @@
    ]
   },
   {
-   "id": "2756bb9d",
+   "id": "665a61b6",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -3598,7 +3631,7 @@
    ]
   },
   {
-   "id": "05e207e9",
+   "id": "c02c94d1",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3632,7 +3665,7 @@
    ]
   },
   {
-   "id": "67af3cf5",
+   "id": "8cd2f921",
    "repository": "acme/infra-terraform",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3642,7 +3675,7 @@
    "in_tok": 2354132,
    "out_tok": 64697,
    "start": "07/16 18:21",
-   "end": "07/16 19:27",
+   "end": "07/16 19:26",
    "minutes": 65,
    "aic_per_hour": 97.1,
    "top_model": "demo-large",
@@ -3666,7 +3699,7 @@
    ]
   },
   {
-   "id": "66fc388e",
+   "id": "53c2e652",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3676,7 +3709,7 @@
    "in_tok": 1974963,
    "out_tok": 65402,
    "start": "07/10 22:36",
-   "end": "07/10 23:51",
+   "end": "07/10 23:50",
    "minutes": 74,
    "aic_per_hour": 85.2,
    "top_model": "demo-large",

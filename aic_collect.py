@@ -64,24 +64,9 @@ def resolve_db_path(cfg: dict) -> Path:
     return Path.home() / ".copilot" / "session-store.db"
 
 
-def connect_readonly(db_path: Path) -> tuple[sqlite3.Connection, Path | None]:
-    """読み取り専用で接続する。失敗したら temp にコピーして接続する。"""
-    uri = f"file:{db_path.as_posix()}?mode=ro"
-    try:
-        conn = sqlite3.connect(uri, uri=True, timeout=5)
-        conn.execute("SELECT 1 FROM assistant_usage_events LIMIT 1").fetchone()
-        return conn, None
-    except sqlite3.Error as exc:
-        print(f"[info] 直接読み取りに失敗 ({exc})。一時コピーを作成します。", file=sys.stderr)
-
-    tmpdir = Path(tempfile.mkdtemp(prefix="aic-dash-"))
-    for suffix in ("", "-wal", "-shm"):
-        src = Path(str(db_path) + suffix)
-        if src.exists():
-            shutil.copy2(src, tmpdir / (db_path.name + suffix))
-    copied = tmpdir / db_path.name
-    conn = sqlite3.connect(f"file:{copied.as_posix()}?mode=ro", uri=True, timeout=5)
-    return conn, tmpdir
+# ライブ DB への接続は aic_archive.connect_readonly() に一本化している。
+# db / -wal / -shm を個別にコピーする方式は、逐次コピー中にチェックポイントが
+# 走ると不整合なスナップショットになるため採用しない。
 
 
 # --------------------------------------------------------------------------
@@ -153,7 +138,12 @@ def build_payload(rows: list[sqlite3.Row], cfg: dict) -> dict:
         })
 
     if not events:
-        raise SystemExit("assistant_usage_events にデータがありません。")
+        raise SystemExit(
+            "利用実績が 1 件もありません。\n"
+            "  Copilot CLI / App をまだ使っていないか、ローカル DB が空です。\n"
+            "  Copilot を数回使ってから、もう一度実行してください。\n"
+            "  データなしで画面を確認したい場合は .\\run-dashboard.ps1 -Demo を実行してください。"
+        )
 
     events.sort(key=lambda e: e["utc"])
     now_local = datetime.now(tz)
@@ -546,7 +536,9 @@ def mark_incomplete(payload: dict, cov: dict, cfg: dict) -> None:
             ranges.append((lo, hi, g.get("confidence", "low")))
 
     def status(lo, hi):
-        if since and hi <= since:
+        # アーカイブ開始点をまたぐバケットも「一部しか記録が無い」ので印を付ける。
+        # hi <= since だけを見ると、最初のイベントを含むバケットが取りこぼされる。
+        if since and lo < since:
             return "before_archive"
         for glo, ghi, conf in ranges:
             if lo < ghi and hi > glo:
@@ -559,11 +551,20 @@ def mark_incomplete(payload: dict, cov: dict, cfg: dict) -> None:
         if st:
             b["incomplete"] = st
 
-    for b in payload.get("daily", []):
+    daily = payload.get("daily", [])
+    for b in daily:
         lo = datetime.fromisoformat(b["date"]).replace(tzinfo=tz)
         st = status(lo, lo + timedelta(days=1))
         if st:
             b["incomplete"] = st
+
+    # 移動平均を「記録がある日」だけで取り直す。
+    # 欠測日を 0 として混ぜると平均が実態より低く出て、
+    # 「最近は落ち着いている」という逆の結論を導いてしまう。
+    for i, item in enumerate(daily):
+        window = [s["aic"] for s in daily[max(0, i - 6): i + 1] if not s.get("incomplete")]
+        item["ma7"] = r(sum(window) / len(window)) if window else None
+        item["ma7_partial"] = len(window) < min(i + 1, 7)
 
     now_local = datetime.now(tz)
     kpi = payload.get("kpi", {})
@@ -573,6 +574,23 @@ def mark_incomplete(payload: dict, cov: dict, cfg: dict) -> None:
         lo = now_local - timedelta(hours=hours)
         if status(lo, now_local):
             kpi.setdefault("partial", []).append(key)
+
+    # 7 日平均も、記録のある日だけを分母にする。
+    today = now_local.date()
+    recent = [
+        b for b in daily
+        if not b.get("incomplete")
+        and 0 <= (today - datetime.fromisoformat(b["date"]).date()).days < 7
+    ]
+    if recent:
+        kpi["avg_daily_7d"] = r(sum(b["aic"] for b in recent) / len(recent))
+        kpi["avg_daily_7d_days"] = len(recent)
+        if len(recent) < 7:
+            kpi.setdefault("partial", []).append("avg_daily_7d")
+    else:
+        kpi["avg_daily_7d"] = None
+        kpi["avg_daily_7d_days"] = 0
+        kpi.setdefault("partial", []).append("avg_daily_7d")
 
 
 # --------------------------------------------------------------------------
