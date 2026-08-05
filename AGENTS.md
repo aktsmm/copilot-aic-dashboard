@@ -75,6 +75,7 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 - Playwright cannot call `inner_text()` on SVG `<text>`; use `text_content()`.
 - `CREATE TABLE IF NOT EXISTS` will not add columns to a table created by an older version — use the `_ensure_columns()` helper.
 - `New-ScheduledTaskTrigger -AtLogOn` has no repetition parameter. Register two triggers (`-AtLogOn` and `-Once ... -RepetitionInterval`) rather than grafting `.Repetition` onto the CIM object, and omit `RepetitionDuration` to mean "indefinitely".
+- `Register-ScheduledTask` goes through the CIM provider and is blocked by policy on many managed corporate devices (`Access is denied`) even for the user's own tasks. `schtasks.exe` uses a different path and usually succeeds unelevated — keep it as the fallback, and make `-UninstallTask` handle tasks created either way.
 - A `<polyline>` with `null` values coerced to `0` reads as a real drop to zero. Break the line into segments instead.
 
 ## Out of scope

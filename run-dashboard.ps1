@@ -101,11 +101,42 @@ switch ($true) {
             -ExecutionTimeLimit (New-TimeSpan -Minutes 15) `
             -MultipleInstances IgnoreNew
 
-        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $triggers `
-            -Settings $settings -Description 'Copilot AIC 使用量をアーカイブへ収集する' -Force | Out-Null
+        try {
+            Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $triggers `
+                -Settings $settings -Description 'Copilot AIC 使用量をアーカイブへ収集する' -Force -ErrorAction Stop | Out-Null
+        }
+        catch {
+            # Register-ScheduledTask は CIM プロバイダ経由のため、
+            # 管理下の端末ではポリシーで拒否されることがある。
+            # schtasks.exe は別経路で、非管理者でも通る場合が多いのでフォールバックする。
+            Write-Host "[warn] Register-ScheduledTask が失敗: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host '       schtasks.exe で再試行します...'
+
+            $script = Join-Path $here 'aic_collect.py'
+            $null = schtasks /Create /TN $taskName `
+                /TR "`"$python`" `"$script`" --quiet" `
+                /SC HOURLY /MO ([int][math]::Max(1, [math]::Round($IntervalMinutes / 60))) /F 2>&1
+
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "[ok] タスク '$taskName' を schtasks で登録しました（毎時）" -ForegroundColor Green
+                Write-Host "     状態確認: schtasks /Query /TN $taskName /V /FO LIST"
+                Write-Host "     解除:     .\run-dashboard.ps1 -UninstallTask"
+                $null = schtasks /Run /TN $taskName 2>&1
+                return
+            }
+
+            Write-Warning 'タスクの登録に失敗しました（Register-ScheduledTask / schtasks の両方）。'
+            Write-Host '     多くの場合は権限不足です。次のいずれかを試してください:' -ForegroundColor Yellow
+            Write-Host '       1) PowerShell を管理者として実行し、もう一度 -InstallTask を実行する'
+            Write-Host '       2) タスクスケジューラ GUI で手動登録する'
+            Write-Host "          プログラム: $python"
+            Write-Host "          引数:       `"$script`" --quiet"
+            Write-Host '       3) 自動収集を使わず、都度 .\run-dashboard.ps1 を実行する'
+            exit 1
+        }
 
         # 登録内容を読み戻して、繰り返し設定が本当に入ったか確認する
-        $saved = Get-ScheduledTask -TaskName $taskName
+        $saved = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
         $rep = $saved.Triggers | Where-Object { $_.Repetition.Interval } |
             Select-Object -First 1 -ExpandProperty Repetition
         if (-not $rep) {
@@ -116,17 +147,37 @@ switch ($true) {
         }
         Write-Host "     状態確認: Get-ScheduledTaskInfo -TaskName $taskName"
         Write-Host "     解除:     .\run-dashboard.ps1 -UninstallTask"
-        Start-ScheduledTask -TaskName $taskName
-        Write-Host '[ok] 初回実行を開始しました。'
+        try {
+            Start-ScheduledTask -TaskName $taskName -ErrorAction Stop
+            Write-Host '[ok] 初回実行を開始しました。'
+        }
+        catch {
+            Write-Warning "初回実行の開始に失敗しました: $($_.Exception.Message)"
+        }
         return
     }
 
     $UninstallTask {
-        if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
-            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+        # 登録経路が Register-ScheduledTask / schtasks のどちらでも解除できるようにする。
+        $null = schtasks /Query /TN $taskName 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[skip] タスク '$taskName' は登録されていません"
+            return
+        }
+        try {
+            Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction Stop
             Write-Host "[ok] タスク '$taskName' を解除しました" -ForegroundColor Green
         }
-        else { Write-Host "[skip] タスク '$taskName' は登録されていません" }
+        catch {
+            $null = schtasks /Delete /TN $taskName /F 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "[ok] タスク '$taskName' を解除しました" -ForegroundColor Green
+            }
+            else {
+                Write-Warning "タスクの解除に失敗しました: $($_.Exception.Message)"
+                exit 1
+            }
+        }
         return
     }
 

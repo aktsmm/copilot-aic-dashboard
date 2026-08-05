@@ -49,7 +49,7 @@ cd copilot-aic-dashboard
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-タスク登録は権限によって失敗することがありますが、致命的ではありません。アーカイブ自体は動くので、後から管理者権限で `.\run-dashboard.ps1 -InstallTask` を実行するか、`.\setup.ps1 -SkipTask` で登録を省略できます。
+タスク登録は権限によって失敗することがありますが、致命的ではありません。アーカイブ自体は動きます。`-InstallTask` はまず `Register-ScheduledTask` を試し、CIM プロバイダがポリシーで拒否された場合（企業管理端末でよくある「アクセスが拒否されました」）は自動的に `schtasks.exe` にフォールバックします。こちらは管理者権限なしでも通ることが多いです。両方失敗した場合は手動登録用のプログラム/引数を表示します。`.\setup.ps1 -SkipTask` で登録を省略し、見たいときだけ `.\run-dashboard.ps1` を実行する運用でも構いません。
 
 自分のデータなしで見た目だけ試すなら:
 

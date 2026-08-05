@@ -49,7 +49,7 @@ If PowerShell refuses to run the script (`... is not digitally signed`), allow i
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-Scheduled-task registration can fail on locked-down machines. That is not fatal — the archive still works, and you can re-try later with `.\run-dashboard.ps1 -InstallTask` from an elevated prompt, or skip it entirely with `.\setup.ps1 -SkipTask`.
+Scheduled-task registration can fail on locked-down machines. That is not fatal — the archive still works. `-InstallTask` first tries `Register-ScheduledTask` and, if the CIM provider is blocked by policy (a common `アクセスが拒否されました` / `Access is denied` on managed corporate devices), automatically falls back to `schtasks.exe`, which usually succeeds without elevation. If both fail it prints the exact program/arguments so you can register the task by hand, and you can always skip it with `.\setup.ps1 -SkipTask` and just run `.\run-dashboard.ps1` when you want fresh numbers.
 
 Just want to see what it looks like, with no data of your own?
 
