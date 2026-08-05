@@ -261,13 +261,16 @@ class UnsupportedSchema(Exception):
     """ライブ DB のスキーマが想定と違う（Copilot 側の変更が疑われる）。"""
 
 
-def connect_readonly(path: Path, attempts: int = 5):
+def connect_readonly(path: Path, attempts: int = 5, probe: str = "assistant_usage_events"):
     """ライブ DB を読み取り専用で開く。開けなければ None を返す。
 
     Copilot が書き込み中でロックされることがあるので指数バックオフで再試行する。
     db/-wal/-shm を個別にコピーする方式は採らない。逐次コピーの間に
     チェックポイントが走ると、異なる時点のファイルが混ざった不整合な
     スナップショットになりうるため。
+
+    probe は「開けたか」を確かめるために触るテーブル名。参照先の DB ごとに
+    期待するテーブルが違うので呼び出し側から差し替えられるようにしてある。
     """
     delay = 0.5
     last = None
@@ -276,7 +279,7 @@ def connect_readonly(path: Path, attempts: int = 5):
         try:
             con = sqlite3.connect(f"file:{path.as_posix()}?mode=ro", uri=True, timeout=10)
             con.execute("PRAGMA query_only=ON")
-            con.execute("SELECT 1 FROM assistant_usage_events LIMIT 1")
+            con.execute(f'SELECT 1 FROM "{probe}" LIMIT 1')
             return con
         except sqlite3.Error as e:
             if con is not None:
@@ -588,6 +591,165 @@ def backup(arc_path: Path, dest_dir: Path) -> Path:
 
 
 # --------------------------------------------------------------------------- 設定
+def reconcile(arc: sqlite3.Connection, app_path: Path) -> dict:
+    """Copilot App が自前で持つ集計 (data.db) とアーカイブを突き合わせる。
+
+    アーカイブの入力元 (session-store.db) と data.db は別々に書かれるので、
+    片方だけに存在するセッションは収集の取りこぼしを示す独立した証拠になる。
+    data.db は Copilot App の内部データであり、存在も列構成も保証されない。
+    見つからない・列が無い場合は「検算できない」として素直に諦める。
+    """
+    if not app_path.exists():
+        return {"available": False, "reason": f"{app_path} が見つかりません"}
+
+    try:
+        app = connect_readonly(app_path, probe="sessions")
+    except UnsupportedSchema as exc:
+        return {"available": False, "reason": f"読み取れません: {exc}"}
+    except sqlite3.Error as exc:
+        return {"available": False, "reason": f"読み取れません: {exc}"}
+    if app is None:
+        return {"available": False, "reason": "ロックされていて読み取れませんでした"}
+
+    try:
+        cols = {r[1] for r in app.execute("PRAGMA table_info(sessions)")}
+        if not cols:
+            return {"available": False, "reason": "sessions テーブルがありません"}
+        if "total_nano_aiu" not in cols:
+            return {"available": False,
+                    "reason": "sessions.total_nano_aiu がありません（App のバージョン差）"}
+
+        title_col = "title" if "title" in cols else "NULL"
+        created_col = "created_at" if "created_at" in cols else "NULL"
+        rows = app.execute(
+            f"SELECT id, COALESCE(total_nano_aiu, 0), {created_col}, {title_col} FROM sessions"
+        ).fetchall()
+    except sqlite3.Error as exc:
+        return {"available": False, "reason": f"クエリに失敗しました: {exc}"}
+    finally:
+        app.close()
+
+    arc_lo = arc.execute("SELECT MIN(created_at) FROM usage_events").fetchone()[0]
+    arc_hi = arc.execute("SELECT MAX(created_at) FROM usage_events").fetchone()[0]
+
+    # 「アーカイブに無い＝取りこぼし」と言えるのは、収集を実際に回し始めた
+    # 後に始まったセッションだけ。初回収集は、その時点でライブ DB に残って
+    # いた分をまとめて取り込むので、アーカイブの最古イベントは収集開始より
+    # ずっと古くなる。その区間の欠落は、ライブ DB 側が初回収集より前に
+    # 刈り取っていた可能性と区別できないため、証拠にならない。
+    try:
+        started = arc.execute(
+            "SELECT MIN(ran_at) FROM collect_runs WHERE status = 'ok'"
+        ).fetchone()[0]
+    except sqlite3.Error:
+        started = None
+    covered_from = started or arc_lo
+
+    matched, missing = [], []
+    for sid, nano, created, title in rows:
+        aic = (nano or 0) / 1e9
+        got = arc.execute(
+            "SELECT COALESCE(SUM(total_nano_aiu), 0) / 1e9, COUNT(*), MAX(created_at) "
+            "FROM usage_events WHERE session_id = ?",
+            (sid,),
+        ).fetchone()
+        if got[1]:
+            # 最後に収集した時点まで動いていたセッションは、収集後も消費が
+            # 増え続けるので「アーカイブが少ない」のは当たり前。取りこぼしと
+            # 区別できないと毎回誤警告になるため、進行中として扱う。
+            live = bool(arc_hi and got[2] and got[2] >= arc_hi[:13])
+            matched.append({"id": sid, "app_aic": aic, "archive_aic": got[0],
+                            "delta": got[0] - aic, "created_at": created,
+                            "title": title, "in_flight": live})
+        else:
+            # 収集開始より前に始まったセッションは「取りこぼし」ではなく範囲外。
+            before = bool(covered_from and created and str(created) < covered_from)
+            missing.append({"id": sid, "app_aic": aic, "created_at": created,
+                            "title": title, "before_archive": before})
+
+    # アーカイブが App より多いのは正常。アーカイブは sub-agent / compaction を
+    # 含む生の消費イベントを全部数えるのに対し、App 側のセッション合計は
+    # そのセッションが直接回した分しか持たないことがあるため。
+    # 逆にアーカイブの方が少ない場合だけが「取りこぼし」の証拠になる。
+    short = sorted((m for m in matched if m["delta"] <= -1.0 and not m["in_flight"]),
+                   key=lambda m: m["delta"])
+    in_flight = [m for m in matched if m["in_flight"] and m["delta"] <= -1.0]
+
+    return {
+        "available": True,
+        "app_db": str(app_path),
+        "app_sessions": len(rows),
+        "app_aic": sum(r[1] or 0 for r in rows) / 1e9,
+        "matched": matched,
+        "missing": missing,
+        "missing_in_range": [m for m in missing if not m["before_archive"]],
+        "short": short,
+        "in_flight": in_flight,
+        "archive_start": arc_lo,
+        "covered_from": covered_from,
+    }
+
+
+def print_reconcile(rep: dict) -> None:
+    if not rep.get("available"):
+        print(f"[skip] 検算できません: {rep.get('reason')}")
+        print("       これは異常ではありません。data.db は Copilot App の内部データで、")
+        print("       CLI 単体で使っている場合は存在しません。")
+        return
+
+    matched, missing = rep["matched"], rep["missing"]
+    in_range, short = rep["missing_in_range"], rep["short"]
+    arc_total = sum(m["archive_aic"] for m in matched)
+    app_total = sum(m["app_aic"] for m in matched)
+
+    print(f"検算元: {rep['app_db']}")
+    print(f"  App 側 {rep['app_sessions']} セッション / 合計 {rep['app_aic']:,.1f} AIC")
+    print(f"  アーカイブと一致  : {len(matched)} セッション"
+          f"（App {app_total:,.0f} AIC / アーカイブ {arc_total:,.0f} AIC）")
+    print(f"  アーカイブに無い  : {len(missing)} セッション"
+          f"（うち収集開始前 {len(missing) - len(in_range)} 件）")
+    if rep.get("covered_from"):
+        print(f"  取りこぼし判定の対象は {str(rep['covered_from'])[:16]} 以降のセッションです。")
+        print("  （それ以前は初回収集時にライブ DB へ残っていた分だけなので、"
+              "無くても取りこぼしとは断定できません）")
+
+    problems = bool(short or in_range)
+
+    if short:
+        print(f"\n  [warn] アーカイブの方が少ないセッション: {len(short)} 件")
+        print("         これは収集の取りこぼしを示します。")
+        for m in short[:10]:
+            print(f"    {str(m['created_at'])[:16]}  App {m['app_aic']:>9,.0f}"
+                  f" / archive {m['archive_aic']:>9,.0f}  差 {m['delta']:+,.0f}")
+        if len(short) > 10:
+            print(f"    ... 他 {len(short) - 10} 件")
+
+    if in_range:
+        print(f"\n  [warn] 収集開始後なのに 1 件も記録が無いセッション: {len(in_range)} 件")
+        for m in sorted(in_range, key=lambda m: m["app_aic"], reverse=True)[:10]:
+            t = (m["title"] or "")[:34]
+            print(f"    {str(m['created_at'])[:16]}  {m['app_aic']:>9,.0f} AIC  {t}")
+        print("    直近のセッションは、まだ収集していないだけの可能性があります。")
+        print("    python aic_collect.py を実行してから再確認してください。")
+
+    if not problems:
+        print("\n  [ok] 取りこぼしの兆候はありません。")
+
+    if rep.get("in_flight"):
+        print(f"\n  進行中とみなしたセッション: {len(rep['in_flight'])} 件")
+        print("         最後の収集時点でまだ動いていたため、その後の消費が"
+              "アーカイブに入っていないだけです。")
+
+    if arc_total > app_total:
+        print(f"\n  参考: アーカイブが App より {arc_total - app_total:,.0f} AIC 多く出ています。")
+        print("        アーカイブは sub-agent / compaction の消費も個別に数えるのに対し、")
+        print("        App 側のセッション合計はそれを含まないことがあるためで、異常ではありません。")
+
+    print("\n  注意: この検算は CLI 実行分どうしの突き合わせです。")
+    print("        Copilot Coding Agent / Code Review はサーバー側で動くため、")
+    print("        どちらの DB にも消費が記録されず、検算対象外です。")
+
+
 def load_config(root: Path) -> dict:
     cfg_path = root / "config.json"
     cfg = json.loads(cfg_path.read_text(encoding="utf-8")) if cfg_path.exists() else {}
@@ -607,7 +769,11 @@ def load_config(root: Path) -> dict:
         cfg["archive_db"] = str(Path.home() / ".copilot-aic" / "archive.db")
     if not cfg.get("source_db"):
         cfg["source_db"] = str(Path.home() / ".copilot" / "session-store.db")
+    # Copilot App が自前で集計している DB。検算にだけ使う（--reconcile）。
+    if not cfg.get("app_db"):
+        cfg["app_db"] = str(Path.home() / ".copilot" / "data.db")
     cfg["archive_db"] = os.path.expandvars(os.path.expanduser(cfg["archive_db"]))
+    cfg["app_db"] = os.path.expandvars(os.path.expanduser(cfg["app_db"]))
     return cfg
 
 
@@ -657,6 +823,10 @@ def main() -> int:
     ap.add_argument("--export-csv", metavar="PATH", help="アーカイブ全件を CSV 出力して終了")
     ap.add_argument("--backup-to", metavar="DIR", help="アーカイブを複製して終了")
     ap.add_argument("--stats", action="store_true", help="アーカイブの統計だけ表示して終了")
+    ap.add_argument("--reconcile", action="store_true",
+                    help="Copilot App の集計 (data.db) と突き合わせて取りこぼしを検出し終了")
+    ap.add_argument("--app-db", default=cfg["app_db"],
+                    help="--reconcile が参照する Copilot App の DB")
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
@@ -666,7 +836,7 @@ def main() -> int:
     # 読み取り専用の操作でアーカイブを新規作成してはいけない。
     # パスを間違えたまま --backup-to が「成功」すると、空 DB を保存して
     # 履歴を守れたと誤解させることになる。
-    read_only_mode = bool(args.export_csv or args.backup_to or args.stats)
+    read_only_mode = bool(args.export_csv or args.backup_to or args.stats or args.reconcile)
     if read_only_mode and not arc_path.exists():
         print(f"[error] アーカイブ DB がありません: {arc_path}", file=sys.stderr)
         print("        パスが正しいか確認してください。", file=sys.stderr)
@@ -691,6 +861,14 @@ def main() -> int:
             dest = backup(arc_path, Path(args.backup_to))
             print(f"[ok] バックアップ: {dest}")
             return 0
+
+        if args.reconcile:
+            rep = reconcile(arc, Path(args.app_db))
+            print_reconcile(rep)
+            # 検算できない・範囲外の欠落は異常ではないので exit 0 のまま。
+            # 取りこぼしの兆候があるときだけ 3 で知らせる（1/2 は既存の意味と衝突させない）。
+            suspect = bool(rep.get("missing_in_range") or rep.get("short"))
+            return 3 if suspect else 0
 
         if args.stats:
             cov = coverage(arc)

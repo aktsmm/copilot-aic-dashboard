@@ -11,6 +11,8 @@ Highest-priority rules, repeated here because breaking them causes silent data l
 - Never commit real usage data. `data/`, `export/`, `sample/`, `*.db`, `*.csv`, `docs/*.png`, `config.local.json` are gitignored; demos come from `tools/make_sample_db.py`. Machine-specific config goes in `config.local.json`, never `config.json`.
 - Missing data renders as a shaded band, never as a zero bar, and is excluded from moving averages and `avg_daily_7d`.
 - Retry only BUSY/LOCKED errors; anything else is `UnsupportedSchema`.
+- **Do not overstate coverage.** Coding Agent, Code Review, VS Code Chat, and other machines leave no local usage rows, and the cloud session store has no `total_nano_aiu`. Never present the dashboard total as total Copilot spend, and never add cloud sync on the assumption AIC is retrievable there.
+- `--reconcile` treats only *missing* and *short* sessions as loss. Archive > app total is normal (sub-agent/compaction); in-flight sessions are excluded; a missing `data.db` exits 0 with `[skip]`. Exit `3` means "signs of loss" and must be a warning, not a failure.
 - User-facing changes must update **both** `README.md` and `README.ja.md`.
 
 Verify with: `python aic_archive.py` twice (second run must report 0 new / 0 changed), `python aic_collect.py`, `node --check` on each inline `<script>` in `index.html`, and `.\run-dashboard.ps1 -Demo -NoOpen`.

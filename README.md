@@ -63,6 +63,7 @@ Just want to see what it looks like, with no data of your own?
 .\run-dashboard.ps1                      # collect + open the dashboard
 .\run-dashboard.ps1 -Stats               # archive statistics only
 .\run-dashboard.ps1 -Verify              # also re-verify the AIU→AIC conversion
+.\run-dashboard.ps1 -Reconcile           # cross-check the archive against the Copilot app's own totals
 .\run-dashboard.ps1 -BackupTo D:\backup  # safe online backup of the archive
 .\run-dashboard.ps1 -ExportCsv .\export\usage.csv # export every archived event
 .\run-dashboard.ps1 -UninstallTask       # stop automatic collection
@@ -197,6 +198,7 @@ Official reporting stops at **daily** granularity in every channel — the summa
 | --- | --- | --- |
 | `db_path` | `null` | `null` auto-detects `%USERPROFILE%\.copilot\session-store.db` |
 | `archive_db` | `~/.copilot-aic/archive.db` | Append-only archive. Override with the `AIC_ARCHIVE_DB` env var. |
+| `app_db` | `~/.copilot/data.db` | Read-only cross-check source for `-Reconcile`. Optional; skipped if absent. |
 | `tz_offset_hours` / `tz_label` | `9` / `"JST"` | Timezone used for bucketing |
 | `aiu_to_aic` | `1.0` | AIU→AIC conversion factor. Verified empirically; you should not need to change it. |
 | `usd_per_aic` | `0.01` | USD per credit |
@@ -225,7 +227,7 @@ Keep the archive **outside** `~/.copilot`. Anything inside that folder can be sw
 
 ```
 setup.ps1              first-time setup (prereqs → config → first run → scheduled task)
-run-dashboard.ps1      day-to-day driver (-Stats -Verify -Demo -InstallTask -BackupTo -ExportCsv)
+run-dashboard.ps1      day-to-day driver (-Stats -Verify -Reconcile -Demo -InstallTask -BackupTo -ExportCsv)
 aic_archive.py         append-only archive: merge, migrate, gap detection, backup, CSV
 aic_collect.py         aggregation → data/usage.json + data/usage.js
 verify_pricing.py      re-derives AIC from token counts and official prices
@@ -238,9 +240,48 @@ AGENTS.md              instructions for AI coding agents working on this repo
 
 ---
 
+## What this can and cannot see
+
+The dashboard reads the local Copilot CLI store. That covers Copilot CLI runs on this machine — including the ones the Copilot desktop app spawns in worktrees — but not everything you are billed for.
+
+| Source of usage | Covered | Why |
+| --- | --- | --- |
+| Copilot CLI on this machine | **Yes** | Written to `~/.copilot/session-store.db` with per-event `total_nano_aiu` |
+| Copilot app project sessions (worktrees) | **Yes** | These run the CLI locally, so they land in the same store |
+| Sub-agents and compaction | **Yes** | Recorded as separate events, attributed via `initiator` |
+| **Copilot Coding Agent** | **No** | Runs on GitHub's servers. No usage rows exist locally |
+| **Copilot Code Review** | **No** | Same — server-side |
+| **VS Code Copilot Chat** | **No** | Separate store with no usage table at all |
+| **Other machines** | **No** | Each machine has its own local store |
+
+This is not a bug that can be fixed locally: for server-side agents there is simply no local record of consumption to read. If you lean on Coding Agent, your real spend is higher than what this dashboard shows, and only GitHub's billing pages will reflect it.
+
+<details>
+<summary>How this was verified</summary>
+
+Copilot also keeps a cloud-side session store, which is why you might expect cross-device data. It does not help here:
+
+- It records `usage_input_tokens` / `usage_output_tokens` but **no** `total_nano_aiu`, so it cannot produce AIC.
+- For Coding Agent and Code Review it carries **zero** usage rows at all (checked across 60 days).
+- It uses a **disjoint session ID space** from the local store — no ID matches in either direction — so the two cannot be joined.
+- For CLI work its token totals are consistently **at or below** the local store's for the same day (1.00x–1.09x in favour of local), i.e. it is a lagging partial mirror rather than an additional source.
+
+</details>
+
+### Cross-checking your archive
+
+If you use the Copilot desktop app, it keeps its own per-session total in `~/.copilot/data.db` (`sessions.total_nano_aiu`). That is written independently of the CLI store, which makes it a useful second opinion:
+
+```powershell
+.\run-dashboard.ps1 -Reconcile
+```
+
+It reports sessions the archive is missing entirely and sessions where the archive holds *less* than the app does — the two signals that actually indicate lost data. The archive normally totals **more** than the app, because it counts sub-agent and compaction events individually; that direction is expected and is called out as such. If `data.db` does not exist, or its schema differs, the command says so and exits 0 rather than pretending to have verified anything.
+
+---
+
 ## Limitations
 
-- **This machine only.** Other devices, and cloud agent work that never touched this machine, are not included.
 - **It reads an undocumented internal schema.** `~/.copilot/session-store.db` is a private implementation detail of GitHub Copilot. Its tables, columns, and the meaning of `total_nano_aiu` are not documented, not guaranteed, and can change or disappear in any Copilot update without notice. When that happens the tool reports `unsupported_schema` and stops ingesting — your existing archive is untouched, but new data will not be collected until the tool is updated.
 - **History before your first collection cannot be recovered.** Whatever the local DB had already pruned is gone.
 - **If you delete the local DB while collection is not running**, that window is lost — the dashboard will flag it rather than hide it. Keep the scheduled task enabled.

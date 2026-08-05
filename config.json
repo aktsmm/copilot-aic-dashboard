@@ -3,6 +3,7 @@
 
   "db_path": null,
   "archive_db": null,
+  "app_db": null,
 
   "tz_offset_hours": 9,
   "tz_label": "JST",

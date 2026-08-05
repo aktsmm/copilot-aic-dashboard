@@ -32,3 +32,6 @@ docs/*.png
 
 # 環境固有の設定上書き（コミットしない）
 config.local.json
+
+# scratch files used when writing commit messages
+_msg.txt

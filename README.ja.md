@@ -63,6 +63,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\run-dashboard.ps1                      # 収集してブラウザで開く
 .\run-dashboard.ps1 -Stats               # アーカイブの統計だけ表示
 .\run-dashboard.ps1 -Verify              # AIU→AIC 換算の再検証も実行
+.\run-dashboard.ps1 -Reconcile           # Copilot App の集計と突き合わせて取りこぼしを検出
 .\run-dashboard.ps1 -BackupTo D:\backup  # アーカイブを安全に複製
 .\run-dashboard.ps1 -ExportCsv .\export\usage.csv # 全イベントを CSV 出力
 .\run-dashboard.ps1 -UninstallTask       # 自動収集を解除
@@ -134,7 +135,7 @@ open index.html                # ブラウザで開く（file:// で動く）
 
 ```
 setup.ps1              初回セットアップ（前提確認 → 設定 → 初回収集 → タスク登録）
-run-dashboard.ps1      日常運用（-Stats -Verify -Demo -InstallTask -BackupTo -ExportCsv）
+run-dashboard.ps1      日常運用（-Stats -Verify -Reconcile -Demo -InstallTask -BackupTo -ExportCsv）
 aic_archive.py         追記専用アーカイブ（マージ / 移行 / 欠測検出 / バックアップ / CSV）
 aic_collect.py         集計 → data/usage.json + data/usage.js
 verify_pricing.py      トークン数と公式単価から AIC を再計算して突合
@@ -278,6 +279,7 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 | --- | --- | --- |
 | `db_path` | `null` | `null` で `%USERPROFILE%\.copilot\session-store.db` を自動検出 |
 | `archive_db` | `~/.copilot-aic/archive.db` | 追記専用アーカイブ。環境変数 `AIC_ARCHIVE_DB` で上書き可 |
+| `app_db` | `~/.copilot/data.db` | `-Reconcile` の検算元（読み取り専用）。無ければスキップ |
 | `tz_offset_hours` / `tz_label` | `9` / `"JST"` | 集計に使うタイムゾーン |
 | `aiu_to_aic` | `1.0` | AIU → AIC 換算係数（検証済み。通常変更不要） |
 | `usd_per_aic` | `0.01` | 1 AIC の USD 単価 |
@@ -302,9 +304,48 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 
 ---
 
-## 9. 制約
+## 9. 何が測れて、何が測れないか
 
-- **この PC のセッションのみ**が対象です。他端末や、cloud agent が GitHub 側だけで動いた分は含まれません。
+このダッシュボードが読むのはローカルの Copilot CLI ストアです。Copilot デスクトップアプリが worktree 内で起動する CLI も同じストアに入るので対象ですが、課金対象すべてを見ているわけではありません。
+
+| 消費元 | 対象 | 理由 |
+| --- | --- | --- |
+| この PC の Copilot CLI | **○** | `~/.copilot/session-store.db` にイベント単位で `total_nano_aiu` が入る |
+| Copilot App のプロジェクトセッション（worktree） | **○** | ローカルで CLI を回すので同じストアに入る |
+| サブエージェント / compaction | **○** | 個別イベントとして記録され `initiator` で判別できる |
+| **Copilot Coding Agent** | **×** | GitHub のサーバー側で動く。ローカルに消費記録が存在しない |
+| **Copilot Code Review** | **×** | 同上（サーバー側） |
+| **VS Code Copilot Chat** | **×** | 別ストアで、usage テーブル自体が無い |
+| **他の PC** | **×** | 端末ごとに別のローカルストアを持つ |
+
+これはローカル側の実装で直せる問題ではありません。サーバー側で動くエージェントは、読み取るべき消費記録がそもそもローカルに存在しないためです。**Coding Agent を多用している場合、実際の消費はこのダッシュボードの数字より多くなります。** その分は GitHub の Billing 画面でしか確認できません。
+
+<details>
+<summary>この結論の検証方法</summary>
+
+Copilot にはクラウド側のセッションストアもあるので、「他 PC の分も見えるのでは」と期待したくなりますが、以下の理由で使えませんでした。
+
+- `usage_input_tokens` / `usage_output_tokens` は持つが、**`total_nano_aiu` を持たない**。AIC を算出できません。
+- Coding Agent と Code Review は **usage 行が 1 件も無い**（60日分を確認）。
+- ローカルストアと**セッション ID 空間が完全に分離**しており、双方向で 1 件も一致しません。結合キーがありません。
+- CLI 分については、同一日のトークン量が常に**ローカル以下**（ローカル比 1.00〜1.09倍でローカルが上）。追加情報源ではなく、遅延のある部分ミラーです。
+
+</details>
+
+### アーカイブの検算
+
+Copilot デスクトップアプリを使っている場合、`~/.copilot/data.db` の `sessions.total_nano_aiu` にアプリ独自のセッション別合計が入っています。CLI ストアとは独立して書かれるので、セカンドオピニオンとして使えます。
+
+```powershell
+.\run-dashboard.ps1 -Reconcile
+```
+
+報告するのは、**アーカイブに 1 件も無いセッション**と、**アーカイブの方が少ないセッション**の 2 つです。これらが実際にデータ欠落を示す信号です。逆にアーカイブの方が**多い**のは正常で、サブエージェントや compaction の消費を個別に数えているためです（その旨も表示されます）。`data.db` が無い場合やスキーマが違う場合は、検算できないと明示して exit 0 で終わります。「検証したふり」はしません。
+
+---
+
+## 10. 制約
+
 - **非公開の内部スキーマに依存しています。** `~/.copilot/session-store.db` は GitHub Copilot の実装詳細であり、テーブル構成も列名も `total_nano_aiu` の意味も公式には文書化されていません。Copilot の更新で予告なく変わったり無くなったりします。その場合は `unsupported_schema` として取り込みを停止します（既存のアーカイブは無傷ですが、ツールを更新するまで新しいデータは貯まりません）。
 - **アーカイブを始める前に消えた分は復元できません。** ローカル DB が既に刈り取っていた期間は取得できません。
 - **収集を回していない間にローカル DB が消されると、その区間は取りこぼします。** `setup.ps1` / `-InstallTask` の定期実行を有効にしておいてください。取りこぼしはバナーと網掛けで表示されます。
@@ -314,7 +355,7 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 
 ---
 
-## 10. 公式リファレンス
+## 11. 公式リファレンス
 
 - [Usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)
 - [Usage-based billing for individuals](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals)

@@ -24,12 +24,14 @@ Violating any of these is a correctness/data-loss bug, not a style preference.
 8. **Missing data is not zero.** Buckets with no coverage must render as shaded bands, be excluded from moving averages and `avg_daily_7d`, and break the MA polyline rather than dropping it to zero. Do not "simplify" this into zero-valued bars.
 9. **Do not overstate gap detection.** Timestamps alone cannot prove deletion. Keep the `high` / `low` confidence distinction and the hedged wording. `source_identity()` must stay size-independent, and must return `None` when the filesystem cannot supply a stable inode — an unknown generation may never be promoted to `high`.
 10. **Distinguish "locked" from "schema changed".** Only BUSY/LOCKED errors are retried; anything else raises `UnsupportedSchema` and is logged as such. Telling a user to "wait and retry" when Copilot changed its internal schema sends them down the wrong path.
+11. **Do not claim coverage the data cannot support.** Copilot Coding Agent, Code Review, VS Code Chat, and other machines leave **no** local usage rows — the cloud session store has no `total_nano_aiu` at all and uses a disjoint session ID space. Never present the dashboard total as total Copilot spend, and never add a "sync from cloud" path on the assumption that AIC is retrievable there.
+12. **`--reconcile` must fail loud in only one direction.** Archive **>** app total is normal (sub-agent and compaction events are counted individually). Only *missing* sessions and *short* sessions indicate data loss. Sessions still in flight at the last collection must be excluded via the `in_flight` check, or every run reports a false positive. A missing or schema-mismatched `data.db` exits **0** with `[skip]` — never a silent success implying verification happened.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
-| `aic_archive.py` | Archive: schema, migration, merge, gap detection, backup, CSV, process lock |
+| `aic_archive.py` | Archive: schema, migration, merge, gap detection, backup, CSV, reconciliation, process lock |
 | `aic_collect.py` | Aggregation into `data/usage.json` + `data/usage.js` |
 | `index.html` | Dashboard. Two inline `<script>` blocks: theme bootstrap in `<head>`, app at the bottom |
 | `verify_pricing.py` | Re-derives AIC from token counts and official prices |
@@ -77,6 +79,8 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 - `New-ScheduledTaskTrigger -AtLogOn` has no repetition parameter. Register two triggers (`-AtLogOn` and `-Once ... -RepetitionInterval`) rather than grafting `.Repetition` onto the CIM object, and omit `RepetitionDuration` to mean "indefinitely".
 - `Register-ScheduledTask` goes through the CIM provider and is blocked by policy on many managed corporate devices (`Access is denied`) even for the user's own tasks. `schtasks.exe` uses a different path and usually succeeds unelevated — keep it as the fallback, and make `-UninstallTask` handle tasks created either way.
 - A `<polyline>` with `null` values coerced to `0` reads as a real drop to zero. Break the line into segments instead.
+- `connect_readonly()` originally hardcoded its probe against `assistant_usage_events`, so pointing it at `~/.copilot/data.db` raised `UnsupportedSchema`. It takes a `probe` table name now — pass the one the caller actually needs.
+- Exit codes are load-bearing: `1` = error, `2` = corrupt DB, `3` = reconciliation found signs of loss. `run-dashboard.ps1` must map `3` to `Write-Warning`, not `throw`.
 
 ## Out of scope
 

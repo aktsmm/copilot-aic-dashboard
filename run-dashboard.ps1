@@ -21,12 +21,17 @@
 .EXAMPLE
     .\run-dashboard.ps1 -ExportCsv .\export\usage.csv
     アーカイブ全件を CSV に出力する。
+
+.EXAMPLE
+    .\run-dashboard.ps1 -Reconcile
+    Copilot App の集計 (~/.copilot/data.db) と突き合わせ、収集の取りこぼしを検出する。
 #>
 [CmdletBinding()]
 param(
     [switch]$NoOpen,
     [switch]$Verify,
     [switch]$Stats,
+    [switch]$Reconcile,
     [switch]$InstallTask,
     [ValidateRange(1, 1440)][int]$IntervalMinutes = 60,
     [switch]$UninstallTask,
@@ -198,6 +203,19 @@ switch ($true) {
 if ($Stats) {
     & $python (Join-Path $here 'aic_archive.py') --stats
     if ($LASTEXITCODE -ne 0) { throw "統計の取得に失敗しました (exit $LASTEXITCODE)" }
+    return
+}
+
+if ($Reconcile) {
+    & $python (Join-Path $here 'aic_archive.py') --reconcile
+    # exit 3 は「取りこぼしの兆候あり」で、実行自体は成功している。
+    # 異常終了として扱うと、検出できたのに失敗に見えてしまう。
+    if ($LASTEXITCODE -eq 3) {
+        Write-Host ''
+        Write-Warning '取りこぼしの兆候があります。上の内容を確認してください。'
+        return
+    }
+    if ($LASTEXITCODE -ne 0) { throw "検算に失敗しました (exit $LASTEXITCODE)" }
     return
 }
 
