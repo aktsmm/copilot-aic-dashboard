@@ -1,4 +1,4 @@
-# Copilot ローカル AIC ダッシュボード
+# GitHub Copilot AIC ダッシュボード
 
 [English README](README.md) · [デモ（合成データ）](https://aktsmm.github.io/copilot-aic-dashboard/demo/)
 
@@ -72,6 +72,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
 収集は既定で 1 時間おきです。`-InstallTask -IntervalMinutes 180` のように指定すれば変更でき、`-InstallTask` を実行し直せば既存のタスクを置き換えます。タスクはコンソールを持たない `pythonw.exe` で動くので、画面には何も出ず、作業中のアクティブウィンドウも奪いません（数時間おきに窓がちらつくバックグラウンド処理は、遅かれ早かれ消されます）。
+
+間隔をどう変えても、ダッシュボード側が追随します。実際に収集が何分おきに走っているかを測り、その 1.5 倍を超えたときだけ「集計が古い」と言います。固定のしきい値にすると、間隔を変えた瞬間にどちらかが必ず誤ります。また、集計から 10 分以上経っている場合は「直近 1 時間」「直近 24 時間」に集計時刻を併記します。これがないと、単に集計が古いだけの 0 を「使っていない」と読んでしまいます。
 
 PowerShell を使わない場合:
 

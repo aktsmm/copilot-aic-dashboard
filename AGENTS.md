@@ -102,6 +102,9 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 - Known, accepted asymmetry: rows whose `created_at` `_parse_ts` cannot read are excluded from the baseline but still counted by `_sum_since` (SQL string compare, no parse). Aligning them by filtering the numerator would drop real spend from the alert, which is the worse failure. Fix it at ingest if it ever matters.
 - The scheduled task must run `pythonw.exe`, and every subprocess it spawns needs `CREATE_NO_WINDOW`. `python.exe` is a console app, so each run pops a window and takes focus. It looks trivial in a review and is the single most likely reason a user uninstalls a background collector.
 - `schtasks /SC HOURLY /MO <n>` cannot express sub-hour intervals. Rounding `IntervalMinutes / 60` silently registers a coarser schedule than the user asked for; switch to `/SC MINUTE` below 60.
+- Staleness is measured against the observed collection cadence (`collect_cadence_min`, the median gap between recent `collect_runs`), not a constant. The old fixed 30-minute cut-off marked every dashboard "stale" the moment the user moved the task to 3 hours. Use the median, not the mean: manual back-to-back runs and multi-day laptop shutdowns both appear in that table.
+- Time-relative KPIs must carry the collection time once the data is not fresh. With collection every few hours, an un-annotated "last 1 hour: 0" reads as "I used nothing", which is the exact misreading this dashboard exists to prevent.
+- The 1-hour KPI shows the *effective* alert line (baseline when `enough`, otherwise the fixed floor). Printing `hourly_alert_aic` there contradicted the baseline banner further down the page whenever the baseline was higher, which is the normal case.
 
 ## Out of scope
 

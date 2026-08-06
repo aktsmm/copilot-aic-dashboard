@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Copilot ローカル AIC ダッシュボード</title>
+<title>GitHub Copilot AIC ダッシュボード</title>
 <script>
   (() => {
     const param = new URLSearchParams(window.location.search).get("scoutTheme");
@@ -310,6 +310,16 @@ function barChart(target, rows, opts) {
   target.appendChild(svg);
 }
 
+// 1時間あたりの実効警戒ライン。固定値は下限なので、基準と大きい方を使う。
+// ここを一本化しないと、KPI・凡例・チャートの基準線で別々の数字が出る。
+function hourlyAlertLine() {
+  const b = (D.meta.alert_baseline || {}).hourly;
+  const fixed = D.meta.hourly_alert_aic;
+  return (b && b.enough && b.threshold > fixed)
+    ? { value: b.threshold, note: `上位 ${b.percentile}%` }
+    : { value: fixed, note: "下限" };
+}
+
 // ---------------------------------------------------------------- sections
 function kpiSection() {
   const k = D.kpi, m = D.meta;
@@ -324,6 +334,13 @@ function kpiSection() {
   const bClass = budgetPct >= 100 ? "danger" : budgetPct >= 70 ? "warn" : "";
   const mPct = Math.min(100, k.month_pct_of_included ?? 0);
   const mClass = mPct >= 100 ? "danger" : mPct >= 70 ? "warn" : "";
+  // 収集は数時間おきなので、「直近 1 時間」は今この瞬間ではなく集計時点の話。
+  // 何も断らないと、古い集計を開いたときの 0 を「使っていない」と読んでしまう。
+  const fr = freshness();
+  const asOf = fr.mins >= 10 ? ` <span class="soft">(${esc(fr.at)} 時点)</span>` : "";
+  // 警戒ラインは実際に使われる値を出す。固定値は下限なので、基準と大きい方。
+  // 片方だけ出すと、下のバナーに載る数字と食い違って見える。
+  const hl = hourlyAlertLine();
 
   return `
   <div class="kpis">
@@ -335,12 +352,12 @@ function kpiSection() {
       <div class="foot">日次目安 ${fmt(m.daily_budget_aic)} AIC の ${fmt(k.daily_budget_pct, 1)}%</div>
     </div>
     <div class="kpi">
-      <div class="label">直近 1 時間</div>
+      <div class="label">直近 1 時間${asOf}</div>
       <div class="value">${fmt(k.last_1h)}</div>
-      <div class="foot">警戒ライン ${fmt(m.hourly_alert_aic)} AIC</div>
+      <div class="foot">警戒ライン ${fmt(hl.value)} AIC <span class="dim">(${hl.note})</span></div>
     </div>
     <div class="kpi">
-      <div class="label">直近 24 時間${pm("last_24h")}</div>
+      <div class="label">直近 24 時間${pm("last_24h")}${asOf}</div>
       <div class="value">${fmt(k.last_24h)}</div>
       <div class="foot">${k.avg_daily_7d == null
         ? "7日平均 — (記録のある日がありません)"
@@ -623,15 +640,21 @@ function banners() {
 // ---------------------------------------------------------------- 鮮度表示
 // 「再読み込み」は data/usage.js を読み直すだけで、DB からの再集計はしない。
 // 集計時刻がどれくらい古いかを常に見せて、再集計が必要かどうかを判断できるようにする。
+//
+// 「古い」の線引きは実測の収集間隔から決める。固定値にすると、収集を
+// 1 時間おきから 3 時間おきに変えた瞬間にずっと「古い」と言い続ける。
 function freshness() {
   const gen = new Date(String(m.generated_at).replace(" ", "T"));
-  if (isNaN(gen)) return { label: esc(m.generated_at), stale: false, mins: 0 };
+  if (isNaN(gen)) return { label: esc(m.generated_at), stale: false, mins: 0, at: "" };
   const mins = Math.max(0, Math.round((Date.now() - gen.getTime()) / 60000));
   const rel = mins < 1 ? "たった今"
     : mins < 60 ? `${mins} 分前`
     : mins < 1440 ? `${Math.floor(mins / 60)} 時間前`
     : `${Math.floor(mins / 1440)} 日前`;
-  return { label: `${esc(m.generated_at)}（${rel}）`, stale: mins >= 30, mins };
+  const cadence = Number(m.collect_cadence_min) || 0;
+  const limit = cadence > 0 ? Math.max(45, cadence * 1.5) : 90;
+  const at = String(m.generated_at || "").slice(11, 16);
+  return { label: `${esc(m.generated_at)}（${rel}）`, stale: mins >= limit, mins, at, rel };
 }
 
 // ---------------------------------------------------------------- render
@@ -643,16 +666,20 @@ function render() {
   app.innerHTML = `
   <div class="head">
     <div>
-      <h1>Copilot ローカル AIC ダッシュボード</h1>
+      <h1>GitHub Copilot AIC ダッシュボード</h1>
       <p class="sub">
         ${esc(m.first_event)} 〜 ${esc(m.last_event)} (${esc(m.tz_label)}) ·
         ${fmt(m.event_count)} 呼出 / ${fmt(m.session_count)} セッション
+      </p>
+      <p class="sub soft">
+        この PC に記録された Copilot CLI / Copilot App の消費のみ · 他端末や cloud agent 単独実行は含みません
       </p>
       <p class="sub">
         <span class="chip ${fresh.stale ? "chip-stale" : "chip-fresh"}" id="freshChip">
           ${fresh.stale ? "● 集計が古い" : "● 集計済み"} ${fresh.label}
         </span>
         <span class="soft">再集計するには <code>python aic_collect.py</code></span>
+        ${m.collect_cadence_min ? `<span class="soft">· 自動収集は約 ${fmt(Math.round(m.collect_cadence_min))} 分おき</span>` : ""}
         <button class="link-btn" id="copyCmd">コマンドをコピー</button>
       </p>
     </div>
@@ -678,7 +705,7 @@ function render() {
     <div id="hourlyChart"></div>
     <div class="legend">
       <span><i style="background:var(--cp-accent)"></i>1時間あたり AIC</span>
-      <span><i style="background:var(--cp-warning)"></i>警戒ライン ${fmt(m.hourly_alert_aic)} AIC/h</span>
+      <span><i style="background:var(--cp-warning)"></i>警戒ライン ${fmt(hourlyAlertLine().value)} AIC/h</span>
       <span><i style="background:var(--cp-text-muted);opacity:.45"></i>消費なし</span>
       <span><i style="background:var(--cp-warning);opacity:.16"></i>記録なし（取りこぼし）</span>
     </div>
@@ -772,8 +799,9 @@ function render() {
   </div>
 `;
 
+  const hAlert = hourlyAlertLine();
   barChart(document.getElementById("hourlyChart"), hourly.rows, {
-    height: 200, refLine: m.hourly_alert_aic, refLabel: `警戒 ${fmt(m.hourly_alert_aic)}`, labelEvery: 6,
+    height: 200, refLine: hAlert.value, refLabel: `警戒 ${fmt(hAlert.value)}`, labelEvery: 6,
   });
   barChart(document.getElementById("dailyChart"), dailySection(), {
     height: 210, refLine: m.daily_budget_aic, refLabel: `目安 ${fmt(m.daily_budget_aic)}`, maLine: true, labelEvery: 3,

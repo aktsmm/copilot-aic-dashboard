@@ -660,6 +660,7 @@ def main() -> int:
                 float(cfg.get("aiu_to_aic", 1.0) or 1.0))
         except Exception:                                  # noqa: BLE001
             base = {}
+        cadence = aic_archive.collect_cadence_min(arc)
     finally:
         arc.close()
 
@@ -680,6 +681,7 @@ def main() -> int:
         "machines": cov.get("machines", []),
         "alert_failures": alert_failures,
         "alert_baseline": base,
+        "collect_cadence_min": cadence,
         "ingested": ingest,
     })
     mark_incomplete(payload, cov, cfg)

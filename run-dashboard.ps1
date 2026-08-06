@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Copilot ローカル AIC ダッシュボードの収集・表示・自動化。
+    GitHub Copilot AIC ダッシュボードの収集・表示・自動化。
 
 .DESCRIPTION
     ライブ DB (~/.copilot/session-store.db) から追記専用アーカイブへ取り込み、

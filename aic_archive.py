@@ -807,6 +807,38 @@ def coverage(arc: sqlite3.Connection) -> dict:
 
 
 # --------------------------------------------------------------------------- エクスポート
+def collect_cadence_min(arc: sqlite3.Connection, samples: int = 12):
+    """このマシンの収集が実際に何分おきに走っているか（間隔の中央値）。
+
+    ダッシュボードの「集計が古い」判定に使う。固定のしきい値だと収集間隔を
+    変えた瞬間に必ずどちらかが誤る。1 時間おきなら 90 分経過は異常だが、
+    3 時間おきなら 90 分は正常。実測すればどちらの設定でも正しく言える。
+
+    中央値を使うのは、手動実行の連打（数秒間隔）や PC を落としていた期間
+    （数日）が混ざるため。平均だと後者だけで簡単に壊れる。
+    """
+    rows = arc.execute(
+        "SELECT ran_at FROM collect_runs WHERE origin IS NULL AND status = 'ok' "
+        "ORDER BY ran_at DESC LIMIT ?", (samples + 1,)
+    ).fetchall()
+    times = []
+    for (ts,) in rows:
+        try:
+            times.append(datetime.strptime(str(ts)[:19], "%Y-%m-%dT%H:%M:%S"))
+        except (ValueError, TypeError):
+            continue
+    gaps = []
+    for a, b in zip(times, times[1:]):
+        mins = (a - b).total_seconds() / 60.0
+        if 2.0 <= mins <= 1440.0:      # 連打と長期停止を除く
+            gaps.append(mins)
+    if len(gaps) < 3:
+        return None
+    gaps.sort()
+    mid = len(gaps) // 2
+    return round(gaps[mid] if len(gaps) % 2 else (gaps[mid - 1] + gaps[mid]) / 2, 1)
+
+
 def export_csv(arc: sqlite3.Connection, out: Path) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     cur = arc.execute("SELECT * FROM usage_events ORDER BY created_at")

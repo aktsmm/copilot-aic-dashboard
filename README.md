@@ -1,4 +1,4 @@
-# Copilot Local AIC Dashboard
+# GitHub Copilot AIC Dashboard
 
 [日本語 README](README.ja.md) · [Live demo (synthetic data)](https://aktsmm.github.io/copilot-aic-dashboard/demo/)
 
@@ -72,6 +72,8 @@ Just want to see what it looks like, with no data of your own?
 ```
 
 Collection runs hourly by default. Change it with `-InstallTask -IntervalMinutes 180`; re-running `-InstallTask` replaces the existing task. The task runs `pythonw.exe`, which has no console, so nothing appears on screen and nothing steals focus — a background job that flashes a window every hour is a background job you will end up uninstalling.
+
+Whatever interval you pick, the dashboard adapts to it. It measures how often collection has actually been running and only says "stale" once you are past 1.5 intervals — a fixed cut-off would be wrong the moment you change the schedule. The "last 1 hour" and "last 24 hours" cards are labelled with the collection time once the data is more than ten minutes old, so a quiet hour is never mistaken for an idle one.
 
 Cross-platform / no PowerShell:
 

@@ -1,9 +1,9 @@
 {
  "meta": {
-  "generated_at": "2026-08-06 15:37:50",
+  "generated_at": "2026-08-06 23:06:38",
   "tz_label": "JST",
   "tz_offset_hours": 9,
-  "first_event": "2026-07-07 18:59",
+  "first_event": "2026-07-07 18:58",
   "last_event": "2026-08-06 07:47",
   "event_count": 2989,
   "session_count": 224,
@@ -22,40 +22,41 @@
   "archive_runs": 1,
   "archive_failed_runs": 0,
   "archive_quarantined": 0,
-  "archive_last_run_at": "2026-08-06T06:37:50Z",
+  "archive_last_run_at": "2026-08-06T14:06:38Z",
   "archive_last_run_status": "ok",
-  "archive_since": "2026-07-07T09:59:05.000Z",
-  "archive_local_since": "2026-07-07T09:59:05.000Z",
+  "archive_since": "2026-07-07T09:58:53.000Z",
+  "archive_local_since": "2026-07-07T09:58:53.000Z",
   "machines": [
    {
     "origin": "this machine",
     "is_local": true,
     "events": 2989,
-    "since": "2026-07-07T09:59:05.000Z",
-    "until": "2026-08-05T22:47:29.000Z",
+    "since": "2026-07-07T09:58:53.000Z",
+    "until": "2026-08-05T22:47:17.000Z",
     "aic": 15558.1,
-    "last_run_at": "2026-08-06T06:37:50Z",
+    "last_run_at": "2026-08-06T14:06:38Z",
     "last_run_status": "ok",
-    "last_ok_at": "2026-08-06T06:37:50Z"
+    "last_ok_at": "2026-08-06T14:06:38Z"
    }
   ],
   "alert_failures": [],
   "alert_baseline": {
    "hourly": {
-    "threshold": 215.6082699940007,
-    "samples": 990,
-    "days": 29.53361111111111,
+    "threshold": 213.7179744899995,
+    "samples": 978,
+    "days": 29.399618055555557,
     "percentile": 99.0,
     "enough": true
    },
    "rolling24h": {
     "threshold": 1857.6852104359969,
-    "samples": 693,
+    "samples": 697,
     "days": 28.578518518518518,
     "percentile": 99.0,
     "enough": true
    }
   },
+  "collect_cadence_min": null,
   "ingested": {
    "source_rows": 2989,
    "inserted": 2989,
@@ -63,8 +64,8 @@
    "existing": 0,
    "quarantined": 0,
    "archive_rows": 2989,
-   "live_min": "2026-07-07T09:59:05.000Z",
-   "live_max": "2026-08-05T22:47:29.000Z",
+   "live_min": "2026-07-07T09:58:53.000Z",
+   "live_max": "2026-08-05T22:47:17.000Z",
    "archive_max_before": null
   },
   "demo": true
@@ -76,7 +77,7 @@
   "dod_pct": -85.4,
   "last_1h": 0.0,
   "last_24h": 116.1,
-  "last_7d": 3050.2,
+  "last_7d": 2986.5,
   "avg_daily_7d": 426.6,
   "month": 2859.8,
   "month_usd": 28.6,
@@ -89,78 +90,6 @@
   "avg_daily_7d_days": 7
  },
  "hourly": [
-  {
-   "label": "08/02 16:00",
-   "short": "16",
-   "date": "08/02",
-   "ts": "2026-08-02T16:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
-  {
-   "label": "08/02 17:00",
-   "short": "17",
-   "date": "08/02",
-   "ts": "2026-08-02T17:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
-  {
-   "label": "08/02 18:00",
-   "short": "18",
-   "date": "08/02",
-   "ts": "2026-08-02T18:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
-  {
-   "label": "08/02 19:00",
-   "short": "19",
-   "date": "08/02",
-   "ts": "2026-08-02T19:00:00+09:00",
-   "aic": 2.7,
-   "calls": 1,
-   "top_model": "demo-medium"
-  },
-  {
-   "label": "08/02 20:00",
-   "short": "20",
-   "date": "08/02",
-   "ts": "2026-08-02T20:00:00+09:00",
-   "aic": 95.0,
-   "calls": 17,
-   "top_model": "demo-large"
-  },
-  {
-   "label": "08/02 21:00",
-   "short": "21",
-   "date": "08/02",
-   "ts": "2026-08-02T21:00:00+09:00",
-   "aic": 5.3,
-   "calls": 2,
-   "top_model": "demo-medium"
-  },
-  {
-   "label": "08/02 22:00",
-   "short": "22",
-   "date": "08/02",
-   "ts": "2026-08-02T22:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
-  {
-   "label": "08/02 23:00",
-   "short": "23",
-   "date": "08/02",
-   "ts": "2026-08-02T23:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
   {
    "label": "08/03 00:00",
    "short": "00",
@@ -535,8 +464,8 @@
    "short": "17",
    "date": "08/04",
    "ts": "2026-08-04T17:00:00+09:00",
-   "aic": 9.3,
-   "calls": 1,
+   "aic": 10.4,
+   "calls": 2,
    "top_model": "demo-large"
   },
   {
@@ -544,8 +473,8 @@
    "short": "18",
    "date": "08/04",
    "ts": "2026-08-04T18:00:00+09:00",
-   "aic": 45.5,
-   "calls": 8,
+   "aic": 44.4,
+   "calls": 7,
    "top_model": "demo-large"
   },
   {
@@ -571,8 +500,8 @@
    "short": "21",
    "date": "08/04",
    "ts": "2026-08-04T21:00:00+09:00",
-   "aic": 118.8,
-   "calls": 19,
+   "aic": 119.8,
+   "calls": 20,
    "top_model": "demo-large"
   },
   {
@@ -580,8 +509,8 @@
    "short": "22",
    "date": "08/04",
    "ts": "2026-08-04T22:00:00+09:00",
-   "aic": 62.6,
-   "calls": 13,
+   "aic": 61.5,
+   "calls": 12,
    "top_model": "demo-large"
   },
   {
@@ -616,8 +545,8 @@
    "short": "02",
    "date": "08/05",
    "ts": "2026-08-05T02:00:00+09:00",
-   "aic": 115.6,
-   "calls": 20,
+   "aic": 117.3,
+   "calls": 21,
    "top_model": "demo-large"
   },
   {
@@ -625,8 +554,8 @@
    "short": "03",
    "date": "08/05",
    "ts": "2026-08-05T03:00:00+09:00",
-   "aic": 126.7,
-   "calls": 24,
+   "aic": 124.9,
+   "calls": 23,
    "top_model": "demo-large"
   },
   {
@@ -952,6 +881,78 @@
    "aic": 0.0,
    "calls": 0,
    "top_model": null
+  },
+  {
+   "label": "08/06 16:00",
+   "short": "16",
+   "date": "08/06",
+   "ts": "2026-08-06T16:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 17:00",
+   "short": "17",
+   "date": "08/06",
+   "ts": "2026-08-06T17:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 18:00",
+   "short": "18",
+   "date": "08/06",
+   "ts": "2026-08-06T18:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 19:00",
+   "short": "19",
+   "date": "08/06",
+   "ts": "2026-08-06T19:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 20:00",
+   "short": "20",
+   "date": "08/06",
+   "ts": "2026-08-06T20:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 21:00",
+   "short": "21",
+   "date": "08/06",
+   "ts": "2026-08-06T21:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 22:00",
+   "short": "22",
+   "date": "08/06",
+   "ts": "2026-08-06T22:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
+  },
+  {
+   "label": "08/06 23:00",
+   "short": "23",
+   "date": "08/06",
+   "ts": "2026-08-06T23:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
   }
  ],
  "daily": [
@@ -1108,7 +1109,7 @@
    "calls": 306,
    "sessions": 28,
    "peak_hour": 1,
-   "peak_hour_aic": 220.9,
+   "peak_hour_aic": 214.4,
    "ma7": 701.4,
    "ma7_partial": false
   },
@@ -1225,7 +1226,7 @@
    "calls": 181,
    "sessions": 14,
    "peak_hour": 21,
-   "peak_hour_aic": 163.2,
+   "peak_hour_aic": 158.6,
    "ma7": 454.2,
    "ma7_partial": false
   },
@@ -1237,8 +1238,8 @@
    "aic": 519.3,
    "calls": 105,
    "sessions": 9,
-   "peak_hour": 3,
-   "peak_hour_aic": 178.3,
+   "peak_hour": 2,
+   "peak_hour_aic": 168.4,
    "ma7": 486.4,
    "ma7_partial": false
   },
@@ -1407,15 +1408,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 6,
-   "aic": 141.7,
-   "calls": 24
+   "aic": 145.9,
+   "calls": 25
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 7,
-   "aic": 107.4,
-   "calls": 21
+   "aic": 103.2,
+   "calls": 20
   },
   {
    "weekday": 0,
@@ -1456,15 +1457,15 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 20,
-   "aic": 188.0,
-   "calls": 40
+   "aic": 192.5,
+   "calls": 41
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 21,
-   "aic": 257.5,
-   "calls": 52
+   "aic": 253.0,
+   "calls": 51
   },
   {
    "weekday": 0,
@@ -1498,15 +1499,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 2,
-   "aic": 220.9,
-   "calls": 42
+   "aic": 233.4,
+   "calls": 43
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 3,
-   "aic": 182.2,
-   "calls": 35
+   "aic": 169.7,
+   "calls": 34
   },
   {
    "weekday": 1,
@@ -1526,15 +1527,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 6,
-   "aic": 85.4,
-   "calls": 18
+   "aic": 86.8,
+   "calls": 19
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 7,
-   "aic": 31.8,
-   "calls": 8
+   "aic": 30.5,
+   "calls": 7
   },
   {
    "weekday": 1,
@@ -1561,15 +1562,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 17,
-   "aic": 44.3,
-   "calls": 9
+   "aic": 45.4,
+   "calls": 10
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 18,
-   "aic": 98.6,
-   "calls": 17
+   "aic": 97.4,
+   "calls": 16
   },
   {
    "weekday": 1,
@@ -1589,15 +1590,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 21,
-   "aic": 118.8,
-   "calls": 19
+   "aic": 119.8,
+   "calls": 20
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 22,
-   "aic": 165.8,
-   "calls": 28
+   "aic": 164.7,
+   "calls": 27
   },
   {
    "weekday": 1,
@@ -1624,15 +1625,15 @@
    "weekday": 2,
    "weekday_label": "水",
    "hour": 2,
-   "aic": 186.3,
-   "calls": 33
+   "aic": 188.0,
+   "calls": 34
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 3,
-   "aic": 320.3,
-   "calls": 63
+   "aic": 318.5,
+   "calls": 62
   },
   {
    "weekday": 2,
@@ -1869,15 +1870,15 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 16,
-   "aic": 31.2,
-   "calls": 7
+   "aic": 34.7,
+   "calls": 8
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 17,
-   "aic": 225.1,
-   "calls": 46
+   "aic": 221.6,
+   "calls": 45
   },
   {
    "weekday": 4,
@@ -1925,15 +1926,15 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 0,
-   "aic": 275.1,
-   "calls": 53
+   "aic": 281.5,
+   "calls": 54
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 1,
-   "aic": 325.7,
-   "calls": 61
+   "aic": 319.2,
+   "calls": 60
   },
   {
    "weekday": 5,
@@ -2362,7 +2363,7 @@
  ],
  "sessions": [
   {
-   "id": "58eff8c7",
+   "id": "5143c934",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -2372,7 +2373,7 @@
    "in_tok": 3344233,
    "out_tok": 93614,
    "start": "07/18 23:14",
-   "end": "07/19 00:31",
+   "end": "07/19 00:30",
    "minutes": 76,
    "aic_per_hour": 131.8,
    "top_model": "demo-large",
@@ -2396,7 +2397,7 @@
    ]
   },
   {
-   "id": "9c2848a3",
+   "id": "70873c55",
    "repository": "acme/mobile-app",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -2437,7 +2438,7 @@
    ]
   },
   {
-   "id": "c730ec02",
+   "id": "b936f5f0",
    "repository": "acme/mobile-app",
    "branch": "feature/search",
    "host": "CLI",
@@ -2471,7 +2472,7 @@
    ]
   },
   {
-   "id": "eb97d70c",
+   "id": "33412242",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2481,7 +2482,7 @@
    "in_tok": 3076621,
    "out_tok": 78466,
    "start": "07/26 21:03",
-   "end": "07/26 22:19",
+   "end": "07/26 22:18",
    "minutes": 75,
    "aic_per_hour": 118.8,
    "top_model": "demo-large",
@@ -2512,7 +2513,7 @@
    ]
   },
   {
-   "id": "fd35d677",
+   "id": "a6a0e30b",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2521,8 +2522,8 @@
    "calls": 24,
    "in_tok": 2822369,
    "out_tok": 71621,
-   "start": "07/26 23:42",
-   "end": "07/27 00:58",
+   "start": "07/26 23:41",
+   "end": "07/27 00:57",
    "minutes": 75,
    "aic_per_hour": 114.3,
    "top_model": "demo-large",
@@ -2546,7 +2547,7 @@
    ]
   },
   {
-   "id": "21e7c762",
+   "id": "cb53de22",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2555,7 +2556,7 @@
    "calls": 23,
    "in_tok": 2918980,
    "out_tok": 78184,
-   "start": "07/30 02:35",
+   "start": "07/30 02:34",
    "end": "07/30 03:48",
    "minutes": 73,
    "aic_per_hour": 116.4,
@@ -2573,7 +2574,7 @@
    ]
   },
   {
-   "id": "2a0265cb",
+   "id": "3b50ba8d",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2583,7 +2584,7 @@
    "in_tok": 2635250,
    "out_tok": 73671,
    "start": "07/15 22:26",
-   "end": "07/15 23:33",
+   "end": "07/15 23:32",
    "minutes": 66,
    "aic_per_hour": 122.6,
    "top_model": "demo-large",
@@ -2614,7 +2615,7 @@
    ]
   },
   {
-   "id": "bc9292fb",
+   "id": "8d67eb68",
    "repository": "acme/infra-terraform",
    "branch": "feature/search",
    "host": "CLI",
@@ -2623,8 +2624,8 @@
    "calls": 25,
    "in_tok": 3555391,
    "out_tok": 73488,
-   "start": "07/07 18:59",
-   "end": "07/07 20:19",
+   "start": "07/07 18:58",
+   "end": "07/07 20:18",
    "minutes": 80,
    "aic_per_hour": 101.0,
    "top_model": "demo-large",
@@ -2655,7 +2656,7 @@
    ]
   },
   {
-   "id": "50488e68",
+   "id": "ace695da",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2689,7 +2690,7 @@
    ]
   },
   {
-   "id": "5e9d0208",
+   "id": "9def86b9",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2716,7 +2717,7 @@
    ]
   },
   {
-   "id": "c5f3669d",
+   "id": "26674036",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2757,7 +2758,7 @@
    ]
   },
   {
-   "id": "0d60354e",
+   "id": "a9ba9f7a",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2798,7 +2799,7 @@
    ]
   },
   {
-   "id": "a7ecd5d4",
+   "id": "f8ab6c93",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2839,7 +2840,7 @@
    ]
   },
   {
-   "id": "eb7bbcd9",
+   "id": "65e868ea",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2849,7 +2850,7 @@
    "in_tok": 2634362,
    "out_tok": 77207,
    "start": "07/18 07:23",
-   "end": "07/18 08:52",
+   "end": "07/18 08:51",
    "minutes": 88,
    "aic_per_hour": 88.3,
    "top_model": "demo-large",
@@ -2873,7 +2874,7 @@
    ]
   },
   {
-   "id": "84af35b5",
+   "id": "88f7b760",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2914,7 +2915,7 @@
    ]
   },
   {
-   "id": "b92a8dfa",
+   "id": "eaf6cef6",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2948,7 +2949,7 @@
    ]
   },
   {
-   "id": "7be21669",
+   "id": "72c5be87",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -2975,7 +2976,7 @@
    ]
   },
   {
-   "id": "56bb5929",
+   "id": "0f40d186",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2984,7 +2985,7 @@
    "calls": 24,
    "in_tok": 2697501,
    "out_tok": 70469,
-   "start": "08/05 02:29",
+   "start": "08/05 02:28",
    "end": "08/05 03:56",
    "minutes": 87,
    "aic_per_hour": 87.4,
@@ -3009,7 +3010,7 @@
    ]
   },
   {
-   "id": "8caf0e33",
+   "id": "62cf2b5e",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3018,7 +3019,7 @@
    "calls": 22,
    "in_tok": 2679074,
    "out_tok": 75036,
-   "start": "07/16 01:35",
+   "start": "07/16 01:34",
    "end": "07/16 02:51",
    "minutes": 76,
    "aic_per_hour": 98.2,
@@ -3043,7 +3044,7 @@
    ]
   },
   {
-   "id": "68c61bcc",
+   "id": "c34195fe",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3077,7 +3078,7 @@
    ]
   },
   {
-   "id": "83fd20e8",
+   "id": "597c53bd",
    "repository": "acme/infra-terraform",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3118,7 +3119,7 @@
    ]
   },
   {
-   "id": "6a91ec63",
+   "id": "d3208a7c",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3159,7 +3160,7 @@
    ]
   },
   {
-   "id": "91d953cd",
+   "id": "16e713e5",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -3186,7 +3187,7 @@
    ]
   },
   {
-   "id": "d780182e",
+   "id": "8d425651",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3213,7 +3214,7 @@
    ]
   },
   {
-   "id": "5094eb3e",
+   "id": "afeee3a3",
    "repository": "acme/data-pipeline",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3240,7 +3241,7 @@
    ]
   },
   {
-   "id": "2504c1e8",
+   "id": "df20551f",
    "repository": "acme/web-frontend",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3250,7 +3251,7 @@
    "in_tok": 2319938,
    "out_tok": 69021,
    "start": "07/20 16:17",
-   "end": "07/20 17:28",
+   "end": "07/20 17:27",
    "minutes": 70,
    "aic_per_hour": 100.1,
    "top_model": "demo-large",
@@ -3274,7 +3275,7 @@
    ]
   },
   {
-   "id": "9881b8f3",
+   "id": "eec1254f",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -3284,7 +3285,7 @@
    "in_tok": 2796979,
    "out_tok": 60445,
    "start": "07/18 18:37",
-   "end": "07/18 19:45",
+   "end": "07/18 19:44",
    "minutes": 67,
    "aic_per_hour": 103.5,
    "top_model": "demo-large",
@@ -3308,7 +3309,7 @@
    ]
   },
   {
-   "id": "2ad228dd",
+   "id": "13e88a12",
    "repository": "acme/api-gateway",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3342,7 +3343,7 @@
    ]
   },
   {
-   "id": "a61eedab",
+   "id": "dc772549",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3383,7 +3384,7 @@
    ]
   },
   {
-   "id": "08fe076e",
+   "id": "9db22782",
    "repository": "acme/infra-terraform",
    "branch": "main",
    "host": "CLI",
@@ -3424,7 +3425,7 @@
    ]
   },
   {
-   "id": "d641621b",
+   "id": "43e6b329",
    "repository": "acme/api-gateway",
    "branch": "feature/search",
    "host": "CLI",
@@ -3451,7 +3452,7 @@
    ]
   },
   {
-   "id": "2f4ff366",
+   "id": "37b75736",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3461,7 +3462,7 @@
    "in_tok": 2017373,
    "out_tok": 54653,
    "start": "07/17 18:25",
-   "end": "07/17 19:21",
+   "end": "07/17 19:20",
    "minutes": 55,
    "aic_per_hour": 120.3,
    "top_model": "demo-large",
@@ -3492,7 +3493,7 @@
    ]
   },
   {
-   "id": "f97b8f58",
+   "id": "db13e3bd",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3533,7 +3534,7 @@
    ]
   },
   {
-   "id": "54e50d09",
+   "id": "e9c84027",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3567,7 +3568,7 @@
    ]
   },
   {
-   "id": "1033e1dc",
+   "id": "ca10f000",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3577,7 +3578,7 @@
    "in_tok": 2280021,
    "out_tok": 65259,
    "start": "07/28 01:52",
-   "end": "07/28 03:23",
+   "end": "07/28 03:22",
    "minutes": 90,
    "aic_per_hour": 72.5,
    "top_model": "demo-large",
@@ -3601,7 +3602,7 @@
    ]
   },
   {
-   "id": "1f895d97",
+   "id": "0a15242f",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3611,7 +3612,7 @@
    "in_tok": 2361589,
    "out_tok": 50448,
    "start": "08/05 07:56",
-   "end": "08/05 08:52",
+   "end": "08/05 08:51",
    "minutes": 55,
    "aic_per_hour": 118.3,
    "top_model": "demo-large",
@@ -3635,7 +3636,7 @@
    ]
   },
   {
-   "id": "4b4f4f67",
+   "id": "24269a46",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -3662,7 +3663,7 @@
    ]
   },
   {
-   "id": "b7392b94",
+   "id": "d5e44ee4",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3696,7 +3697,7 @@
    ]
   },
   {
-   "id": "82f4aa7e",
+   "id": "4d97a85a",
    "repository": "acme/infra-terraform",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3706,7 +3707,7 @@
    "in_tok": 2354132,
    "out_tok": 64697,
    "start": "07/17 18:21",
-   "end": "07/17 19:27",
+   "end": "07/17 19:26",
    "minutes": 65,
    "aic_per_hour": 97.1,
    "top_model": "demo-large",
@@ -3730,7 +3731,7 @@
    ]
   },
   {
-   "id": "393e903a",
+   "id": "1e1bb783",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3740,7 +3741,7 @@
    "in_tok": 1974963,
    "out_tok": 65402,
    "start": "07/11 22:36",
-   "end": "07/11 23:51",
+   "end": "07/11 23:50",
    "minutes": 74,
    "aic_per_hour": 85.2,
    "top_model": "demo-large",
