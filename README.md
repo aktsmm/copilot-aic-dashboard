@@ -71,6 +71,8 @@ Just want to see what it looks like, with no data of your own?
 .\run-dashboard.ps1 -UninstallTask       # stop automatic collection
 ```
 
+Collection runs hourly by default. Change it with `-InstallTask -IntervalMinutes 180`; re-running `-InstallTask` replaces the existing task. The task runs `pythonw.exe`, which has no console, so nothing appears on screen and nothing steals focus — a background job that flashes a window every hour is a background job you will end up uninstalling.
+
 Cross-platform / no PowerShell:
 
 ```bash

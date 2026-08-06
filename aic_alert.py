@@ -290,11 +290,18 @@ def evaluate(arc, cfg: dict, now: datetime | None = None) -> list:
     return alerts
 
 
+# PowerShell を呼ぶときにコンソール窓を出さない。定期実行で窓が開くと、
+# 数時間おきに作業中のフォーカスを奪われる。通知そのものが邪魔になっては
+# 本末転倒なので、子プロセスは必ず窓なしで起動する。
+_NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0) if sys.platform == "win32" else 0
+
+
 def _powershell() -> str | None:
     for exe in ("pwsh.exe", "powershell.exe"):
         try:
             subprocess.run([exe, "-NoProfile", "-Command", "exit 0"],
-                           capture_output=True, timeout=20, check=True)
+                           capture_output=True, timeout=20, check=True,
+                           creationflags=_NO_WINDOW)
             return exe
         except (OSError, subprocess.SubprocessError):
             continue
@@ -350,6 +357,7 @@ def notify(title: str, body: str) -> bool:
         r = subprocess.run(
             [shell, "-NoProfile", "-NonInteractive", "-Command", _TOAST_PS],
             capture_output=True, timeout=60, env=env,
+            creationflags=_NO_WINDOW,
         )
         return r.returncode == 0
     except (OSError, subprocess.SubprocessError):

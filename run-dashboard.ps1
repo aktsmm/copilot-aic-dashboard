@@ -66,6 +66,20 @@ function Get-PythonExe {
 }
 $python = Get-PythonExe
 
+function Get-PythonwExe {
+    # 定期実行には pythonw.exe を使う。python.exe はコンソールアプリなので
+    # 起動のたびに黒い窓が開き、作業中のアクティブウィンドウを奪う。
+    # 数時間おきに一瞬だけ現れるので原因が分かりにくく、ツールを消したく
+    # なる理由としては十分に大きい。
+    param([string]$Exe)
+    $dir = Split-Path -Parent $Exe
+    foreach ($cand in @('pythonw.exe', 'pyw.exe')) {
+        $p = Join-Path $dir $cand
+        if (Test-Path -LiteralPath $p) { return $p }
+    }
+    return $Exe        # 見つからなければ従来どおり（動作優先）
+}
+
 switch ($true) {
 
     $Demo {
@@ -91,7 +105,9 @@ switch ($true) {
 
     $InstallTask {
         # 収集だけを行うタスク。ブラウザは開かない。
-        $action = New-ScheduledTaskAction -Execute $python `
+        # 窓を出さない pythonw.exe で実行する（無ければ python.exe に戻る）。
+        $runner = Get-PythonwExe $python
+        $action = New-ScheduledTaskAction -Execute $runner `
             -Argument 'aic_collect.py --quiet' -WorkingDirectory $here
 
         # 公式にサポートされたトリガーを 2 本登録する。
@@ -122,12 +138,21 @@ switch ($true) {
             Write-Host '       schtasks.exe で再試行します...'
 
             $script = Join-Path $here 'aic_collect.py'
+            # schtasks は分単位と時間単位で書式が違う。60 分未満を HOURLY に
+            # 丸めると、指定より粗い間隔で静かに登録されてしまう。
+            if ($IntervalMinutes -lt 60) {
+                $sc, $mo = 'MINUTE', $IntervalMinutes
+            }
+            else {
+                $sc, $mo = 'HOURLY', [int][math]::Max(1, [math]::Round($IntervalMinutes / 60))
+            }
             $null = schtasks /Create /TN $taskName `
-                /TR "`"$python`" `"$script`" --quiet" `
-                /SC HOURLY /MO ([int][math]::Max(1, [math]::Round($IntervalMinutes / 60))) /F 2>&1
+                /TR "`"$runner`" `"$script`" --quiet" `
+                /SC $sc /MO $mo /F 2>&1
 
             if ($LASTEXITCODE -eq 0) {
-                Write-Host "[ok] タスク '$taskName' を schtasks で登録しました（毎時）" -ForegroundColor Green
+                $unit = if ($sc -eq 'MINUTE') { '分' } else { '時間' }
+                Write-Host "[ok] タスク '$taskName' を schtasks で登録しました（$mo $unit おき）" -ForegroundColor Green
                 Write-Host "     状態確認: schtasks /Query /TN $taskName /V /FO LIST"
                 Write-Host "     解除:     .\run-dashboard.ps1 -UninstallTask"
                 $null = schtasks /Run /TN $taskName 2>&1

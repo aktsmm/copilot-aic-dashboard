@@ -71,6 +71,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\run-dashboard.ps1 -UninstallTask       # 自動収集を解除
 ```
 
+収集は既定で 1 時間おきです。`-InstallTask -IntervalMinutes 180` のように指定すれば変更でき、`-InstallTask` を実行し直せば既存のタスクを置き換えます。タスクはコンソールを持たない `pythonw.exe` で動くので、画面には何も出ず、作業中のアクティブウィンドウも奪いません（数時間おきに窓がちらつくバックグラウンド処理は、遅かれ早かれ消されます）。
+
 PowerShell を使わない場合:
 
 ```bash

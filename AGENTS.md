@@ -100,6 +100,8 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 - A backtest that falls back to a default on a cache miss hides the bug instead of failing. The old `dist.get(key, ([], 0.0))` silently scored the whole trailing partial day against the fixed floor, and only for archives roughly 7–21 days long — precisely the new users who run `--tune`.
 - Escalation state stores the amount, not the tier. While usage is heavy, that day's own closed windows enter the trailing distribution and raise the threshold, so a tier would stay flat or fall as usage climbs and the escalation would be swallowed. The reverse drift (baseline dips, or `enough` flips) would mint a spurious "it got worse". `_tier()` is display-only now; do not reintroduce it into dedup. Legacy `"{period}|{tier}"` state is treated as "already notified this period" so upgrading cannot fire a false alarm.
 - Known, accepted asymmetry: rows whose `created_at` `_parse_ts` cannot read are excluded from the baseline but still counted by `_sum_since` (SQL string compare, no parse). Aligning them by filtering the numerator would drop real spend from the alert, which is the worse failure. Fix it at ingest if it ever matters.
+- The scheduled task must run `pythonw.exe`, and every subprocess it spawns needs `CREATE_NO_WINDOW`. `python.exe` is a console app, so each run pops a window and takes focus. It looks trivial in a review and is the single most likely reason a user uninstalls a background collector.
+- `schtasks /SC HOURLY /MO <n>` cannot express sub-hour intervals. Rounding `IntervalMinutes / 60` silently registers a coarser schedule than the user asked for; switch to `/SC MINUTE` below 60.
 
 ## Out of scope
 
