@@ -75,6 +75,13 @@ Collection runs hourly by default. Change it with `-InstallTask -IntervalMinutes
 
 Whatever interval you pick, the dashboard adapts to it. It measures how often collection has actually been running and only says "stale" once you are past 1.5 intervals — a fixed cut-off would be wrong the moment you change the schedule. The "last 1 hour" and "last 24 hours" cards are labelled with the collection time once the data is more than ten minutes old, so a quiet hour is never mistaken for an idle one.
 
+Note that **the collection interval and the chart granularity are separate things.** The charts always bucket by the hour, because every event is stored with its own timestamp — collecting every three hours does not make the graph coarser, it only means the most recent hours have not been picked up yet. Pick the interval for how fresh you need the numbers to be, not for how detailed you want the chart.
+
+Two details make that measurement honest, and both need a note if you are upgrading:
+
+- The scheduled task passes `--scheduled`, and only runs so marked are used to measure the interval. Ad-hoc runs cluster together while you are poking around — mixing them in measures *how many times you just ran it*, not how often it normally runs. The flag is corroborated rather than trusted: it only counts when the run came from the scheduler (on Windows, `pythonw.exe`, which is what `-InstallTask` registers), so passing it by hand does nothing but print a warning. **If you installed the task before this version, re-run `-InstallTask` once.** Until then the header says "cannot confirm automatic collection"; right after re-installing it says "measuring" until enough scheduled runs have accumulated, and only then does it name an interval. Failed runs still count towards the interval — what is being measured is how often the task *fires*, not how often it succeeds, so a half-broken hourly task does not get recorded as a two-hourly one.
+- Staleness is judged by the last *successful ingest*, not by when the page was generated. Aggregation still runs when the live database is locked or missing, so keying off the generation time would report hours-old data as "just now". While the interval is not yet measured from scheduled runs, the stale cut-off never tightens below the 90-minute default — a measurement polluted by ad-hoc runs reads short, and acting on it would call a healthy 3-hourly setup stale.
+
 Cross-platform / no PowerShell:
 
 ```bash

@@ -108,7 +108,7 @@ switch ($true) {
         # 窓を出さない pythonw.exe で実行する（無ければ python.exe に戻る）。
         $runner = Get-PythonwExe $python
         $action = New-ScheduledTaskAction -Execute $runner `
-            -Argument 'aic_collect.py --quiet' -WorkingDirectory $here
+            -Argument 'aic_collect.py --quiet --scheduled' -WorkingDirectory $here
 
         # 公式にサポートされたトリガーを 2 本登録する。
         #  - AtLogOn : ログオン直後に 1 回
@@ -147,7 +147,7 @@ switch ($true) {
                 $sc, $mo = 'HOURLY', [int][math]::Max(1, [math]::Round($IntervalMinutes / 60))
             }
             $null = schtasks /Create /TN $taskName `
-                /TR "`"$runner`" `"$script`" --quiet" `
+                /TR "`"$runner`" `"$script`" --quiet --scheduled" `
                 /SC $sc /MO $mo /F 2>&1
 
             if ($LASTEXITCODE -eq 0) {
@@ -164,7 +164,7 @@ switch ($true) {
             Write-Host '       1) PowerShell を管理者として実行し、もう一度 -InstallTask を実行する'
             Write-Host '       2) タスクスケジューラ GUI で手動登録する'
             Write-Host "          プログラム: $python"
-            Write-Host "          引数:       `"$script`" --quiet"
+            Write-Host "          引数:       `"$script`" --quiet --scheduled"
             Write-Host '       3) 自動収集を使わず、都度 .\run-dashboard.ps1 を実行する'
             exit 1
         }

@@ -515,6 +515,20 @@ def write_atomic(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
+def _local_stamp(iso, cfg: dict):
+    """アーカイブの UTC タイムスタンプを meta の他の時刻と同じ表記に揃える。
+
+    generated_at などはローカル時刻の "YYYY-MM-DD HH:MM:SS" で、UI はこの形式
+    しか想定していない。揃えないと片方だけ Z 付き UTC になり、表示が時差ぶん
+    ずれる。
+    """
+    dt = parse_ts(iso)
+    if not dt:
+        return None
+    tz = timezone(timedelta(hours=cfg["tz_offset_hours"]))
+    return dt.astimezone(tz).strftime("%Y-%m-%d %H:%M:%S")
+
+
 def mark_incomplete(payload: dict, cov: dict, cfg: dict) -> None:
     """記録が無い期間を「0 消費」と誤読させないための印を付ける。
 
@@ -597,6 +611,26 @@ def mark_incomplete(payload: dict, cov: dict, cfg: dict) -> None:
 # main
 # --------------------------------------------------------------------------
 
+def _looks_scheduled() -> bool:
+    """--scheduled を額面どおり受け取ってよい実行か。
+
+    間隔の実測はこの印だけを見るので、手作業の実行が混ざると「普段の間隔」
+    ではなく「いま何回叩いたか」を測ってしまう。フラグの有無だけでは
+    守れない（実際、開発中にコマンドラインから付けて回って実測を
+    5 分おきまで引き下げた）ので、実行のされ方から裏を取る。
+
+    stdout の isatty() では足りない。パイプやリダイレクト越しの手動実行が
+    すり抜けるうえ、CLI ツールから叩くと常にすり抜ける。
+    """
+    if os.name == "nt":
+        # -InstallTask が登録するタスクは pythonw.exe で走る。コンソールを
+        # 出さないためだが、副産物として「タスクからの実行」の目印になる。
+        # わざわざ手で pythonw を使う人はいない（何も表示されないので）。
+        return Path(sys.executable).stem.lower() == "pythonw"
+    # cron / systemd には端末が無い。
+    return not getattr(sys.stdout, "isatty", lambda: False)()
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Copilot ローカル AIC 使用量を集計する")
     ap.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
@@ -610,9 +644,19 @@ def main() -> int:
     ap.add_argument("--redact-paths", action="store_true",
                     help="出力に含まれるローカルパスを伏せる（デモや共有用）")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--scheduled", action="store_true",
+                    help="スケジュール実行として記録する（収集間隔の実測に使う。手作業では付けない）")
     ap.add_argument("--no-alert", action="store_true",
                     help="閾値を超えていても通知しない")
     args = ap.parse_args()
+
+    # --scheduled は自己申告なので、手で叩けば手作業の実行が「自動収集」として
+    # 記録され、間隔の実測が壊れる（開発中これで 5 分おきと誤認させた）。
+    # 実行のされ方から裏を取る。
+    run_trigger = "scheduled" if args.scheduled and _looks_scheduled() else "manual"
+    if args.scheduled and run_trigger == "manual" and not args.quiet:
+        print("[warn] --scheduled は自動収集からの実行にだけ効きます。"
+              "この実行は手作業として記録します。")
 
     cfg = load_config(args.config)
     arc_cfg = aic_archive.load_config(HERE)
@@ -632,7 +676,8 @@ def main() -> int:
                       f"        integrity_check => {integrity}", file=sys.stderr)
                 return 2
             with aic_archive.ProcessLock(archive_path.with_suffix(".lock")):
-                ingest = aic_archive.ingest(live_path, arc, args.quiet)
+                ingest = aic_archive.ingest(
+                live_path, arc, args.quiet, run_trigger=run_trigger)
         finally:
             arc.close()
 
@@ -660,7 +705,7 @@ def main() -> int:
                 float(cfg.get("aiu_to_aic", 1.0) or 1.0))
         except Exception:                                  # noqa: BLE001
             base = {}
-        cadence = aic_archive.collect_cadence_min(arc)
+        cadence = aic_archive.collect_cadence(arc)
     finally:
         arc.close()
 
@@ -681,7 +726,12 @@ def main() -> int:
         "machines": cov.get("machines", []),
         "alert_failures": alert_failures,
         "alert_baseline": base,
-        "collect_cadence_min": cadence,
+        "collect_cadence_min": (cadence or {}).get("minutes"),
+        "collect_cadence_source": (cadence or {}).get("source"),
+        # 鮮度は「出力を書いた時刻」ではなく「最後に取り込めた時刻」で測る。
+        # 取り込みが失敗しても集計は走るので、前者だけ見ると古いデータを
+        # 「たった今」と表示してしまう。
+        "archive_last_ok_local": _local_stamp(cov.get("last_ok_at"), cfg),
         "ingested": ingest,
     })
     mark_incomplete(payload, cov, cfg)

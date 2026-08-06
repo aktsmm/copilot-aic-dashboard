@@ -158,6 +158,11 @@ def utcnow() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def utcnow_dt() -> datetime:
+    """ran_at と比較するための naive UTC。ran_at は tz 情報なしで保存されている。"""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 def _norm_ts(v):
     """created_at を比較可能な形（UTC / ミリ秒 / Z 終端）へ正規化する。
 
@@ -345,6 +350,10 @@ _COLLECT_RUN_COLUMNS = {
     "quarantined": "INTEGER", "live_min_id": "INTEGER", "live_max_id": "INTEGER",
     "updated": "INTEGER",   # v1 の列名。読み出し互換のため残す
     "origin": "TEXT",
+    # v4: スケジュール実行か手作業かの区別。NULL = この列より前の行（不明）。
+    # 収集間隔を実測するときに手作業ぶんを混ぜないために要る。列名を trigger に
+    # しないのは SQLite の予約語で、引用符なしの ALTER / INSERT が落ちるため。
+    "run_trigger": "TEXT",
 }
 
 
@@ -408,7 +417,8 @@ def _log_run(arc: sqlite3.Connection, **kw) -> None:
     arc.execute(f"INSERT INTO collect_runs ({cols}) VALUES ({marks})", tuple(kw.values()))
 
 
-def merge(live: sqlite3.Connection, arc: sqlite3.Connection, source_path: str) -> dict:
+def merge(live: sqlite3.Connection, arc: sqlite3.Connection, source_path: str,
+          run_trigger: str = "manual") -> dict:
     now = utcnow()
     live.row_factory = sqlite3.Row
 
@@ -491,6 +501,7 @@ def merge(live: sqlite3.Connection, arc: sqlite3.Connection, source_path: str) -
             quarantined=len(bad), live_min_created=lo, live_max_created=hi,
             live_min_id=min(ids, default=None), live_max_id=max(ids, default=None),
             archive_max_created_before=before_max,
+            run_trigger=run_trigger,
         )
         arc.execute("COMMIT")
     except Exception:
@@ -504,7 +515,8 @@ def merge(live: sqlite3.Connection, arc: sqlite3.Connection, source_path: str) -
     }
 
 
-def log_failed_run(arc: sqlite3.Connection, status: str, source_path: str, note: str = "") -> None:
+def log_failed_run(arc: sqlite3.Connection, status: str, source_path: str, note: str = "",
+                   run_trigger: str = "manual") -> None:
     """取り込めなかった実行も必ず残す。空白期間の判定に必要。"""
     arc.execute("BEGIN IMMEDIATE")
     try:
@@ -512,7 +524,8 @@ def log_failed_run(arc: sqlite3.Connection, status: str, source_path: str, note:
             "SELECT MAX(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
         _log_run(arc, ran_at=utcnow(), status=status, source_path=source_path,
                  source_ident=source_identity(Path(source_path)),
-                 archive_max_created_before=before_max, note=note)
+                 archive_max_created_before=before_max, note=note,
+                 run_trigger=run_trigger)
         arc.execute("COMMIT")
     except Exception:
         arc.execute("ROLLBACK")
@@ -795,48 +808,110 @@ def coverage(arc: sqlite3.Connection) -> dict:
         "ORDER BY run_id DESC LIMIT 1").fetchone()
     local = arc.execute(
         "SELECT MIN(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
+    # 「データがどこまで新しいか」は最後に成功した取り込みで決まる。
+    # 集計は取り込みが失敗しても走るので、出力の生成時刻とは別物。
+    last_ok = arc.execute(
+        "SELECT MAX(ran_at) FROM collect_runs WHERE origin IS NULL AND status='ok'").fetchone()[0]
     return {
         "events": row[0], "since": row[1], "until": row[2],
         "local_since": local,
         "runs": runs, "failed_runs": failed, "quarantined": qn,
         "last_run_at": last[0] if last else None,
         "last_run_status": last[1] if last else None,
+        "last_ok_at": last_ok,
         "gaps": detect_gaps(arc),
         "machines": machines(arc),
     }
 
 
 # --------------------------------------------------------------------------- エクスポート
-def collect_cadence_min(arc: sqlite3.Connection, samples: int = 12):
+def collect_cadence(arc: sqlite3.Connection, samples: int = 12):
     """このマシンの収集が実際に何分おきに走っているか（間隔の中央値）。
 
     ダッシュボードの「集計が古い」判定に使う。固定のしきい値だと収集間隔を
     変えた瞬間に必ずどちらかが誤る。1 時間おきなら 90 分経過は異常だが、
     3 時間おきなら 90 分は正常。実測すればどちらの設定でも正しく言える。
 
-    中央値を使うのは、手動実行の連打（数秒間隔）や PC を落としていた期間
-    （数日）が混ざるため。平均だと後者だけで簡単に壊れる。
+    スケジュール実行だけを見る。手作業の実行は間隔がばらばらで、しかも
+    調べものをしている最中に固まって走るので、混ぜると測りたい「普段の
+    間隔」ではなく「いま何回叩いたか」を測ってしまう。
+
+    run_trigger が付く前の行しかない場合（この列より古いアーカイブ、または
+    スケジュールを更新していない人）は、全実行にフォールバックする。粗いが、
+    何も出さないよりは「集計が古い」の判定に使える。ただし混ざった値を
+    「自動収集の間隔」と名乗らせてはいけないので、source で区別できるようにする。
+
+    中央値を使うのは、それでも手動実行の連打や PC を落としていた期間が
+    混ざりうるため。平均は後者ひとつで簡単に壊れる。
+
+    失敗した実行も数える。測りたいのは「タスクが何分おきに起動するか」で
+    あって「何分おきに成功したか」ではない。成功だけを見ると、毎時タスクが
+    一回おきに失敗しているときに「2 時間おきの設定なのだ」と学習してしまい、
+    障害に合わせて鮮度のしきい値まで緩む。取り込めているかどうかは
+    coverage() の last_ok_at で別に見る。
+
+    返り値: {"minutes": float, "source": ...} または None
+      source は次の 3 つ。UI はこれで名乗り方を変える。
+        "scheduled" — スケジュール実行だけから測れている。間隔を名乗ってよい
+        "measuring" — 自動収集は動いているが標本がまだ足りない
+        "unknown"   — スケジュール実行の記録が無い、または古い（未登録 / 旧タスク / 停止）
     """
-    rows = arc.execute(
-        "SELECT ran_at FROM collect_runs WHERE origin IS NULL AND status = 'ok' "
-        "ORDER BY ran_at DESC LIMIT ?", (samples + 1,)
-    ).fetchall()
-    times = []
-    for (ts,) in rows:
-        try:
-            times.append(datetime.strptime(str(ts)[:19], "%Y-%m-%dT%H:%M:%S"))
-        except (ValueError, TypeError):
-            continue
-    gaps = []
-    for a, b in zip(times, times[1:]):
-        mins = (a - b).total_seconds() / 60.0
-        if 2.0 <= mins <= 1440.0:      # 連打と長期停止を除く
-            gaps.append(mins)
+    # 旧アーカイブには run_trigger が無い。--no-archive は読み取り専用で開くので
+    # _ensure_columns() が走らず、問い合わせると no such column で落ちる。
+    cols = {r[1] for r in arc.execute("PRAGMA table_info(collect_runs)")}
+    has_trigger = "run_trigger" in cols
+
+    def _rows(where: str) -> list:
+        rows = arc.execute(
+            "SELECT ran_at FROM collect_runs "
+            f"WHERE origin IS NULL AND {where} "
+            "ORDER BY ran_at DESC LIMIT ?", (samples + 1,)
+        ).fetchall()
+        times = []
+        for (ts,) in rows:
+            try:
+                times.append(datetime.strptime(str(ts)[:19], "%Y-%m-%dT%H:%M:%S"))
+            except (ValueError, TypeError):
+                continue
+        return times
+
+    def _gaps(times: list, lo: float) -> list:
+        out = []
+        for a, b in zip(times, times[1:]):
+            mins = (a - b).total_seconds() / 60.0
+            if lo <= mins <= 1440.0:      # 連打と長期停止を除く
+                out.append(mins)
+        return out
+
+    def _median(gaps: list) -> float:
+        gaps.sort()
+        mid = len(gaps) // 2
+        return round(gaps[mid] if len(gaps) % 2 else (gaps[mid - 1] + gaps[mid]) / 2, 1)
+
+    sched = []
+    if has_trigger:
+        # スケジュール実行に連打は無いので下限は 1 分未満でよい。
+        # タスク側は 1 分間隔を許しているのに 2 分で切ると永久に測れなくなる。
+        sched = _rows("run_trigger = 'scheduled'")
+        gaps = _gaps(sched, 0.5)
+        if len(gaps) >= 3:
+            minutes = _median(gaps)
+            # 止めた / 作り直したタスクの間隔を「いまの自動収集」と言い続けない。
+            stale_after = max(3 * minutes, 1440.0)
+            age = (utcnow_dt() - sched[0]).total_seconds() / 60.0
+            if age <= stale_after:
+                return {"minutes": minutes, "source": "scheduled"}
+
+    # ここに来るのは、標本が足りないか、最後のスケジュール実行が古い場合。
+    # 「登録し直した直後で溜まっている最中」と「そもそも自動収集が動いて
+    # いない」は、利用者にとって次にやることが違うので区別する。
+    fresh_sched = bool(sched) and (utcnow_dt() - sched[0]).total_seconds() <= 86400.0
+    source = "measuring" if fresh_sched else "unknown"
+
+    gaps = _gaps(_rows("1 = 1"), 2.0)
     if len(gaps) < 3:
         return None
-    gaps.sort()
-    mid = len(gaps) // 2
-    return round(gaps[mid] if len(gaps) % 2 else (gaps[mid - 1] + gaps[mid]) / 2, 1)
+    return {"minutes": _median(gaps), "source": source}
 
 
 def export_csv(arc: sqlite3.Connection, out: Path) -> int:
@@ -1062,13 +1137,14 @@ def load_config(root: Path) -> dict:
     return cfg
 
 
-def ingest(src_path: Path, arc: sqlite3.Connection, quiet: bool = False):
+def ingest(src_path: Path, arc: sqlite3.Connection, quiet: bool = False,
+           run_trigger: str = "manual"):
     """ライブ DB → アーカイブ。失敗しても例外を投げず、実行ログだけ残す。"""
     if not src_path.exists():
         if not quiet:
             print(f"[warn] ライブ DB が見つかりません: {src_path}")
             print("       アーカイブ済みのデータのみで集計します。")
-        log_failed_run(arc, "source_missing", str(src_path))
+        log_failed_run(arc, "source_missing", str(src_path), run_trigger=run_trigger)
         return None
 
     try:
@@ -1080,18 +1156,18 @@ def ingest(src_path: Path, arc: sqlite3.Connection, quiet: bool = False):
             print(f"[warn] ライブ DB のスキーマが想定と異なります: {e}", file=sys.stderr)
             print("       Copilot 側の内部形式が変わった可能性があります。", file=sys.stderr)
             print("       アーカイブ済みのデータは無事です。ツールの更新を確認してください。", file=sys.stderr)
-        log_failed_run(arc, "unsupported_schema", str(src_path), str(e)[:500])
+        log_failed_run(arc, "unsupported_schema", str(src_path), str(e)[:500], run_trigger)
         return None
 
     if live is None:
         if not quiet:
             print("[warn] ライブ DB がロックされています。今回の取り込みは見送ります。")
-        log_failed_run(arc, "source_locked", str(src_path), "read-only connect failed")
+        log_failed_run(arc, "source_locked", str(src_path), "read-only connect failed", run_trigger)
         return None
     try:
-        return merge(live, arc, str(src_path))
+        return merge(live, arc, str(src_path), run_trigger)
     except Exception as e:      # 取り込み失敗でも集計は継続させる
-        log_failed_run(arc, "error", str(src_path), repr(e)[:500])
+        log_failed_run(arc, "error", str(src_path), repr(e)[:500], run_trigger)
         print(f"[warn] 取り込みに失敗しました: {e}", file=sys.stderr)
         return None
     finally:

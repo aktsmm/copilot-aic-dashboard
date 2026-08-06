@@ -641,10 +641,15 @@ function banners() {
 // 「再読み込み」は data/usage.js を読み直すだけで、DB からの再集計はしない。
 // 集計時刻がどれくらい古いかを常に見せて、再集計が必要かどうかを判断できるようにする。
 //
+// 見るのは「出力を書いた時刻」ではなく「最後に取り込めた時刻」。取り込みが
+// 失敗しても集計自体は走るので、前者だけ見ていると、ライブ DB がロックされた
+// まま何時間経っても「たった今」と表示してしまう。
+//
 // 「古い」の線引きは実測の収集間隔から決める。固定値にすると、収集を
 // 1 時間おきから 3 時間おきに変えた瞬間にずっと「古い」と言い続ける。
 function freshness() {
-  const gen = new Date(String(m.generated_at).replace(" ", "T"));
+  const src = m.archive_last_ok_local || m.generated_at;
+  const gen = new Date(String(src).replace(" ", "T"));
   if (isNaN(gen)) return { label: esc(m.generated_at), stale: false, mins: 0, at: "" };
   const mins = Math.max(0, Math.round((Date.now() - gen.getTime()) / 60000));
   const rel = mins < 1 ? "たった今"
@@ -652,9 +657,16 @@ function freshness() {
     : mins < 1440 ? `${Math.floor(mins / 60)} 時間前`
     : `${Math.floor(mins / 1440)} 日前`;
   const cadence = Number(m.collect_cadence_min) || 0;
-  const limit = cadence > 0 ? Math.max(45, cadence * 1.5) : 90;
-  const at = String(m.generated_at || "").slice(11, 16);
-  return { label: `${esc(m.generated_at)}（${rel}）`, stale: mins >= limit, mins, at, rel };
+  // 実測をしきい値に使えるのは、スケジュール実行だけから測れているとき。
+  // mixed は手作業の実行が混ざっているので、値が実際の間隔より短く出る
+  // （調べもの中の連打がそのまま「普段の間隔」になる）。そのまま使うと
+  // 3 時間おきの人が 45 分で「古い」と言われる。既定の 90 分を下限にして、
+  // 実測が長い側に出ているときだけ緩める。
+  const limit = m.collect_cadence_source === "scheduled" && cadence > 0
+    ? Math.max(45, cadence * 1.5)
+    : Math.max(90, cadence * 1.5);
+  const at = String(src).slice(11, 16);
+  return { label: `${esc(src)}（${rel}）`, stale: mins >= limit, mins, at, rel };
 }
 
 // ---------------------------------------------------------------- render
@@ -676,10 +688,15 @@ function render() {
       </p>
       <p class="sub">
         <span class="chip ${fresh.stale ? "chip-stale" : "chip-fresh"}" id="freshChip">
-          ${fresh.stale ? "● 集計が古い" : "● 集計済み"} ${fresh.label}
+          ${fresh.stale ? "● 取り込みが古い" : "● 取り込み済み"} ${fresh.label}
         </span>
         <span class="soft">再集計するには <code>python aic_collect.py</code></span>
-        ${m.collect_cadence_min ? `<span class="soft">· 自動収集は約 ${fmt(Math.round(m.collect_cadence_min))} 分おき</span>` : ""}
+        ${m.demo ? ""
+          : m.collect_cadence_source === "scheduled"
+          ? `<span class="soft">· 自動収集は約 ${fmt(Math.round(m.collect_cadence_min))} 分おき</span>`
+          : m.collect_cadence_source === "measuring"
+          ? `<span class="soft" title="自動収集は動いています。間隔を名乗るのに必要な回数が溜まるまでお待ちください。">· 自動収集の間隔は測定中</span>`
+          : `<span class="soft" title="スケジュール実行の記録がありません。未登録か、--scheduled が付く前に登録したタスクです。run-dashboard.ps1 -InstallTask で登録し直してください。">· 自動収集を確認できません</span>`}
         <button class="link-btn" id="copyCmd">コマンドをコピー</button>
       </p>
     </div>
