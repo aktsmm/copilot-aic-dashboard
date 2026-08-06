@@ -202,22 +202,61 @@ Every collection run evaluates three thresholds and raises a desktop notificatio
 
 | Alert | Threshold | When it fires again |
 | --- | --- | --- |
-| Last 1 hour | `hourly_alert_aic` | New clock hour, or the overage **doubles** |
-| Last 24 hours | `daily_budget_aic` | New local day, or the overage **doubles** |
-| Month to date | `monthly_included_aic × monthly_alert_ratio` | New month, or the overage **doubles** |
+| Last 1 hour | Your own p95, floored at `hourly_alert_aic` | New clock hour, or your usage **doubles** |
+| Last 24 hours | Your own p90, floored at `daily_budget_aic` | New local day, or your usage **doubles** |
+| Month to date | `monthly_included_aic × monthly_alert_ratio` | New month, or your usage **doubles** |
 
-The "doubles" rule matters: a fixed once-a-day notification is easy to ignore, and a per-run notification is noise. Re-notifying only when the overage doubles means the alert stays quiet while things are merely bad, and speaks up again when they get materially worse.
+### The threshold is your own history, not a number someone picked
 
-Within a period the alert remembers the **highest** level it has already reported. If your rolling-24h number doubles, drops back, and climbs again, you get one notification, not three.
+A fixed number cannot work here. Usage varies by orders of magnitude between people, so any default is either permanently silent or permanently screaming. On my own archive the shipped default of 5,000 AIC/day was crossed on essentially every working day — 18 notifications a month that all said the same thing.
+
+So the hourly and 24-hour thresholds are derived from your own past instead: **alert when this hour lands in the top N% of your usual hours.**
+
+Three things make that work rather than sound clever:
+
+- **The baseline is measured the same way the alert is.** Both use a rolling window, not calendar buckets. A rolling 1-hour sum runs hotter than any single clock hour, so building the baseline from hourly buckets would quietly over-fire.
+- **Idle windows are excluded.** Roughly 80% of all hours have zero spend. Averaged in, they drag the baseline to near nothing and every working hour trips it.
+- **The window in progress is excluded from its own baseline.** Otherwise the spike you want to catch raises the bar it has to clear, and the tool goes quiet exactly when you are burning the most.
+
+For the same reason the statistic is a percentile and not a mean. A mean is dragged around by the spikes — on my archive the daily mean is 7,211 AIC against a median of 1,225 — so one heavy day raises the bar for the rest of the month.
+
+`hourly_alert_aic` and `daily_budget_aic` are still honoured, but as a **floor**: a level below which you do not want to be interrupted even if it is unusual for you. This matters in your first weeks, when the baseline is small. Until there are `baseline_min_days` of history the baseline is not used at all and the fixed values apply on their own.
+
+Month-to-date stays absolute, because it maps to an actual bill.
+
+### Pick the notification rate by measuring it
+
+You cannot infer how often a percentile will fire. Exceedances persist across several evaluations and cluster together, and if your usage is trending upwards a trailing-30-day baseline lags behind it. So measure instead of guessing:
+
+```powershell
+.\run-dashboard.ps1 -TuneAlert
+```
+
+This replays your own history, rebuilding the baseline at every simulated point from only the windows that had already closed by then, so no hindsight leaks in. The sample grid is anchored to the current time rather than to the calendar, so running it in the morning and in the evening gives the same answer for the same history. It reports how many notifications each setting would actually have produced:
+
+```
+【Last 1 hour】config: "hourly_baseline_percentile"
+   p90        3,259 AIC   ~56 / month
+   p95        4,641 AIC   ~39 / month
+   p99        6,253 AIC   ~6 / month  <- suggested
+```
+
+Use `-TargetAlertsPerMonth` to aim at a different rate.
+
+### Repetition
+
+The "doubles" rule matters: a fixed once-a-day notification is easy to ignore, and a per-run notification is noise. Re-notifying only when usage doubles means the alert stays quiet while things are merely bad, and speaks up again when they get materially worse.
+
+Note *what* doubles: the alert remembers the **amount you were using** when it last spoke, not how far over the line you were. The threshold is recomputed on every run and moves, so a ratio against it is not comparable between runs — and it moves in the worst possible direction. While you are having a heavy day, that day's own closed windows enter the trailing distribution and push the threshold up, so a ratio would stay flat or shrink exactly as your usage climbs. Remembering the raw amount keeps "it doubled" meaning "it doubled".
 
 ```powershell
 .\run-dashboard.ps1 -TestAlert    # verify notifications work at all
-.\run-dashboard.ps1 -CheckAlert   # print current values vs thresholds, no notification, no state change
+.\run-dashboard.ps1 -CheckAlert   # print baselines and current values, no notification, no state change
 ```
 
 Notifications use the Windows toast API through PowerShell — no extra packages. If a toast cannot be shown, the message is printed to stdout instead; it is never silently dropped.
 
-**A notification that fails to display is not counted as delivered.** The alert state is only advanced after a successful notification, so a transient failure is retried on the next run rather than swallowed — and the dashboard shows a banner listing anything that could not be delivered. Set `"alerts_enabled": false` to turn the whole thing off.
+**A notification that fails to display is not counted as delivered.** The alert state is only advanced after a successful notification, so a transient failure is retried on the next run rather than swallowed — and the dashboard shows a banner listing anything that could not be delivered. Set `"alerts_enabled": false` to turn the whole thing off, or `"baseline_enabled": false` to go back to plain fixed thresholds.
 
 Dedup state lives in the archive's `meta` table (`alert_state:*`), so restarting or re-running does not re-trigger.
 
@@ -260,10 +299,16 @@ For the same reason, alerts are evaluated against whatever is currently in the a
 | `aiu_to_aic` | `1.0` | AIU→AIC conversion factor. Verified empirically; you should not need to change it. |
 | `usd_per_aic` | `0.01` | USD per credit |
 | `monthly_included_aic` | `3000` | Credits included in your plan |
-| `daily_budget_aic` | `5000` | Dashed guideline on the daily chart |
-| `hourly_alert_aic` | `1000` | Warning line on the hourly chart, and the 1-hour alert threshold |
+| `daily_budget_aic` | `5000` | Dashed guideline on the daily chart, and the **floor** for the 24-hour alert |
+| `hourly_alert_aic` | `1000` | Warning line on the hourly chart, and the **floor** for the 1-hour alert |
 | `alerts_enabled` | `true` | Desktop notification when a threshold is crossed. Set `false` to disable. |
 | `monthly_alert_ratio` | `0.8` | Notify once month-to-date exceeds this fraction of `monthly_included_aic` |
+| `baseline_enabled` | `true` | Derive the 1-hour / 24-hour thresholds from your own history. `false` uses the fixed values alone. |
+| `baseline_days` | `30` | How far back the baseline looks |
+| `baseline_min_days` | `7` | Below this much history the baseline is not used at all |
+| `baseline_min_samples` | `40` | Minimum number of non-idle windows before the baseline is trusted |
+| `hourly_baseline_percentile` | `95` | Alert when the last hour is in the top 5% of your active hours. Run `-TuneAlert` to pick this from your own data. |
+| `daily_baseline_percentile` | `90` | Same, for the last 24 hours |
 | `daily_days` / `hourly_hours` | `45` / `96` | Display window |
 | `top_sessions` | `40` | Rows in the session table |
 | `summary_max_chars` | `60` | Session summary truncation in the generated JSON |

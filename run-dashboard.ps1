@@ -34,6 +34,8 @@ param(
     [switch]$Reconcile,
     [switch]$TestAlert,
     [switch]$CheckAlert,
+    [switch]$TuneAlert,
+    [double]$TargetAlertsPerMonth = 8,
     [switch]$InstallTask,
     [ValidateRange(1, 1440)][int]$IntervalMinutes = 60,
     [switch]$UninstallTask,
@@ -232,6 +234,12 @@ if ($TestAlert) {
 if ($CheckAlert) {
     & $python (Join-Path $here 'aic_alert.py') --check
     if ($LASTEXITCODE -ne 0) { throw "閾値の評価に失敗しました (exit $LASTEXITCODE)" }
+    return
+}
+
+if ($TuneAlert) {
+    & $python (Join-Path $here 'aic_alert.py') --tune --target-per-month $TargetAlertsPerMonth
+    if ($LASTEXITCODE -ne 0) { throw "通知頻度の実測に失敗しました (exit $LASTEXITCODE)" }
     return
 }
 

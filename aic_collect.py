@@ -653,6 +653,13 @@ def main() -> int:
                 "SELECT key, value FROM meta "
                 "WHERE key LIKE 'alert_delivery_failed:%' AND value <> ''")
         ]
+        try:
+            import aic_alert
+            base = aic_alert.baseline(
+                arc, {**arc_cfg, **cfg}, aic_alert._now_utc(),
+                float(cfg.get("aiu_to_aic", 1.0) or 1.0))
+        except Exception:                                  # noqa: BLE001
+            base = {}
     finally:
         arc.close()
 
@@ -672,6 +679,7 @@ def main() -> int:
         "archive_local_since": cov.get("local_since"),
         "machines": cov.get("machines", []),
         "alert_failures": alert_failures,
+        "alert_baseline": base,
         "ingested": ingest,
     })
     mark_incomplete(payload, cov, cfg)

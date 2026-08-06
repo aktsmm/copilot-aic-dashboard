@@ -570,6 +570,32 @@ function banners() {
     </div>`);
   }
 
+  const bl = D.meta.alert_baseline || {};
+  const blRows = [
+    ["hourly", "直近1時間", D.kpi ? D.kpi.last_1h : null],
+    ["rolling24h", "直近24時間", D.kpi ? D.kpi.last_24h : null],
+  ].filter(([k]) => bl[k]);
+  if (blRows.length) {
+    const items = blRows.map(([k, label, cur]) => {
+      const b = bl[k];
+      if (!b.enough) {
+        return `<li>${label} — 基準を出すにはデータ不足
+          （${b.days.toFixed(1)} 日 / 標本 ${b.samples.toLocaleString()} 件）。固定値を使用中</li>`;
+      }
+      const over = cur != null && cur > b.threshold;
+      return `<li>${label} — 上位 <b>${b.percentile}%</b> の線は <b>${fmt(b.threshold)}</b> AIC
+        <span class="dim">（直近 ${b.days.toFixed(0)} 日 / 標本 ${b.samples.toLocaleString()} 件）</span>
+        ${over ? ' — <b>いま超えています</b>' : ""}</li>`;
+    }).join("");
+    out.push(`<div class="banner banner-info">
+      <b>通知の基準は自分の過去から決まっています</b>
+      <ul>${items}</ul>
+      固定の閾値ではなく「普段の上位何%か」で判定しています。
+      鳴る回数を変えたいときは <span class="mono">.\\run-dashboard.ps1 -TuneAlert</span> で
+      設定ごとの実測回数を確認してください。
+    </div>`);
+  }
+
   if (D.meta.archive_last_run_status && D.meta.archive_last_run_status !== "ok") {
     out.push(`<div class="banner banner-warn">
       <b>直近の収集が失敗しています</b> — status=<span class="mono">${esc(D.meta.archive_last_run_status)}</span>

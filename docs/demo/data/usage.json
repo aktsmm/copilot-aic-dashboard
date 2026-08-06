@@ -1,10 +1,10 @@
 {
  "meta": {
-  "generated_at": "2026-08-06 14:37:08",
+  "generated_at": "2026-08-06 15:37:50",
   "tz_label": "JST",
   "tz_offset_hours": 9,
-  "first_event": "2026-07-07 18:58",
-  "last_event": "2026-08-06 07:46",
+  "first_event": "2026-07-07 18:59",
+  "last_event": "2026-08-06 07:47",
   "event_count": 2989,
   "session_count": 224,
   "total_aic": 15558.1,
@@ -22,24 +22,40 @@
   "archive_runs": 1,
   "archive_failed_runs": 0,
   "archive_quarantined": 0,
-  "archive_last_run_at": "2026-08-06T05:37:07Z",
+  "archive_last_run_at": "2026-08-06T06:37:50Z",
   "archive_last_run_status": "ok",
-  "archive_since": "2026-07-07T09:58:22.000Z",
-  "archive_local_since": "2026-07-07T09:58:22.000Z",
+  "archive_since": "2026-07-07T09:59:05.000Z",
+  "archive_local_since": "2026-07-07T09:59:05.000Z",
   "machines": [
    {
     "origin": "this machine",
     "is_local": true,
     "events": 2989,
-    "since": "2026-07-07T09:58:22.000Z",
-    "until": "2026-08-05T22:46:46.000Z",
+    "since": "2026-07-07T09:59:05.000Z",
+    "until": "2026-08-05T22:47:29.000Z",
     "aic": 15558.1,
-    "last_run_at": "2026-08-06T05:37:07Z",
+    "last_run_at": "2026-08-06T06:37:50Z",
     "last_run_status": "ok",
-    "last_ok_at": "2026-08-06T05:37:07Z"
+    "last_ok_at": "2026-08-06T06:37:50Z"
    }
   ],
   "alert_failures": [],
+  "alert_baseline": {
+   "hourly": {
+    "threshold": 215.6082699940007,
+    "samples": 990,
+    "days": 29.53361111111111,
+    "percentile": 99.0,
+    "enough": true
+   },
+   "rolling24h": {
+    "threshold": 1857.6852104359969,
+    "samples": 693,
+    "days": 28.578518518518518,
+    "percentile": 99.0,
+    "enough": true
+   }
+  },
   "ingested": {
    "source_rows": 2989,
    "inserted": 2989,
@@ -47,8 +63,8 @@
    "existing": 0,
    "quarantined": 0,
    "archive_rows": 2989,
-   "live_min": "2026-07-07T09:58:22.000Z",
-   "live_max": "2026-08-05T22:46:46.000Z",
+   "live_min": "2026-07-07T09:59:05.000Z",
+   "live_max": "2026-08-05T22:47:29.000Z",
    "archive_max_before": null
   },
   "demo": true
@@ -66,22 +82,13 @@
   "month_usd": 28.6,
   "month_pct_of_included": 95.3,
   "peak_1h": 296.2,
-  "peak_1h_at": "08-05 00:26",
+  "peak_1h_at": "08-05 00:27",
   "peak_24h": 1918.1,
-  "peak_24h_at": "07-18 12:38",
+  "peak_24h_at": "07-18 12:39",
   "daily_budget_pct": 2.3,
   "avg_daily_7d_days": 7
  },
  "hourly": [
-  {
-   "label": "08/02 15:00",
-   "short": "15",
-   "date": "08/02",
-   "ts": "2026-08-02T15:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
   {
    "label": "08/02 16:00",
    "short": "16",
@@ -357,8 +364,8 @@
    "short": "22",
    "date": "08/03",
    "ts": "2026-08-03T22:00:00+09:00",
-   "aic": 21.8,
-   "calls": 5,
+   "aic": 19.2,
+   "calls": 4,
    "top_model": "demo-large"
   },
   {
@@ -366,8 +373,8 @@
    "short": "23",
    "date": "08/03",
    "ts": "2026-08-03T23:00:00+09:00",
-   "aic": 82.3,
-   "calls": 14,
+   "aic": 84.9,
+   "calls": 15,
    "top_model": "demo-large"
   },
   {
@@ -528,8 +535,8 @@
    "short": "17",
    "date": "08/04",
    "ts": "2026-08-04T17:00:00+09:00",
-   "aic": 10.4,
-   "calls": 2,
+   "aic": 9.3,
+   "calls": 1,
    "top_model": "demo-large"
   },
   {
@@ -537,8 +544,8 @@
    "short": "18",
    "date": "08/04",
    "ts": "2026-08-04T18:00:00+09:00",
-   "aic": 44.4,
-   "calls": 7,
+   "aic": 45.5,
+   "calls": 8,
    "top_model": "demo-large"
   },
   {
@@ -564,8 +571,8 @@
    "short": "21",
    "date": "08/04",
    "ts": "2026-08-04T21:00:00+09:00",
-   "aic": 119.8,
-   "calls": 20,
+   "aic": 118.8,
+   "calls": 19,
    "top_model": "demo-large"
   },
   {
@@ -573,8 +580,8 @@
    "short": "22",
    "date": "08/04",
    "ts": "2026-08-04T22:00:00+09:00",
-   "aic": 61.5,
-   "calls": 12,
+   "aic": 62.6,
+   "calls": 13,
    "top_model": "demo-large"
   },
   {
@@ -609,8 +616,8 @@
    "short": "02",
    "date": "08/05",
    "ts": "2026-08-05T02:00:00+09:00",
-   "aic": 117.3,
-   "calls": 21,
+   "aic": 115.6,
+   "calls": 20,
    "top_model": "demo-large"
   },
   {
@@ -618,7 +625,7 @@
    "short": "03",
    "date": "08/05",
    "ts": "2026-08-05T03:00:00+09:00",
-   "aic": 134.5,
+   "aic": 126.7,
    "calls": 24,
    "top_model": "demo-large"
   },
@@ -627,8 +634,8 @@
    "short": "04",
    "date": "08/05",
    "ts": "2026-08-05T04:00:00+09:00",
-   "aic": 108.7,
-   "calls": 20,
+   "aic": 118.3,
+   "calls": 21,
    "top_model": "demo-large"
   },
   {
@@ -654,8 +661,8 @@
    "short": "07",
    "date": "08/05",
    "ts": "2026-08-05T07:00:00+09:00",
-   "aic": 15.8,
-   "calls": 3,
+   "aic": 14.5,
+   "calls": 2,
    "top_model": "demo-large"
   },
   {
@@ -663,8 +670,8 @@
    "short": "08",
    "date": "08/05",
    "ts": "2026-08-05T08:00:00+09:00",
-   "aic": 92.7,
-   "calls": 15,
+   "aic": 93.9,
+   "calls": 16,
    "top_model": "demo-large"
   },
   {
@@ -936,6 +943,15 @@
    "aic": 0.0,
    "calls": 0,
    "top_model": null
+  },
+  {
+   "label": "08/06 15:00",
+   "short": "15",
+   "date": "08/06",
+   "ts": "2026-08-06T15:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
   }
  ],
  "daily": [
@@ -1014,7 +1030,7 @@
    "calls": 164,
    "sessions": 17,
    "peak_hour": 21,
-   "peak_hour_aic": 176.8,
+   "peak_hour_aic": 178.6,
    "ma7": 471.9,
    "ma7_partial": true
   },
@@ -1053,7 +1069,7 @@
    "calls": 43,
    "sessions": 2,
    "peak_hour": 22,
-   "peak_hour_aic": 78.1,
+   "peak_hour_aic": 73.5,
    "ma7": 401.8,
    "ma7_partial": false
   },
@@ -1079,7 +1095,7 @@
    "calls": 166,
    "sessions": 12,
    "peak_hour": 21,
-   "peak_hour_aic": 221.7,
+   "peak_hour_aic": 215.1,
    "ma7": 548.1,
    "ma7_partial": false
   },
@@ -1092,7 +1108,7 @@
    "calls": 306,
    "sessions": 28,
    "peak_hour": 1,
-   "peak_hour_aic": 214.4,
+   "peak_hour_aic": 220.9,
    "ma7": 701.4,
    "ma7_partial": false
   },
@@ -1118,7 +1134,7 @@
    "calls": 132,
    "sessions": 8,
    "peak_hour": 20,
-   "peak_hour_aic": 107.5,
+   "peak_hour_aic": 106.3,
    "ma7": 709.2,
    "ma7_partial": false
   },
@@ -1183,7 +1199,7 @@
    "calls": 134,
    "sessions": 9,
    "peak_hour": 7,
-   "peak_hour_aic": 109.7,
+   "peak_hour_aic": 113.1,
    "ma7": 461.0,
    "ma7_partial": false
   },
@@ -1209,7 +1225,7 @@
    "calls": 181,
    "sessions": 14,
    "peak_hour": 21,
-   "peak_hour_aic": 158.6,
+   "peak_hour_aic": 163.2,
    "ma7": 454.2,
    "ma7_partial": false
   },
@@ -1221,8 +1237,8 @@
    "aic": 519.3,
    "calls": 105,
    "sessions": 9,
-   "peak_hour": 2,
-   "peak_hour_aic": 179.5,
+   "peak_hour": 3,
+   "peak_hour_aic": 178.3,
    "ma7": 486.4,
    "ma7_partial": false
   },
@@ -1261,7 +1277,7 @@
    "calls": 26,
    "sessions": 3,
    "peak_hour": 17,
-   "peak_hour_aic": 48.4,
+   "peak_hour_aic": 41.0,
    "ma7": 497.6,
    "ma7_partial": false
   },
@@ -1274,7 +1290,7 @@
    "calls": 74,
    "sessions": 6,
    "peak_hour": 1,
-   "peak_hour_aic": 101.7,
+   "peak_hour_aic": 104.8,
    "ma7": 458.9,
    "ma7_partial": false
   },
@@ -1300,7 +1316,7 @@
    "calls": 47,
    "sessions": 4,
    "peak_hour": 23,
-   "peak_hour_aic": 82.3,
+   "peak_hour_aic": 84.9,
    "ma7": 363.8,
    "ma7_partial": false
   },
@@ -1384,22 +1400,22 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 5,
-   "aic": 177.2,
-   "calls": 35
+   "aic": 170.8,
+   "calls": 33
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 6,
-   "aic": 139.5,
-   "calls": 23
+   "aic": 141.7,
+   "calls": 24
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 7,
-   "aic": 103.2,
-   "calls": 20
+   "aic": 107.4,
+   "calls": 21
   },
   {
    "weekday": 0,
@@ -1440,29 +1456,29 @@
    "weekday": 0,
    "weekday_label": "月",
    "hour": 20,
-   "aic": 193.7,
-   "calls": 42
+   "aic": 188.0,
+   "calls": 40
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 21,
-   "aic": 251.8,
-   "calls": 50
+   "aic": 257.5,
+   "calls": 52
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 22,
-   "aic": 129.9,
-   "calls": 26
+   "aic": 127.4,
+   "calls": 25
   },
   {
    "weekday": 0,
    "weekday_label": "月",
    "hour": 23,
-   "aic": 236.3,
-   "calls": 44
+   "aic": 238.8,
+   "calls": 45
   },
   {
    "weekday": 1,
@@ -1482,15 +1498,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 2,
-   "aic": 244.5,
-   "calls": 44
+   "aic": 220.9,
+   "calls": 42
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 3,
-   "aic": 158.6,
-   "calls": 33
+   "aic": 182.2,
+   "calls": 35
   },
   {
    "weekday": 1,
@@ -1510,15 +1526,15 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 6,
-   "aic": 86.8,
-   "calls": 19
+   "aic": 85.4,
+   "calls": 18
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 7,
-   "aic": 30.5,
-   "calls": 7
+   "aic": 31.8,
+   "calls": 8
   },
   {
    "weekday": 1,
@@ -1545,43 +1561,43 @@
    "weekday": 1,
    "weekday_label": "火",
    "hour": 17,
-   "aic": 45.4,
-   "calls": 10
+   "aic": 44.3,
+   "calls": 9
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 18,
-   "aic": 97.4,
-   "calls": 16
+   "aic": 98.6,
+   "calls": 17
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 19,
-   "aic": 88.8,
-   "calls": 16
+   "aic": 86.0,
+   "calls": 15
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 20,
-   "aic": 173.1,
-   "calls": 30
+   "aic": 175.9,
+   "calls": 31
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 21,
-   "aic": 119.8,
-   "calls": 20
+   "aic": 118.8,
+   "calls": 19
   },
   {
    "weekday": 1,
    "weekday_label": "火",
    "hour": 22,
-   "aic": 164.7,
-   "calls": 27
+   "aic": 165.8,
+   "calls": 28
   },
   {
    "weekday": 1,
@@ -1601,29 +1617,29 @@
    "weekday": 2,
    "weekday_label": "水",
    "hour": 1,
-   "aic": 164.9,
-   "calls": 36
+   "aic": 161.0,
+   "calls": 35
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 2,
-   "aic": 184.1,
+   "aic": 186.3,
    "calls": 33
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 3,
-   "aic": 328.1,
+   "aic": 320.3,
    "calls": 63
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 4,
-   "aic": 253.8,
-   "calls": 50
+   "aic": 263.4,
+   "calls": 51
   },
   {
    "weekday": 2,
@@ -1636,15 +1652,15 @@
    "weekday": 2,
    "weekday_label": "水",
    "hour": 7,
-   "aic": 41.3,
-   "calls": 10
+   "aic": 40.0,
+   "calls": 9
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 8,
-   "aic": 92.7,
-   "calls": 15
+   "aic": 93.9,
+   "calls": 16
   },
   {
    "weekday": 2,
@@ -1678,15 +1694,15 @@
    "weekday": 2,
    "weekday_label": "水",
    "hour": 22,
-   "aic": 135.8,
-   "calls": 27
+   "aic": 120.2,
+   "calls": 24
   },
   {
    "weekday": 2,
    "weekday_label": "水",
    "hour": 23,
-   "aic": 204.6,
-   "calls": 42
+   "aic": 220.2,
+   "calls": 45
   },
   {
    "weekday": 3,
@@ -1720,15 +1736,15 @@
    "weekday": 3,
    "weekday_label": "木",
    "hour": 4,
-   "aic": 36.9,
-   "calls": 5
+   "aic": 26.9,
+   "calls": 4
   },
   {
    "weekday": 3,
    "weekday_label": "木",
    "hour": 5,
-   "aic": 73.6,
-   "calls": 13
+   "aic": 83.6,
+   "calls": 14
   },
   {
    "weekday": 3,
@@ -1769,15 +1785,15 @@
    "weekday": 3,
    "weekday_label": "木",
    "hour": 19,
-   "aic": 110.1,
-   "calls": 23
+   "aic": 106.1,
+   "calls": 22
   },
   {
    "weekday": 3,
    "weekday_label": "木",
    "hour": 20,
-   "aic": 32.8,
-   "calls": 7
+   "aic": 36.8,
+   "calls": 8
   },
   {
    "weekday": 3,
@@ -1853,22 +1869,22 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 16,
-   "aic": 34.7,
-   "calls": 8
+   "aic": 31.2,
+   "calls": 7
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 17,
-   "aic": 229.0,
+   "aic": 225.1,
    "calls": 46
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 18,
-   "aic": 202.4,
-   "calls": 35
+   "aic": 209.8,
+   "calls": 36
   },
   {
    "weekday": 4,
@@ -1888,15 +1904,15 @@
    "weekday": 4,
    "weekday_label": "金",
    "hour": 21,
-   "aic": 285.0,
-   "calls": 60
+   "aic": 278.4,
+   "calls": 59
   },
   {
    "weekday": 4,
    "weekday_label": "金",
    "hour": 22,
-   "aic": 130.9,
-   "calls": 25
+   "aic": 137.4,
+   "calls": 26
   },
   {
    "weekday": 4,
@@ -1909,15 +1925,15 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 0,
-   "aic": 284.6,
-   "calls": 55
+   "aic": 275.1,
+   "calls": 53
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 1,
-   "aic": 316.2,
-   "calls": 59
+   "aic": 325.7,
+   "calls": 61
   },
   {
    "weekday": 5,
@@ -1951,15 +1967,15 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 6,
-   "aic": 106.7,
-   "calls": 23
+   "aic": 103.4,
+   "calls": 22
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 7,
-   "aic": 396.9,
-   "calls": 79
+   "aic": 400.2,
+   "calls": 80
   },
   {
    "weekday": 5,
@@ -1993,29 +2009,29 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 18,
-   "aic": 62.0,
-   "calls": 9
+   "aic": 59.8,
+   "calls": 8
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 19,
-   "aic": 294.7,
-   "calls": 61
+   "aic": 296.8,
+   "calls": 62
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 20,
-   "aic": 167.6,
-   "calls": 34
+   "aic": 164.6,
+   "calls": 33
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 21,
-   "aic": 213.3,
-   "calls": 45
+   "aic": 216.3,
+   "calls": 46
   },
   {
    "weekday": 5,
@@ -2105,15 +2121,15 @@
    "weekday": 6,
    "weekday_label": "日",
    "hour": 16,
-   "aic": 130.0,
-   "calls": 33
+   "aic": 125.6,
+   "calls": 32
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 17,
-   "aic": 140.5,
-   "calls": 21
+   "aic": 144.9,
+   "calls": 22
   },
   {
    "weekday": 6,
@@ -2133,29 +2149,29 @@
    "weekday": 6,
    "weekday_label": "日",
    "hour": 20,
-   "aic": 227.1,
-   "calls": 41
+   "aic": 225.3,
+   "calls": 40
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 21,
-   "aic": 315.6,
-   "calls": 53
+   "aic": 317.4,
+   "calls": 54
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 22,
-   "aic": 239.1,
-   "calls": 48
+   "aic": 233.1,
+   "calls": 47
   },
   {
    "weekday": 6,
    "weekday_label": "日",
    "hour": 23,
-   "aic": 110.1,
-   "calls": 21
+   "aic": 116.2,
+   "calls": 22
   }
  ],
  "models": [
@@ -2346,7 +2362,7 @@
  ],
  "sessions": [
   {
-   "id": "c34704ae",
+   "id": "58eff8c7",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -2356,7 +2372,7 @@
    "in_tok": 3344233,
    "out_tok": 93614,
    "start": "07/18 23:14",
-   "end": "07/19 00:30",
+   "end": "07/19 00:31",
    "minutes": 76,
    "aic_per_hour": 131.8,
    "top_model": "demo-large",
@@ -2380,7 +2396,7 @@
    ]
   },
   {
-   "id": "adfb83d8",
+   "id": "9c2848a3",
    "repository": "acme/mobile-app",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -2389,8 +2405,8 @@
    "calls": 25,
    "in_tok": 2982943,
    "out_tok": 76115,
-   "start": "07/13 04:49",
-   "end": "07/13 06:05",
+   "start": "07/13 04:50",
+   "end": "07/13 06:06",
    "minutes": 76,
    "aic_per_hour": 121.6,
    "top_model": "demo-large",
@@ -2421,7 +2437,7 @@
    ]
   },
   {
-   "id": "b57dae82",
+   "id": "c730ec02",
    "repository": "acme/mobile-app",
    "branch": "feature/search",
    "host": "CLI",
@@ -2431,7 +2447,7 @@
    "in_tok": 2958893,
    "out_tok": 91967,
    "start": "07/27 18:15",
-   "end": "07/27 19:31",
+   "end": "07/27 19:32",
    "minutes": 76,
    "aic_per_hour": 119.8,
    "top_model": "demo-large",
@@ -2455,7 +2471,7 @@
    ]
   },
   {
-   "id": "58e6dda5",
+   "id": "eb97d70c",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2464,8 +2480,8 @@
    "calls": 25,
    "in_tok": 3076621,
    "out_tok": 78466,
-   "start": "07/26 21:02",
-   "end": "07/26 22:18",
+   "start": "07/26 21:03",
+   "end": "07/26 22:19",
    "minutes": 75,
    "aic_per_hour": 118.8,
    "top_model": "demo-large",
@@ -2496,7 +2512,7 @@
    ]
   },
   {
-   "id": "79dba07c",
+   "id": "fd35d677",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2505,8 +2521,8 @@
    "calls": 24,
    "in_tok": 2822369,
    "out_tok": 71621,
-   "start": "07/26 23:41",
-   "end": "07/27 00:57",
+   "start": "07/26 23:42",
+   "end": "07/27 00:58",
    "minutes": 75,
    "aic_per_hour": 114.3,
    "top_model": "demo-large",
@@ -2530,7 +2546,7 @@
    ]
   },
   {
-   "id": "61b350e5",
+   "id": "21e7c762",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2539,8 +2555,8 @@
    "calls": 23,
    "in_tok": 2918980,
    "out_tok": 78184,
-   "start": "07/30 02:34",
-   "end": "07/30 03:47",
+   "start": "07/30 02:35",
+   "end": "07/30 03:48",
    "minutes": 73,
    "aic_per_hour": 116.4,
    "top_model": "demo-large",
@@ -2557,7 +2573,7 @@
    ]
   },
   {
-   "id": "e2d2c59a",
+   "id": "2a0265cb",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2566,8 +2582,8 @@
    "calls": 21,
    "in_tok": 2635250,
    "out_tok": 73671,
-   "start": "07/15 22:25",
-   "end": "07/15 23:32",
+   "start": "07/15 22:26",
+   "end": "07/15 23:33",
    "minutes": 66,
    "aic_per_hour": 122.6,
    "top_model": "demo-large",
@@ -2598,7 +2614,7 @@
    ]
   },
   {
-   "id": "b63c228e",
+   "id": "bc9292fb",
    "repository": "acme/infra-terraform",
    "branch": "feature/search",
    "host": "CLI",
@@ -2607,8 +2623,8 @@
    "calls": 25,
    "in_tok": 3555391,
    "out_tok": 73488,
-   "start": "07/07 18:58",
-   "end": "07/07 20:18",
+   "start": "07/07 18:59",
+   "end": "07/07 20:19",
    "minutes": 80,
    "aic_per_hour": 101.0,
    "top_model": "demo-large",
@@ -2639,7 +2655,7 @@
    ]
   },
   {
-   "id": "4db5139f",
+   "id": "50488e68",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2648,7 +2664,7 @@
    "calls": 24,
    "in_tok": 3018454,
    "out_tok": 70144,
-   "start": "07/13 03:27",
+   "start": "07/13 03:28",
    "end": "07/13 04:42",
    "minutes": 74,
    "aic_per_hour": 108.9,
@@ -2673,7 +2689,7 @@
    ]
   },
   {
-   "id": "714c84a4",
+   "id": "5e9d0208",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2683,7 +2699,7 @@
    "in_tok": 2407493,
    "out_tok": 73010,
    "start": "07/25 19:34",
-   "end": "07/25 21:03",
+   "end": "07/25 21:04",
    "minutes": 89,
    "aic_per_hour": 89.6,
    "top_model": "demo-large",
@@ -2700,7 +2716,7 @@
    ]
   },
   {
-   "id": "f57d95cd",
+   "id": "c5f3669d",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2710,7 +2726,7 @@
    "in_tok": 2843172,
    "out_tok": 92869,
    "start": "08/05 01:15",
-   "end": "08/05 02:33",
+   "end": "08/05 02:34",
    "minutes": 78,
    "aic_per_hour": 101.9,
    "top_model": "demo-large",
@@ -2741,7 +2757,7 @@
    ]
   },
   {
-   "id": "ae5ef001",
+   "id": "0d60354e",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2750,8 +2766,8 @@
    "calls": 23,
    "in_tok": 2976175,
    "out_tok": 77654,
-   "start": "07/28 01:06",
-   "end": "07/28 02:49",
+   "start": "07/28 01:07",
+   "end": "07/28 02:50",
    "minutes": 103,
    "aic_per_hour": 76.8,
    "top_model": "demo-large",
@@ -2782,7 +2798,7 @@
    ]
   },
   {
-   "id": "2806daea",
+   "id": "a7ecd5d4",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2791,7 +2807,7 @@
    "calls": 22,
    "in_tok": 2874911,
    "out_tok": 79367,
-   "start": "07/20 03:38",
+   "start": "07/20 03:39",
    "end": "07/20 05:00",
    "minutes": 81,
    "aic_per_hour": 96.6,
@@ -2823,7 +2839,7 @@
    ]
   },
   {
-   "id": "39b77951",
+   "id": "eb7bbcd9",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2832,8 +2848,8 @@
    "calls": 24,
    "in_tok": 2634362,
    "out_tok": 77207,
-   "start": "07/18 07:22",
-   "end": "07/18 08:51",
+   "start": "07/18 07:23",
+   "end": "07/18 08:52",
    "minutes": 88,
    "aic_per_hour": 88.3,
    "top_model": "demo-large",
@@ -2857,7 +2873,7 @@
    ]
   },
   {
-   "id": "c4e0a40f",
+   "id": "84af35b5",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2866,8 +2882,8 @@
    "calls": 23,
    "in_tok": 2514681,
    "out_tok": 58017,
-   "start": "07/12 21:19",
-   "end": "07/12 22:36",
+   "start": "07/12 21:20",
+   "end": "07/12 22:37",
    "minutes": 77,
    "aic_per_hour": 100.6,
    "top_model": "demo-large",
@@ -2898,7 +2914,7 @@
    ]
   },
   {
-   "id": "ca0ab27d",
+   "id": "b92a8dfa",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2908,7 +2924,7 @@
    "in_tok": 2356498,
    "out_tok": 65626,
    "start": "07/17 23:22",
-   "end": "07/18 00:18",
+   "end": "07/18 00:19",
    "minutes": 56,
    "aic_per_hour": 137.4,
    "top_model": "demo-large",
@@ -2932,7 +2948,7 @@
    ]
   },
   {
-   "id": "63392814",
+   "id": "7be21669",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -2941,8 +2957,8 @@
    "calls": 18,
    "in_tok": 2374110,
    "out_tok": 51305,
-   "start": "08/04 20:31",
-   "end": "08/04 21:25",
+   "start": "08/04 20:32",
+   "end": "08/04 21:26",
    "minutes": 54,
    "aic_per_hour": 140.9,
    "top_model": "demo-large",
@@ -2959,7 +2975,7 @@
    ]
   },
   {
-   "id": "2f3472b4",
+   "id": "56bb5929",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2968,8 +2984,8 @@
    "calls": 24,
    "in_tok": 2697501,
    "out_tok": 70469,
-   "start": "08/05 02:28",
-   "end": "08/05 03:55",
+   "start": "08/05 02:29",
+   "end": "08/05 03:56",
    "minutes": 87,
    "aic_per_hour": 87.4,
    "top_model": "demo-large",
@@ -2993,7 +3009,7 @@
    ]
   },
   {
-   "id": "be10f84d",
+   "id": "8caf0e33",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3002,7 +3018,7 @@
    "calls": 22,
    "in_tok": 2679074,
    "out_tok": 75036,
-   "start": "07/16 01:34",
+   "start": "07/16 01:35",
    "end": "07/16 02:51",
    "minutes": 76,
    "aic_per_hour": 98.2,
@@ -3027,7 +3043,7 @@
    ]
   },
   {
-   "id": "585df432",
+   "id": "68c61bcc",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3036,8 +3052,8 @@
    "calls": 24,
    "in_tok": 2486958,
    "out_tok": 82150,
-   "start": "07/12 17:26",
-   "end": "07/12 18:41",
+   "start": "07/12 17:27",
+   "end": "07/12 18:42",
    "minutes": 74,
    "aic_per_hour": 99.6,
    "top_model": "demo-large",
@@ -3061,7 +3077,7 @@
    ]
   },
   {
-   "id": "31de6297",
+   "id": "83fd20e8",
    "repository": "acme/infra-terraform",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3070,8 +3086,8 @@
    "calls": 23,
    "in_tok": 2503471,
    "out_tok": 51195,
-   "start": "07/20 20:40",
-   "end": "07/20 21:54",
+   "start": "07/20 20:41",
+   "end": "07/20 21:55",
    "minutes": 74,
    "aic_per_hour": 98.7,
    "top_model": "demo-large",
@@ -3102,7 +3118,7 @@
    ]
   },
   {
-   "id": "4ed5e99b",
+   "id": "6a91ec63",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3112,7 +3128,7 @@
    "in_tok": 2418621,
    "out_tok": 75208,
    "start": "07/24 03:24",
-   "end": "07/24 04:44",
+   "end": "07/24 04:45",
    "minutes": 80,
    "aic_per_hour": 89.6,
    "top_model": "demo-large",
@@ -3143,7 +3159,7 @@
    ]
   },
   {
-   "id": "fc84d474",
+   "id": "91d953cd",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -3152,8 +3168,8 @@
    "calls": 22,
    "in_tok": 2799417,
    "out_tok": 55782,
-   "start": "08/05 04:47",
-   "end": "08/05 05:47",
+   "start": "08/05 04:48",
+   "end": "08/05 05:48",
    "minutes": 59,
    "aic_per_hour": 121.3,
    "top_model": "demo-large",
@@ -3170,7 +3186,7 @@
    ]
   },
   {
-   "id": "ad23f7be",
+   "id": "d780182e",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3179,8 +3195,8 @@
    "calls": 22,
    "in_tok": 2383557,
    "out_tok": 63239,
-   "start": "07/19 20:01",
-   "end": "07/19 21:07",
+   "start": "07/19 20:02",
+   "end": "07/19 21:08",
    "minutes": 65,
    "aic_per_hour": 109.7,
    "top_model": "demo-large",
@@ -3197,7 +3213,7 @@
    ]
   },
   {
-   "id": "dc659579",
+   "id": "5094eb3e",
    "repository": "acme/data-pipeline",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3207,7 +3223,7 @@
    "in_tok": 2074754,
    "out_tok": 59463,
    "start": "08/04 22:50",
-   "end": "08/04 23:42",
+   "end": "08/04 23:43",
    "minutes": 52,
    "aic_per_hour": 135.3,
    "top_model": "demo-large",
@@ -3224,7 +3240,7 @@
    ]
   },
   {
-   "id": "ccd16105",
+   "id": "2504c1e8",
    "repository": "acme/web-frontend",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3233,8 +3249,8 @@
    "calls": 21,
    "in_tok": 2319938,
    "out_tok": 69021,
-   "start": "07/20 16:16",
-   "end": "07/20 17:27",
+   "start": "07/20 16:17",
+   "end": "07/20 17:28",
    "minutes": 70,
    "aic_per_hour": 100.1,
    "top_model": "demo-large",
@@ -3258,7 +3274,7 @@
    ]
   },
   {
-   "id": "a1ad77e5",
+   "id": "9881b8f3",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -3267,8 +3283,8 @@
    "calls": 22,
    "in_tok": 2796979,
    "out_tok": 60445,
-   "start": "07/18 18:36",
-   "end": "07/18 19:44",
+   "start": "07/18 18:37",
+   "end": "07/18 19:45",
    "minutes": 67,
    "aic_per_hour": 103.5,
    "top_model": "demo-large",
@@ -3292,7 +3308,7 @@
    ]
   },
   {
-   "id": "f0b67123",
+   "id": "2ad228dd",
    "repository": "acme/api-gateway",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3301,8 +3317,8 @@
    "calls": 23,
    "in_tok": 2501548,
    "out_tok": 79487,
-   "start": "08/02 00:43",
-   "end": "08/02 01:56",
+   "start": "08/02 00:44",
+   "end": "08/02 01:57",
    "minutes": 73,
    "aic_per_hour": 95.0,
    "top_model": "demo-large",
@@ -3326,7 +3342,7 @@
    ]
   },
   {
-   "id": "0ce8b7c6",
+   "id": "a61eedab",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3336,7 +3352,7 @@
    "in_tok": 1940193,
    "out_tok": 61999,
    "start": "07/13 00:14",
-   "end": "07/13 01:13",
+   "end": "07/13 01:14",
    "minutes": 59,
    "aic_per_hour": 117.2,
    "top_model": "demo-large",
@@ -3367,7 +3383,7 @@
    ]
   },
   {
-   "id": "8b7dbeec",
+   "id": "08fe076e",
    "repository": "acme/infra-terraform",
    "branch": "main",
    "host": "CLI",
@@ -3376,8 +3392,8 @@
    "calls": 23,
    "in_tok": 2780091,
    "out_tok": 60679,
-   "start": "07/25 06:49",
-   "end": "07/25 08:05",
+   "start": "07/25 06:50",
+   "end": "07/25 08:06",
    "minutes": 75,
    "aic_per_hour": 92.0,
    "top_model": "demo-large",
@@ -3408,7 +3424,7 @@
    ]
   },
   {
-   "id": "b4b01853",
+   "id": "d641621b",
    "repository": "acme/api-gateway",
    "branch": "feature/search",
    "host": "CLI",
@@ -3418,7 +3434,7 @@
    "in_tok": 2601641,
    "out_tok": 73215,
    "start": "07/29 03:08",
-   "end": "07/29 04:19",
+   "end": "07/29 04:20",
    "minutes": 71,
    "aic_per_hour": 97.1,
    "top_model": "demo-large",
@@ -3435,7 +3451,7 @@
    ]
   },
   {
-   "id": "083bf436",
+   "id": "2f4ff366",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3444,8 +3460,8 @@
    "calls": 17,
    "in_tok": 2017373,
    "out_tok": 54653,
-   "start": "07/17 18:24",
-   "end": "07/17 19:20",
+   "start": "07/17 18:25",
+   "end": "07/17 19:21",
    "minutes": 55,
    "aic_per_hour": 120.3,
    "top_model": "demo-large",
@@ -3476,7 +3492,7 @@
    ]
   },
   {
-   "id": "deae6c7a",
+   "id": "f97b8f58",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3486,7 +3502,7 @@
    "in_tok": 2401636,
    "out_tok": 70814,
    "start": "07/26 01:17",
-   "end": "07/26 02:27",
+   "end": "07/26 02:28",
    "minutes": 70,
    "aic_per_hour": 93.4,
    "top_model": "demo-large",
@@ -3517,7 +3533,7 @@
    ]
   },
   {
-   "id": "5c88b0d4",
+   "id": "54e50d09",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3526,7 +3542,7 @@
    "calls": 21,
    "in_tok": 2335705,
    "out_tok": 61411,
-   "start": "08/01 22:22",
+   "start": "08/01 22:23",
    "end": "08/01 23:33",
    "minutes": 70,
    "aic_per_hour": 93.3,
@@ -3551,7 +3567,7 @@
    ]
   },
   {
-   "id": "76384b2a",
+   "id": "1033e1dc",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3560,8 +3576,8 @@
    "calls": 24,
    "in_tok": 2280021,
    "out_tok": 65259,
-   "start": "07/28 01:51",
-   "end": "07/28 03:22",
+   "start": "07/28 01:52",
+   "end": "07/28 03:23",
    "minutes": 90,
    "aic_per_hour": 72.5,
    "top_model": "demo-large",
@@ -3585,7 +3601,7 @@
    ]
   },
   {
-   "id": "2af848cd",
+   "id": "1f895d97",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3595,7 +3611,7 @@
    "in_tok": 2361589,
    "out_tok": 50448,
    "start": "08/05 07:56",
-   "end": "08/05 08:51",
+   "end": "08/05 08:52",
    "minutes": 55,
    "aic_per_hour": 118.3,
    "top_model": "demo-large",
@@ -3619,7 +3635,7 @@
    ]
   },
   {
-   "id": "6a982095",
+   "id": "4b4f4f67",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -3628,7 +3644,7 @@
    "calls": 19,
    "in_tok": 2208929,
    "out_tok": 49127,
-   "start": "07/16 00:53",
+   "start": "07/16 00:54",
    "end": "07/16 02:06",
    "minutes": 72,
    "aic_per_hour": 89.2,
@@ -3646,7 +3662,7 @@
    ]
   },
   {
-   "id": "ddabda31",
+   "id": "b7392b94",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3656,7 +3672,7 @@
    "in_tok": 2310073,
    "out_tok": 66589,
    "start": "07/19 04:31",
-   "end": "07/19 05:33",
+   "end": "07/19 05:34",
    "minutes": 62,
    "aic_per_hour": 102.5,
    "top_model": "demo-large",
@@ -3680,7 +3696,7 @@
    ]
   },
   {
-   "id": "d74e0206",
+   "id": "82f4aa7e",
    "repository": "acme/infra-terraform",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3689,8 +3705,8 @@
    "calls": 19,
    "in_tok": 2354132,
    "out_tok": 64697,
-   "start": "07/17 18:20",
-   "end": "07/17 19:26",
+   "start": "07/17 18:21",
+   "end": "07/17 19:27",
    "minutes": 65,
    "aic_per_hour": 97.1,
    "top_model": "demo-large",
@@ -3714,7 +3730,7 @@
    ]
   },
   {
-   "id": "8a9eae29",
+   "id": "393e903a",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3723,8 +3739,8 @@
    "calls": 21,
    "in_tok": 1974963,
    "out_tok": 65402,
-   "start": "07/11 22:35",
-   "end": "07/11 23:50",
+   "start": "07/11 22:36",
+   "end": "07/11 23:51",
    "minutes": 74,
    "aic_per_hour": 85.2,
    "top_model": "demo-large",

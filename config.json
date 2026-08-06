@@ -18,6 +18,14 @@
   "alerts_enabled": true,
   "monthly_alert_ratio": 0.8,
 
+  "_baseline_comment": "1時間/24時間の閾値は、過去 baseline_days 日の自分の消費分布から自動で決めます（上位N%に入ったら通知）。上の hourly_alert_aic / daily_budget_aic は下限として効きます。データが baseline_min_days 日ぶんに満たない間は固定値のみ使います。baseline_enabled: false で従来どおり固定値だけになります。",
+  "baseline_enabled": true,
+  "baseline_days": 30,
+  "baseline_min_days": 7,
+  "baseline_min_samples": 40,
+  "hourly_baseline_percentile": 95,
+  "daily_baseline_percentile": 90,
+
   "daily_days": 45,
   "hourly_hours": 96,
   "top_sessions": 40,
