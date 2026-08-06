@@ -33,6 +33,8 @@ TOLERANCE = 0.02
 
 # (長コンテキスト閾値, 閾値以下単価, 閾値超単価)
 # 単価は (input, cached_input, cache_write, output) の USD / 1M tokens
+# 出典: https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing
+# 最終照合: 2026-08-06
 PRICING = {
     "gpt-5.6-sol":            (272_000, (5.00, 0.50, 6.25, 30.00), (10.00, 1.00, 12.50, 45.00)),
     "gpt-5.6-terra":          (272_000, (2.00, 0.20, 2.50, 12.00), (4.00, 0.40, 5.00, 18.00)),
@@ -40,19 +42,27 @@ PRICING = {
     "gpt-5.5":                (272_000, (5.00, 0.50, None, 30.00), (10.00, 1.00, None, 45.00)),
     "gpt-5.4":                (272_000, (2.50, 0.25, None, 15.00), (5.00, 0.50, None, 22.50)),
     "gpt-5.4-mini":           (None, (0.75, 0.075, None, 4.50), None),
+    "gpt-5.4-nano":           (None, (0.20, 0.02, None, 1.25), None),
     "gpt-5.3-codex":          (None, (1.75, 0.175, None, 14.00), None),
     "gpt-5-mini":             (None, (0.25, 0.025, None, 2.00), None),
     "claude-opus-5":          (None, (5.00, 0.50, 6.25, 25.00), None),
     "claude-opus-4.8":        (None, (5.00, 0.50, 6.25, 25.00), None),
+    "claude-opus-4.7":        (None, (5.00, 0.50, 6.25, 25.00), None),
     "claude-opus-4.6":        (None, (5.00, 0.50, 6.25, 25.00), None),
+    "claude-opus-4.5":        (None, (5.00, 0.50, 6.25, 25.00), None),
+    "claude-fable-5":         (None, (10.00, 1.00, 12.50, 50.00), None),
     "claude-sonnet-5":        (None, (2.00, 0.20, 2.50, 10.00), None),
     "claude-sonnet-4.6":      (None, (3.00, 0.30, 3.75, 15.00), None),
+    "claude-sonnet-4.5":      (None, (3.00, 0.30, 3.75, 15.00), None),
+    "claude-sonnet-4":        (None, (3.00, 0.30, 3.75, 15.00), None),
     "claude-haiku-4.5":       (None, (1.00, 0.10, 1.25, 5.00), None),
     "gemini-3.1-pro-preview": (200_000, (2.00, 0.20, None, 12.00), (4.00, 0.40, None, 18.00)),
     "gemini-3.5-flash":       (None, (1.50, 0.15, None, 9.00), None),
     "gemini-3.6-flash":       (None, (1.50, 0.15, None, 7.50), None),
     "mai-code-1-flash":       (None, (0.75, 0.075, None, 4.50), None),
-    "grok-4.5":               (200_000, (2.00, 0.50, None, 6.00), None),
+    "raptor-mini":            (None, (0.25, 0.025, None, 2.00), None),
+    "kimi-k2.7-code":         (None, (0.95, 0.19, None, 4.00), None),
+    "grok-4.5":               (200_000, (2.00, 0.50, None, 6.00), (4.00, 1.00, None, 12.00)),
 }
 
 QUERY = """

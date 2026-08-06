@@ -261,10 +261,12 @@ This is not a bug that can be fixed locally: for server-side agents there is sim
 
 Copilot also keeps a cloud-side session store, which is why you might expect cross-device data. It does not help here:
 
-- It records `usage_input_tokens` / `usage_output_tokens` but **no** `total_nano_aiu`, so it cannot produce AIC.
-- For Coding Agent and Code Review it carries **zero** usage rows at all (checked across 60 days).
-- It uses a **disjoint session ID space** from the local store — no ID matches in either direction — so the two cannot be joined.
-- For CLI work its token totals are consistently **at or below** the local store's for the same day (1.00x–1.09x in favour of local), i.e. it is a lagging partial mirror rather than an additional source.
+- It has no `total_nano_aiu`. It *does* carry input/output/cache-read/cache-write token counts, so AIC can be **re-derived** from it — and on a day where both stores held the same events, the derived total matched the local ground truth exactly (206 vs 206 AIC).
+- But its coverage is **incomplete and unpredictable**. Deriving AIC across a 10-day window recovered only **55%** of actual, ranging from 41% to 100% per day. It is a lagging partial mirror, so a cloud-derived number is strictly worse than the local one.
+- For Coding Agent and Code Review it carries **zero** usage rows at all — 6,697 and 122 events over 30 days, none with tokens. The blind spots above are therefore not fixable from the cloud either.
+- It uses a **disjoint session ID space** from the local store — no ID matches in either direction — so the two cannot be merged per session.
+
+The one thing it could add is usage from *other machines*, since those sessions do appear there. Even then you would be adding an undercount of unknown size to an exact local figure, so this tool does not do it.
 
 </details>
 
