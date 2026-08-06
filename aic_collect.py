@@ -610,6 +610,8 @@ def main() -> int:
     ap.add_argument("--redact-paths", action="store_true",
                     help="出力に含まれるローカルパスを伏せる（デモや共有用）")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--no-alert", action="store_true",
+                    help="閾値を超えていても通知しない")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -645,6 +647,12 @@ def main() -> int:
         arc.row_factory = sqlite3.Row
         rows = arc.execute(QUERY).fetchall()
         cov = aic_archive.coverage(arc)
+        alert_failures = [
+            {"kind": k.split(":", 1)[1], "at": v}
+            for k, v in arc.execute(
+                "SELECT key, value FROM meta "
+                "WHERE key LIKE 'alert_delivery_failed:%' AND value <> ''")
+        ]
     finally:
         arc.close()
 
@@ -661,6 +669,9 @@ def main() -> int:
         "archive_last_run_at": cov["last_run_at"],
         "archive_last_run_status": cov["last_run_status"],
         "archive_since": cov["since"],
+        "archive_local_since": cov.get("local_since"),
+        "machines": cov.get("machines", []),
+        "alert_failures": alert_failures,
         "ingested": ingest,
     })
     mark_incomplete(payload, cov, cfg)
@@ -668,6 +679,14 @@ def main() -> int:
     if args.redact_paths:
         for key in ("db_path", "live_db_path", "project_dir"):
             payload["meta"][key] = "(redacted)"
+        # マシン名はホスト名そのもの。デモ用出力に混ぜてはいけない。
+        for i, m in enumerate(payload["meta"].get("machines", []), 1):
+            m["origin"] = "this machine" if m.get("is_local") else f"machine-{i}"
+        for g in payload["meta"].get("gaps", []):
+            if g.get("origin"):
+                g["origin"] = "another machine"
+        for mm in payload["meta"].get("machines", []):
+            mm.pop("merged_at", None)
         payload["meta"]["demo"] = True
 
     # 同ディレクトリの一時ファイルへ書いてから os.replace で差し替える。
@@ -686,6 +705,21 @@ def main() -> int:
         print(f"     ピーク 1h: {k['peak_1h']:,.1f} AIC @ {k['peak_1h_at']}")
         print(f"     ピーク 24h: {k['peak_24h']:,.1f} AIC @ {k['peak_24h_at']}")
         print(f"[ok] 出力: {args.out}")
+
+    # 3) 閾値超過の通知。定期実行はこのスクリプトを叩くので、ここに置く。
+    #    通知で落ちても集計結果は既に書き終わっているので、失敗しても 0 を返す。
+    if not args.no_alert and not args.redact_paths:
+        try:
+            import aic_alert
+            arc = aic_archive.open_archive(archive_path)
+            try:
+                # 手動実行と定期実行が重なっても二重に鳴らさない。
+                with aic_archive.ProcessLock(archive_path.with_suffix(".alert.lock")):
+                    aic_alert.fire(arc, {**arc_cfg, **cfg}, quiet=args.quiet)
+            finally:
+                arc.close()
+        except Exception as exc:                       # noqa: BLE001
+            print(f"[warn] 通知の処理に失敗しました: {exc}", file=sys.stderr)
     return 0
 
 

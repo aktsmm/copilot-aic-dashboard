@@ -15,6 +15,9 @@
   "daily_budget_aic": 5000,
   "hourly_alert_aic": 1000,
 
+  "alerts_enabled": true,
+  "monthly_alert_ratio": 0.8,
+
   "daily_days": 45,
   "hourly_hours": 96,
   "top_sessions": 40,

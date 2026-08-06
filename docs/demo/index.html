@@ -512,7 +512,8 @@ function banners() {
   const low = gaps.filter((g) => g.confidence !== "high");
 
   const list = (arr) => arr.map((g) =>
-    `<li><span class="mono">${esc(g.from)}</span> 〜 <span class="mono">${esc(g.to)}</span></li>`).join("");
+    `<li><span class="mono">${esc(g.from)}</span> 〜 <span class="mono">${esc(g.to)}</span>${
+      g.origin ? ` <span class="mono">[${esc(g.origin)}]</span>` : ""}</li>`).join("");
 
   if (high.length) {
     out.push(`<div class="banner banner-warn">
@@ -529,6 +530,43 @@ function banners() {
       <ul>${list(low)}</ul>
       記録が途切れていますが、単に Copilot を使っていなかっただけの可能性もあります。
       ローカル DB が作り直された形跡は見つかっていません。
+    </div>`);
+  }
+
+  // 複数マシンのアーカイブを取り込んでいる場合だけ内訳を出す。
+  // 1 台しか無いときに「マシン別」と書かれても意味がないため。
+  const machines = D.meta.machines || [];
+  const remote = machines.filter((m) => !m.is_local);
+  if (remote.length) {
+    const total = machines.reduce((s, m) => s + (m.aic || 0), 0) || 1;
+    const rows = machines.map((m) => {
+      const age = m.is_local ? "" :
+        ` — 最終収集 <span class="mono">${esc(m.last_ok_at || "不明")}</span>`;
+      return `<li>
+        <span class="mono">${esc(m.origin)}</span>${m.is_local ? "（このマシン）" : ""} —
+        <b>${fmt(m.aic)}</b> AIC（${((m.aic / total) * 100).toFixed(0)}%） /
+        ${(m.events || 0).toLocaleString()} イベント${age}</li>`;
+    }).join("");
+    out.push(`<div class="banner banner-warn">
+      <b>${machines.length} 台分のアーカイブを合算しています</b>
+      <ul>${rows}</ul>
+      同じイベントが複数のアーカイブに含まれていても、主キーで一意化されるため二重計上はしません。
+      ただし<b>取り込んだのはその時点のスナップショット</b>です。相手のマシンはその後も消費しているので、
+      最終収集より後の期間は<b>このマシンの分しか入っていません</b>。
+      合計・アラート・グラフはいずれも実際より少なく出ます。最新化するには、
+      向こうで収集してからアーカイブを持ってきて
+      <span class="mono">--merge-archive</span> し直してください。
+    </div>`);
+  }
+
+  const af = D.meta.alert_failures || [];
+  if (af.length) {
+    out.push(`<div class="banner banner-warn">
+      <b>通知を表示できていません（${af.length} 件）</b>
+      <ul>${af.map((f) => `<li><span class="mono">${esc(f.kind)}</span> — ${esc(f.at)}</li>`).join("")}</ul>
+      閾値は超えていましたが、デスクトップ通知が出せませんでした。
+      <span class="mono">.\\run-dashboard.ps1 -TestAlert</span> で通知経路を確認してください。
+      通知が出ない＝消費が少ない、ではありません。
     </div>`);
   }
 

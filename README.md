@@ -64,6 +64,8 @@ Just want to see what it looks like, with no data of your own?
 .\run-dashboard.ps1 -Stats               # archive statistics only
 .\run-dashboard.ps1 -Verify              # also re-verify the AIU→AIC conversion
 .\run-dashboard.ps1 -Reconcile           # cross-check the archive against the Copilot app's own totals
+.\run-dashboard.ps1 -CheckAlert          # print which budget thresholds are currently exceeded
+.\run-dashboard.ps1 -TestAlert           # send a test desktop notification
 .\run-dashboard.ps1 -BackupTo D:\backup  # safe online backup of the archive
 .\run-dashboard.ps1 -ExportCsv .\export\usage.csv # export every archived event
 .\run-dashboard.ps1 -UninstallTask       # stop automatic collection
@@ -192,7 +194,62 @@ Official reporting stops at **daily** granularity in every channel — the summa
 
 ---
 
-## Configuration (`config.json`)
+## Getting warned before you hit the wall
+
+There is no way to detect throttling after the fact — the local store records no 429s, no quota errors, nothing. So the only useful move is a warning *before* you get there.
+
+Every collection run evaluates three thresholds and raises a desktop notification when one is crossed:
+
+| Alert | Threshold | When it fires again |
+| --- | --- | --- |
+| Last 1 hour | `hourly_alert_aic` | New clock hour, or the overage **doubles** |
+| Last 24 hours | `daily_budget_aic` | New local day, or the overage **doubles** |
+| Month to date | `monthly_included_aic × monthly_alert_ratio` | New month, or the overage **doubles** |
+
+The "doubles" rule matters: a fixed once-a-day notification is easy to ignore, and a per-run notification is noise. Re-notifying only when the overage doubles means the alert stays quiet while things are merely bad, and speaks up again when they get materially worse.
+
+Within a period the alert remembers the **highest** level it has already reported. If your rolling-24h number doubles, drops back, and climbs again, you get one notification, not three.
+
+```powershell
+.\run-dashboard.ps1 -TestAlert    # verify notifications work at all
+.\run-dashboard.ps1 -CheckAlert   # print current values vs thresholds, no notification, no state change
+```
+
+Notifications use the Windows toast API through PowerShell — no extra packages. If a toast cannot be shown, the message is printed to stdout instead; it is never silently dropped.
+
+**A notification that fails to display is not counted as delivered.** The alert state is only advanced after a successful notification, so a transient failure is retried on the next run rather than swallowed — and the dashboard shows a banner listing anything that could not be delivered. Set `"alerts_enabled": false` to turn the whole thing off.
+
+Dedup state lives in the archive's `meta` table (`alert_state:*`), so restarting or re-running does not re-trigger.
+
+---
+
+## Multiple machines
+
+The archive is per-machine by design: each machine collects from its own local store. To see the combined picture, copy one archive to the other machine and merge it in.
+
+```powershell
+python aic_archive.py --merge-archive D:\from-laptop\archive.db
+python aic_archive.py --merge-archive D:\from-laptop\archive.db --origin laptop   # explicit label
+```
+
+Merging is **append-only and idempotent**:
+
+- `usage_events` is keyed on `(session_id, id, created_at)`, which does **not** include the machine label. If both archives contain the same event, it is stored once. Merging the same file twice adds nothing.
+- Existing rows are never updated or deleted. Only newly inserted rows get tagged with an origin.
+- `collect_runs.run_id` is `AUTOINCREMENT`, so runs are renumbered on the way in and deduplicated on `(origin, ran_at, status, source_path)`.
+
+Gap detection runs **per machine**. This is not cosmetic: gaps are inferred partly from the source database's file identity changing between runs, and if two machines' runs were interleaved in one timeline, that identity would flip on every row and every single run would be reported as a high-confidence gap. Splitting by origin is what keeps the report meaningful.
+
+Once more than one machine is present, the dashboard shows a per-machine breakdown and labels each gap with the machine it belongs to.
+
+**What you are looking at is a snapshot, not a live view.** A merged archive is frozen at the moment you exported it; the other machine keeps spending afterwards. So for any period after that machine's last collection, the numbers contain only *this* machine — totals, alerts and charts all read low. The dashboard shows each machine's last collection time next to its subtotal so you can see how stale the picture is. To catch up, collect on the other machine and merge again.
+
+For the same reason, alerts are evaluated against whatever is currently in the archive. If you rely on alerts and use several machines heavily, run the alert check on each machine rather than trusting one merged view.
+
+> The label defaults to the source archive's hostname. It is never written to `docs/demo/` — the demo generator replaces it, along with every path.
+
+---
+
 
 | Key | Default | Meaning |
 | --- | --- | --- |
@@ -204,7 +261,9 @@ Official reporting stops at **daily** granularity in every channel — the summa
 | `usd_per_aic` | `0.01` | USD per credit |
 | `monthly_included_aic` | `3000` | Credits included in your plan |
 | `daily_budget_aic` | `5000` | Dashed guideline on the daily chart |
-| `hourly_alert_aic` | `1000` | Warning line on the hourly chart |
+| `hourly_alert_aic` | `1000` | Warning line on the hourly chart, and the 1-hour alert threshold |
+| `alerts_enabled` | `true` | Desktop notification when a threshold is crossed. Set `false` to disable. |
+| `monthly_alert_ratio` | `0.8` | Notify once month-to-date exceeds this fraction of `monthly_included_aic` |
 | `daily_days` / `hourly_hours` | `45` / `96` | Display window |
 | `top_sessions` | `40` | Rows in the session table |
 | `summary_max_chars` | `60` | Session summary truncation in the generated JSON |
@@ -227,9 +286,10 @@ Keep the archive **outside** `~/.copilot`. Anything inside that folder can be sw
 
 ```
 setup.ps1              first-time setup (prereqs → config → first run → scheduled task)
-run-dashboard.ps1      day-to-day driver (-Stats -Verify -Reconcile -Demo -InstallTask -BackupTo -ExportCsv)
-aic_archive.py         append-only archive: merge, migrate, gap detection, backup, CSV
+run-dashboard.ps1      day-to-day driver (-Stats -Verify -Reconcile -CheckAlert -TestAlert -Demo -InstallTask -BackupTo -ExportCsv)
+aic_archive.py         append-only archive: merge, migrate, gap detection, backup, CSV, multi-machine merge
 aic_collect.py         aggregation → data/usage.json + data/usage.js
+aic_alert.py           budget thresholds → desktop notification (deduplicated)
 verify_pricing.py      re-derives AIC from token counts and official prices
 index.html             the dashboard (single file, no dependencies)
 config.json            settings
@@ -252,7 +312,7 @@ The dashboard reads the local Copilot CLI store. That covers Copilot CLI runs on
 | **Copilot Coding Agent** | **No** | Runs on GitHub's servers. No usage rows exist locally |
 | **Copilot Code Review** | **No** | Same — server-side |
 | **VS Code Copilot Chat** | **No** | Separate store with no usage table at all |
-| **Other machines** | **No** | Each machine has its own local store |
+| **Other machines** | Only if merged | Each machine keeps its own store. Bring the archive over and see [Multiple machines](#multiple-machines) |
 
 This is not a bug that can be fixed locally: for server-side agents there is simply no local record of consumption to read. If you lean on Coding Agent, your real spend is higher than what this dashboard shows, and only GitHub's billing pages will reflect it.
 

@@ -26,13 +26,16 @@ Violating any of these is a correctness/data-loss bug, not a style preference.
 10. **Distinguish "locked" from "schema changed".** Only BUSY/LOCKED errors are retried; anything else raises `UnsupportedSchema` and is logged as such. Telling a user to "wait and retry" when Copilot changed its internal schema sends them down the wrong path.
 11. **Do not claim coverage the data cannot support.** Copilot Coding Agent, Code Review, VS Code Chat, and other machines leave **no** local usage rows — the cloud session store has no `total_nano_aiu` at all and uses a disjoint session ID space. Never present the dashboard total as total Copilot spend, and never add a "sync from cloud" path on the assumption that AIC is retrievable there.
 12. **`--reconcile` must fail loud in only one direction.** Archive **>** app total is normal (sub-agent and compaction events are counted individually). Only *missing* sessions and *short* sessions indicate data loss. Sessions still in flight at the last collection must be excluded via the `in_flight` check, or every run reports a false positive. A missing or schema-mismatched `data.db` exits **0** with `[skip]` — never a silent success implying verification happened.
-
-## Layout
+13. **Merging another machine's archive must stay append-only and idempotent.** `merge_archive()` uses `INSERT OR IGNORE` only. The `usage_events` primary key deliberately excludes `origin`, which is what makes double-counting impossible when the same event exists in two archives — do not add `origin` to the key. `collect_runs.run_id` is `AUTOINCREMENT` and must be renumbered on import, deduplicated on `(origin, ran_at, status, source_path)`.
+14. **Gap detection must be partitioned by `origin`.** `detect_gaps()` infers a replaced source from `source_ident` changing between consecutive runs. Interleaving two machines' runs in one timeline flips that identity on every row and reports *every* run as a high-confidence gap. Any change to gap detection must keep the per-origin split and be re-tested with two synthetic archives.
+15. **Alerts must be deduplicated by a bucket, and must never be silent about failing.** Re-notify at most once per bucket; escalate only when the overage doubles (`_tier()`), never on a fixed timer that trains the user to ignore it. If the toast cannot be shown, print to stdout — never swallow the alert. Alert state lives in `meta`, which is the only mutable table.
+16. **Machine labels are hostnames — treat them as personal data.** `--redact-paths` must replace every `origin` in both `machines` and `gaps` before anything is written to `docs/demo/`.
 
 | Path | Role |
 | --- | --- |
-| `aic_archive.py` | Archive: schema, migration, merge, gap detection, backup, CSV, reconciliation, process lock |
+| `aic_archive.py` | Archive: schema, migration, merge, gap detection, backup, CSV, reconciliation, multi-machine merge, process lock |
 | `aic_collect.py` | Aggregation into `data/usage.json` + `data/usage.js` |
+| `aic_alert.py` | Budget thresholds → desktop notification, with dedup state in `meta` |
 | `index.html` | Dashboard. Two inline `<script>` blocks: theme bootstrap in `<head>`, app at the bottom |
 | `verify_pricing.py` | Re-derives AIC from token counts and official prices |
 | `run-dashboard.ps1` | Day-to-day driver and scheduled-task management |
@@ -81,6 +84,13 @@ To exercise gap handling, inject synthetic `incomplete` flags and `meta.gaps` in
 - A `<polyline>` with `null` values coerced to `0` reads as a real drop to zero. Break the line into segments instead.
 - `connect_readonly()` originally hardcoded its probe against `assistant_usage_events`, so pointing it at `~/.copilot/data.db` raised `UnsupportedSchema`. It takes a `probe` table name now — pass the one the caller actually needs.
 - Exit codes are load-bearing: `1` = error, `2` = corrupt DB, `3` = reconciliation found signs of loss. `run-dashboard.ps1` must map `3` to `Write-Warning`, not `throw`.
+- Merging is transitive. When A merges B and B already contains C's rows, the incoming `origin` must be preserved and only `NULL` rows get the new label. Overwriting turns C's spending into B's, which corrupts both the per-machine breakdown and gap detection.
+- Anything that means "how complete is *my* record" must be scoped to `origin IS NULL`: `archive_max_created_before`, every archive-side query in `reconcile()` (it compares against the local live DB), and `coverage()`'s run counters. A merged remote archive otherwise hides local gaps.
+- `detect_gaps()` must run per origin. `source_ident` changing between consecutive runs means "the source DB was recreated", so interleaving two machines' runs makes every row look like a new identity and flags the entire history as high-confidence loss.
+- Never advance alert dedup state on a failed notification. The scheduled task runs with `--quiet`, so a swallowed failure means the alert is gone forever. Record the failure, retry next run, and surface it in the dashboard.
+- `powershell -Command "<script>" -Title x` does not bind `-Title` to the script's `param()`. Pass values through environment variables.
+- The machine label is the hostname, i.e. personal data. `--redact-paths` must scrub it from `machines[].origin` *and* `gaps[].origin`.
+- `math.log2` on a threshold near zero overflows. Compute tiers as a difference of logs, check `isfinite`, and clamp.
 
 ## Out of scope
 

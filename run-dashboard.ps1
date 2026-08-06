@@ -32,6 +32,8 @@ param(
     [switch]$Verify,
     [switch]$Stats,
     [switch]$Reconcile,
+    [switch]$TestAlert,
+    [switch]$CheckAlert,
     [switch]$InstallTask,
     [ValidateRange(1, 1440)][int]$IntervalMinutes = 60,
     [switch]$UninstallTask,
@@ -216,6 +218,20 @@ if ($Reconcile) {
         return
     }
     if ($LASTEXITCODE -ne 0) { throw "検算に失敗しました (exit $LASTEXITCODE)" }
+    return
+}
+
+if ($TestAlert) {
+    & $python (Join-Path $here 'aic_alert.py') --test
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning '通知を表示できませんでした。閾値超過は標準出力に出ます。'
+    }
+    return
+}
+
+if ($CheckAlert) {
+    & $python (Join-Path $here 'aic_alert.py') --check
+    if ($LASTEXITCODE -ne 0) { throw "閾値の評価に失敗しました (exit $LASTEXITCODE)" }
     return
 }
 

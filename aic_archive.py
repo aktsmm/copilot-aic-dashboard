@@ -50,7 +50,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 # ライブ DB から取り込む列。assistant_usage_events のスキーマに対応する。
 EVENT_COLUMNS = [
@@ -91,6 +91,7 @@ _EVENT_BODY = """
     finish_reason           TEXT,
     content_filter_triggered INTEGER,
     token_details_json      TEXT,
+    origin                  TEXT,
     first_archived_at       TEXT    NOT NULL,
     last_seen_at            TEXT    NOT NULL,
     PRIMARY KEY (session_id, id, created_at)
@@ -119,6 +120,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     created_at        TEXT,
     updated_at        TEXT,
     host_type         TEXT,
+    origin            TEXT,
     first_archived_at TEXT NOT NULL,
     last_seen_at      TEXT NOT NULL
 );
@@ -140,6 +142,7 @@ CREATE TABLE IF NOT EXISTS collect_runs (
     live_min_id       INTEGER,
     live_max_id       INTEGER,
     archive_max_created_before TEXT,
+    origin            TEXT,                   -- NULL = このマシン
     note              TEXT
 );
 
@@ -295,6 +298,19 @@ def connect_readonly(path: Path, attempts: int = 5, probe: str = "assistant_usag
     return None
 
 
+def _meta_get(con: sqlite3.Connection, key: str):
+    row = con.execute("SELECT value FROM meta WHERE key=?", (key,)).fetchone()
+    return row[0] if row else None
+
+
+def _meta_set(con: sqlite3.Connection, key: str, value: str) -> None:
+    con.execute(
+        "INSERT INTO meta(key, value) VALUES (?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (key, value),
+    )
+
+
 def open_archive(path: Path) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(path.as_posix(), timeout=60, isolation_level=None)
@@ -304,7 +320,19 @@ def open_archive(path: Path) -> sqlite3.Connection:
     con.execute("PRAGMA busy_timeout=60000")
     con.executescript(ARCHIVE_SCHEMA)
     migrate(con)
+    # このアーカイブが「どのマシンのものか」を一度だけ刻む。
+    # 他マシンへ持ち込んで --merge-archive したときの既定ラベルになる。
+    if not _meta_get(con, "machine_label"):
+        _meta_set(con, "machine_label", _hostname())
     return con
+
+
+def _hostname() -> str:
+    import socket
+    try:
+        return socket.gethostname() or "unknown"
+    except Exception:
+        return "unknown"
 
 
 def check_integrity(con: sqlite3.Connection) -> str:
@@ -316,6 +344,7 @@ _COLLECT_RUN_COLUMNS = {
     "status": "TEXT", "source_ident": "TEXT", "changed": "INTEGER", "existing": "INTEGER",
     "quarantined": "INTEGER", "live_min_id": "INTEGER", "live_max_id": "INTEGER",
     "updated": "INTEGER",   # v1 の列名。読み出し互換のため残す
+    "origin": "TEXT",
 }
 
 
@@ -334,6 +363,10 @@ def migrate(con: sqlite3.Connection) -> None:
     """
     _ensure_columns(con, "collect_runs", _COLLECT_RUN_COLUMNS)
     con.execute("UPDATE collect_runs SET status='ok' WHERE status IS NULL")
+    # v3: 他マシンのアーカイブを取り込めるようにする。NULL = このマシン。
+    # 既存行は NULL のままでよい（このマシンで集めたものだから）。
+    _ensure_columns(con, "usage_events", {"origin": "TEXT"})
+    _ensure_columns(con, "sessions", {"origin": "TEXT"})
 
     row = con.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()
     ver = int(row[0]) if row else 1
@@ -404,7 +437,10 @@ def merge(live: sqlite3.Connection, arc: sqlite3.Connection, source_path: str) -
     # ---- ここから書き込み。統計を正しく取るため最初に write lock を取る ----
     arc.execute("BEGIN IMMEDIATE")
     try:
-        before_max = arc.execute("SELECT MAX(created_at) FROM usage_events").fetchone()[0]
+        # 欠測判定の基準はこのマシン分だけで取る。他マシンの新しいイベントが
+        # 混ざると、ローカルの本当の欠測が「既に記録済み」に見えて隠れてしまう。
+        before_max = arc.execute(
+            "SELECT MAX(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
         before_count = arc.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0]
 
         if scols and srows:
@@ -472,7 +508,8 @@ def log_failed_run(arc: sqlite3.Connection, status: str, source_path: str, note:
     """取り込めなかった実行も必ず残す。空白期間の判定に必要。"""
     arc.execute("BEGIN IMMEDIATE")
     try:
-        before_max = arc.execute("SELECT MAX(created_at) FROM usage_events").fetchone()[0]
+        before_max = arc.execute(
+            "SELECT MAX(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
         _log_run(arc, ran_at=utcnow(), status=status, source_path=source_path,
                  source_ident=source_identity(Path(source_path)),
                  archive_max_created_before=before_max, note=note)
@@ -480,6 +517,155 @@ def log_failed_run(arc: sqlite3.Connection, status: str, source_path: str, note:
     except Exception:
         arc.execute("ROLLBACK")
         raise
+
+
+def merge_archive(dst: sqlite3.Connection, src_path: Path, origin: str = "") -> dict:
+    """別マシンのアーカイブを取り込む（追記のみ）。
+
+    二重計上が起きない理由: usage_events の主キーは (session_id, id, created_at)
+    で origin を含まない。同じイベントが両方に居れば INSERT OR IGNORE で
+    片方だけが残る。つまり同じアーカイブを何度取り込んでも合計は増えない。
+
+    既存行の UPDATE / DELETE は一切しない。取り込んだ行だけに origin を付ける。
+
+    取り込み元が既に別マシン分を含んでいる場合（A ← B ← C）、その origin は
+    そのまま保つ。上書きすると C の実績が B のものに化け、マシン別内訳も
+    欠測判定も壊れる。新しいラベルを付けるのは origin が NULL の行
+    （= 取り込み元自身が集めた行）だけ。
+    """
+    if not src_path.exists():
+        raise FileNotFoundError(f"アーカイブが見つかりません: {src_path}")
+    dst_path = Path(dst.execute("PRAGMA database_list").fetchone()[2])
+    same = src_path.resolve() == dst_path.resolve()
+    if not same:
+        try:
+            same = os.path.samefile(src_path, dst_path)   # ハードリンク / 別名パス
+        except OSError:
+            pass
+    if same:
+        raise ValueError("取り込み元と取り込み先が同じファイルです")
+
+    src = connect_readonly(src_path, probe="usage_events")
+    try:
+        src.row_factory = sqlite3.Row
+        tables = {r[0] for r in src.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "usage_events" not in tables:
+            raise ValueError(f"アーカイブ形式ではありません: {src_path}")
+
+        label = origin.strip()
+        if not label and "meta" in tables:
+            row = src.execute("SELECT value FROM meta WHERE key='machine_label'").fetchone()
+            label = (row[0] if row else "") or ""
+        label = label or src_path.stem
+        if label == (_meta_get(dst, "machine_label") or ""):
+            # 同名だと「このマシン」と見分けが付かない。取り違えを避けて止める。
+            raise ValueError(
+                f"origin '{label}' はこのマシンのラベルと同じです。--origin で別名を指定してください"
+            )
+
+        # 取り込み元も 1 トランザクションで読む。読んでいる最中に相手が
+        # 収集を回すと、イベントと収集ログが別スナップショットになりかねない。
+        src.execute("BEGIN")
+        try:
+            dst_ecols = {r[1] for r in dst.execute("PRAGMA table_info(usage_events)")}
+            src_ecols = [r[1] for r in src.execute("PRAGMA table_info(usage_events)")]
+            missing = [c for c in ("session_id", "id", "created_at", "total_nano_aiu")
+                       if c not in src_ecols]
+            if missing:
+                raise ValueError(
+                    f"取り込み元に必要な列がありません: {', '.join(missing)} ({src_path})"
+                )
+            has_src_origin = "origin" in src_ecols
+            ecols = [c for c in src_ecols if c in dst_ecols and c != "origin"]
+            sel = ecols + (["origin"] if has_src_origin else [])
+            erows = [tuple(r[c] for c in ecols) + ((r["origin"] if has_src_origin else None) or label,)
+                     for r in src.execute(f"SELECT {', '.join(sel)} FROM usage_events")]
+
+            srows, scols = [], []
+            if "sessions" in tables:
+                dst_scols = {r[1] for r in dst.execute("PRAGMA table_info(sessions)")}
+                src_scols = [r[1] for r in src.execute("PRAGMA table_info(sessions)")]
+                has_so = "origin" in src_scols
+                scols = [c for c in src_scols if c in dst_scols and c != "origin"]
+                if scols:
+                    ssel = scols + (["origin"] if has_so else [])
+                    srows = [tuple(r[c] for c in scols) + ((r["origin"] if has_so else None) or label,)
+                             for r in src.execute(f"SELECT {', '.join(ssel)} FROM sessions")]
+
+            rruns, rcols = [], []
+            has_runs = "collect_runs" in tables
+            if has_runs:
+                dst_rcols = {r[1] for r in dst.execute("PRAGMA table_info(collect_runs)")}
+                src_rcols = [r[1] for r in src.execute("PRAGMA table_info(collect_runs)")]
+                # run_id は AUTOINCREMENT なので持ち込むと衝突する。採番し直す。
+                rcols = [c for c in src_rcols if c in dst_rcols and c not in ("run_id", "origin")]
+                rsel = rcols + (["origin"] if "origin" in src_rcols else [])
+                rruns = [dict(r) for r in src.execute(f"SELECT {', '.join(rsel)} FROM collect_runs")]
+
+            quarantined = 0
+            if "quarantine_events" in tables:
+                quarantined = src.execute("SELECT COUNT(*) FROM quarantine_events").fetchone()[0]
+        finally:
+            src.execute("COMMIT")
+    finally:
+        src.close()
+
+    dst.execute("BEGIN IMMEDIATE")
+    try:
+        before = dst.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0]
+        sess_before = dst.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
+
+        if erows:
+            dst.executemany(
+                f"INSERT OR IGNORE INTO usage_events ({', '.join(ecols)}, origin) "
+                f"VALUES ({', '.join('?' * (len(ecols) + 1))})",
+                erows,
+            )
+        if srows:
+            dst.executemany(
+                f"INSERT OR IGNORE INTO sessions ({', '.join(scols)}, origin) "
+                f"VALUES ({', '.join('?' * (len(scols) + 1))})",
+                srows,
+            )
+
+        runs_added = 0
+        origins_seen = set()
+        for r in rruns:
+            # 取り込み元が持ち込んだ origin をそのまま尊重する（A ← B ← C）。
+            org = r.get("origin") or label
+            origins_seen.add(org)
+            dup = dst.execute(
+                "SELECT 1 FROM collect_runs WHERE origin IS ? AND ran_at IS ? "
+                "AND status IS ? AND source_path IS ? LIMIT 1",
+                (org, r.get("ran_at"), r.get("status"), r.get("source_path")),
+            ).fetchone()
+            if dup:
+                continue
+            cols = [c for c in rcols if c in r]
+            dst.execute(
+                f"INSERT INTO collect_runs ({', '.join(cols)}, origin) "
+                f"VALUES ({', '.join('?' * (len(cols) + 1))})",
+                tuple(r[c] for c in cols) + (org,),
+            )
+            runs_added += 1
+
+        after = dst.execute("SELECT COUNT(*) FROM usage_events").fetchone()[0]
+        sess_after = dst.execute("SELECT COUNT(*) FROM sessions").fetchone()[0]
+        _meta_set(dst, f"merged_from:{label}", utcnow())
+        dst.execute("COMMIT")
+    except Exception:
+        dst.execute("ROLLBACK")
+        raise
+
+    inserted = after - before
+    return {
+        "origin": label, "source_events": len(erows), "inserted": inserted,
+        "skipped": len(erows) - inserted, "sessions": sess_after - sess_before,
+        "runs_added": runs_added, "archive_rows": after,
+        "has_runs": has_runs, "source_quarantined": quarantined,
+        "origins": sorted(origins_seen | {o for o in
+                          (r[-1] for r in erows) if o}),
+    }
 
 
 # --------------------------------------------------------------------------- 連続性の判定
@@ -495,17 +681,33 @@ def detect_gaps(arc: sqlite3.Connection) -> list:
     confidence:
       high … ソースが作り直され、かつ時刻も不連続（取りこぼしの可能性が高い）
       low  … 時刻が不連続なだけ（単に使っていなかった可能性が高い）
+
+    複数マシンのアーカイブを取り込んでいる場合、origin を混ぜて時系列に
+    並べると source_ident が毎行入れ替わり、全実行が「作り直された」と
+    誤判定される。必ず origin ごとに独立して判定する。
     """
     runs = arc.execute(
         """SELECT run_id, ran_at, status, source_ident, live_min_created,
-                  archive_max_created_before
+                  archive_max_created_before, origin
            FROM collect_runs ORDER BY run_id"""
     ).fetchall()
 
+    by_origin = {}
+    for r in runs:
+        by_origin.setdefault(r[6], []).append(r)
+
+    out = []
+    for origin, group in by_origin.items():
+        out.extend(_gaps_for_origin(arc, origin, group))
+    out.sort(key=lambda g: (g["from"], g["origin"] or ""))
+    return out
+
+
+def _gaps_for_origin(arc: sqlite3.Connection, origin, group: list) -> list:
     gaps = []
     prev_ident = None
     seen_first = False
-    for _rid, ran_at, status, ident, live_min, arc_max in runs:
+    for _rid, ran_at, status, ident, live_min, arc_max, _org in group:
         replaced = bool(prev_ident and ident and ident != prev_ident)
         if ident:
             prev_ident = ident
@@ -520,10 +722,12 @@ def detect_gaps(arc: sqlite3.Connection) -> list:
         if not lo or not hi or hi <= lo:
             continue
         covered = arc.execute(
-            "SELECT COUNT(*) FROM usage_events WHERE created_at > ? AND created_at < ?", (lo, hi)
+            """SELECT COUNT(*) FROM usage_events
+               WHERE created_at > ? AND created_at < ? AND origin IS ?""",
+            (lo, hi, origin),
         ).fetchone()[0]
         gaps.append({
-            "from": lo, "to": hi, "detected_at": ran_at,
+            "from": lo, "to": hi, "detected_at": ran_at, "origin": origin,
             "confidence": "high" if replaced else "low",
             "source_replaced": replaced,
             "archived_in_range": covered,
@@ -543,18 +747,62 @@ def detect_gaps(arc: sqlite3.Connection) -> list:
     return merged
 
 
+def machines(arc: sqlite3.Connection) -> list:
+    """origin ごとのイベント数・期間・最終収集時刻。
+
+    取り込んだ他マシンの分は「その時点のスナップショット」でしかない。
+    以後もそのマシンは消費し続けるので、最終収集がいつだったかを必ず
+    添える。これが無いと、古いスナップショットを最新の全体像だと
+    誤解させることになる。
+    """
+    rows = arc.execute(
+        """SELECT origin, COUNT(*), MIN(created_at), MAX(created_at),
+                  ROUND(SUM(COALESCE(total_nano_aiu,0)) / 1e9, 1)
+           FROM usage_events GROUP BY origin ORDER BY 2 DESC"""
+    ).fetchall()
+    label = _meta_get(arc, "machine_label")
+    out = []
+    for r in rows:
+        last = arc.execute(
+            "SELECT ran_at, status FROM collect_runs WHERE origin IS ? "
+            "ORDER BY run_id DESC LIMIT 1", (r[0],)
+        ).fetchone()
+        last_ok = arc.execute(
+            "SELECT MAX(ran_at) FROM collect_runs WHERE origin IS ? AND status='ok'", (r[0],)
+        ).fetchone()[0]
+        out.append({
+            "origin": r[0] or label or "this machine", "is_local": r[0] is None,
+            "events": r[1], "since": r[2], "until": r[3], "aic": r[4] or 0.0,
+            "last_run_at": last[0] if last else None,
+            "last_run_status": last[1] if last else None,
+            "last_ok_at": last_ok,
+            "merged_at": _meta_get(arc, f"merged_from:{r[0]}") if r[0] else None,
+        })
+    return out
+
+
 def coverage(arc: sqlite3.Connection) -> dict:
     row = arc.execute("SELECT COUNT(*), MIN(created_at), MAX(created_at) FROM usage_events").fetchone()
-    runs = arc.execute("SELECT COUNT(*) FROM collect_runs").fetchone()[0]
-    failed = arc.execute("SELECT COUNT(*) FROM collect_runs WHERE status<>'ok'").fetchone()[0]
+    runs = arc.execute("SELECT COUNT(*) FROM collect_runs WHERE origin IS NULL").fetchone()[0]
+    failed = arc.execute(
+        "SELECT COUNT(*) FROM collect_runs WHERE origin IS NULL AND status<>'ok'").fetchone()[0]
     qn = arc.execute("SELECT COUNT(*) FROM quarantine_events").fetchone()[0]
-    last = arc.execute("SELECT ran_at, status FROM collect_runs ORDER BY run_id DESC LIMIT 1").fetchone()
+    # 「直近の収集」は必ずこのマシンの実行を指す。取り込んだ他マシンの
+    # 実行ログが後から入ると、ローカルの失敗を隠したり、成功しているのに
+    # 失敗と表示したりしてしまう。
+    last = arc.execute(
+        "SELECT ran_at, status FROM collect_runs WHERE origin IS NULL "
+        "ORDER BY run_id DESC LIMIT 1").fetchone()
+    local = arc.execute(
+        "SELECT MIN(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
     return {
         "events": row[0], "since": row[1], "until": row[2],
+        "local_since": local,
         "runs": runs, "failed_runs": failed, "quarantined": qn,
         "last_run_at": last[0] if last else None,
         "last_run_status": last[1] if last else None,
         "gaps": detect_gaps(arc),
+        "machines": machines(arc),
     }
 
 
@@ -629,8 +877,13 @@ def reconcile(arc: sqlite3.Connection, app_path: Path) -> dict:
     finally:
         app.close()
 
-    arc_lo = arc.execute("SELECT MIN(created_at) FROM usage_events").fetchone()[0]
-    arc_hi = arc.execute("SELECT MAX(created_at) FROM usage_events").fetchone()[0]
+    # data.db はこのマシンの Copilot App が書くもの。突き合わせ相手は
+    # このマシンで集めた分だけに限る。他マシンのイベントを混ぜると、
+    # 相手側の古い/新しい記録が範囲判定と in_flight 判定を狂わせる。
+    arc_lo = arc.execute(
+        "SELECT MIN(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
+    arc_hi = arc.execute(
+        "SELECT MAX(created_at) FROM usage_events WHERE origin IS NULL").fetchone()[0]
 
     # 「アーカイブに無い＝取りこぼし」と言えるのは、収集を実際に回し始めた
     # 後に始まったセッションだけ。初回収集は、その時点でライブ DB に残って
@@ -639,7 +892,7 @@ def reconcile(arc: sqlite3.Connection, app_path: Path) -> dict:
     # 刈り取っていた可能性と区別できないため、証拠にならない。
     try:
         started = arc.execute(
-            "SELECT MIN(ran_at) FROM collect_runs WHERE status = 'ok'"
+            "SELECT MIN(ran_at) FROM collect_runs WHERE status = 'ok' AND origin IS NULL"
         ).fetchone()[0]
     except sqlite3.Error:
         started = None
@@ -650,7 +903,7 @@ def reconcile(arc: sqlite3.Connection, app_path: Path) -> dict:
         aic = (nano or 0) / 1e9
         got = arc.execute(
             "SELECT COALESCE(SUM(total_nano_aiu), 0) / 1e9, COUNT(*), MAX(created_at) "
-            "FROM usage_events WHERE session_id = ?",
+            "FROM usage_events WHERE session_id = ? AND origin IS NULL",
             (sid,),
         ).fetchone()
         if got[1]:
@@ -827,6 +1080,10 @@ def main() -> int:
                     help="Copilot App の集計 (data.db) と突き合わせて取りこぼしを検出し終了")
     ap.add_argument("--app-db", default=cfg["app_db"],
                     help="--reconcile が参照する Copilot App の DB")
+    ap.add_argument("--merge-archive", metavar="PATH",
+                    help="別マシンのアーカイブ DB を取り込む（追記のみ）")
+    ap.add_argument("--origin", default="",
+                    help="--merge-archive で付けるマシン名（既定: 取り込み元の machine_label）")
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
 
@@ -836,8 +1093,10 @@ def main() -> int:
     # 読み取り専用の操作でアーカイブを新規作成してはいけない。
     # パスを間違えたまま --backup-to が「成功」すると、空 DB を保存して
     # 履歴を守れたと誤解させることになる。
-    read_only_mode = bool(args.export_csv or args.backup_to or args.stats or args.reconcile)
-    if read_only_mode and not arc_path.exists():
+    # --merge-archive も同様に、取り込み先を間違えたまま空 DB を作らせない。
+    needs_existing_archive = bool(args.export_csv or args.backup_to or args.stats
+                                  or args.reconcile or args.merge_archive)
+    if needs_existing_archive and not arc_path.exists():
         print(f"[error] アーカイブ DB がありません: {arc_path}", file=sys.stderr)
         print("        パスが正しいか確認してください。", file=sys.stderr)
         print("        まだ作成していない場合は、先に python aic_archive.py を実行してください。",
@@ -879,8 +1138,32 @@ def main() -> int:
                   f" / 最終 {cov['last_run_at']} [{cov['last_run_status']}]")
             if cov["quarantined"]:
                 print(f"  [!] 隔離 {cov['quarantined']} 行（created_at 欠損）")
+            if len(cov["machines"]) > 1:
+                print("  マシン別:")
+                for m in cov["machines"]:
+                    print(f"    {m['origin']:<20} {m['events']:>8,} イベント / {m['aic']:>10,.1f} AIC")
             for g in cov["gaps"]:
-                print(f"  [gap:{g['confidence']}] {g['from']} 〜 {g['to']}")
+                who = f" [{g['origin']}]" if g.get("origin") else ""
+                print(f"  [gap:{g['confidence']}]{who} {g['from']} 〜 {g['to']}")
+            return 0
+
+        if args.merge_archive:
+            with ProcessLock(arc_path.with_suffix(".lock")):
+                res = merge_archive(arc, Path(args.merge_archive), args.origin)
+            print(f"[ok] 取り込み元 '{res['origin']}': 新規 {res['inserted']:,} / "
+                  f"重複 {res['skipped']:,}（元 {res['source_events']:,} 行）")
+            print(f"     セッション {res['sessions']:,} / 収集ログ {res['runs_added']:,} 行を追加")
+            if len(res["origins"]) > 1:
+                print(f"     取り込んだマシン: {', '.join(res['origins'])}")
+            if not res["has_runs"]:
+                print("     [!] 取り込み元に collect_runs がありません。"
+                      "そのマシン分は欠測を判定できません。")
+            if res["source_quarantined"]:
+                print(f"     [!] 取り込み元に隔離行が {res['source_quarantined']:,} 件あります"
+                      "（集計対象外なので取り込んでいません）")
+            print(f"     アーカイブ累計: {res['archive_rows']:,} イベント")
+            print("     注意: 取り込んだのはその時点のスナップショットです。"
+                  "相手のマシンはこの後も消費し続けます。")
             return 0
 
         with ProcessLock(arc_path.with_suffix(".lock")):

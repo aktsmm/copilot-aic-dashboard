@@ -64,6 +64,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\run-dashboard.ps1 -Stats               # アーカイブの統計だけ表示
 .\run-dashboard.ps1 -Verify              # AIU→AIC 換算の再検証も実行
 .\run-dashboard.ps1 -Reconcile           # Copilot App の集計と突き合わせて取りこぼしを検出
+.\run-dashboard.ps1 -CheckAlert          # 現在どの閾値を超えているかを表示（通知はしない）
+.\run-dashboard.ps1 -TestAlert           # デスクトップ通知のテスト
 .\run-dashboard.ps1 -BackupTo D:\backup  # アーカイブを安全に複製
 .\run-dashboard.ps1 -ExportCsv .\export\usage.csv # 全イベントを CSV 出力
 .\run-dashboard.ps1 -UninstallTask       # 自動収集を解除
@@ -135,9 +137,10 @@ open index.html                # ブラウザで開く（file:// で動く）
 
 ```
 setup.ps1              初回セットアップ（前提確認 → 設定 → 初回収集 → タスク登録）
-run-dashboard.ps1      日常運用（-Stats -Verify -Reconcile -Demo -InstallTask -BackupTo -ExportCsv）
-aic_archive.py         追記専用アーカイブ（マージ / 移行 / 欠測検出 / バックアップ / CSV）
+run-dashboard.ps1      日常運用（-Stats -Verify -Reconcile -CheckAlert -TestAlert -Demo -InstallTask -BackupTo -ExportCsv）
+aic_archive.py         追記専用アーカイブ（マージ / 移行 / 欠測検出 / バックアップ / CSV / 複数マシン統合）
 aic_collect.py         集計 → data/usage.json + data/usage.js
+aic_alert.py           閾値超過をデスクトップ通知（重複抑制つき）
 verify_pricing.py      トークン数と公式単価から AIC を再計算して突合
 index.html             ダッシュボード本体（単一ファイル・依存なし）
 config.json            設定
@@ -285,7 +288,9 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 | `usd_per_aic` | `0.01` | 1 AIC の USD 単価 |
 | `monthly_included_aic` | `3000` | 月間含有クレジット。プランに合わせて変更 |
 | `daily_budget_aic` | `5000` | 日次目安ライン（グラフの破線） |
-| `hourly_alert_aic` | `1000` | 1時間あたりの警戒ライン |
+| `hourly_alert_aic` | `1000` | 1時間あたりの警戒ライン（通知の閾値も兼ねる） |
+| `alerts_enabled` | `true` | 閾値超過時にデスクトップ通知する。`false` で無効化 |
+| `monthly_alert_ratio` | `0.8` | 月間含有クレジットのこの割合を超えたら通知 |
 | `daily_days` / `hourly_hours` | `45` / `96` | 表示期間 |
 | `top_sessions` | `40` | セッション表の表示件数 |
 | `summary_max_chars` | `60` | JSON に書き出す summary の最大文字数 |
@@ -304,7 +309,63 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 
 ---
 
-## 9. 何が測れて、何が測れないか
+## 9. 制限に当たる前に気づく
+
+レート制限は**事後に検出できません**。ローカル DB には 429 もクォータエラーも一切記録されていないためです。したがって打てる手は「当たる前に警告する」しかありません。
+
+収集のたびに次の 3 つを評価し、超えていればデスクトップ通知を出します。
+
+| 種類 | 閾値 | 再通知の条件 |
+| --- | --- | --- |
+| 直近 1 時間 | `hourly_alert_aic` | 時が変わったとき、または超過が**倍**になったとき |
+| 直近 24 時間 | `daily_budget_aic` | 日が変わったとき、または超過が**倍**になったとき |
+| 今月累計 | `monthly_included_aic × monthly_alert_ratio` | 月が変わったとき、または超過が**倍**になったとき |
+
+「倍になったら」という条件が肝心です。1 日 1 回固定だと慣れて無視するようになり、毎回鳴らすとただの雑音になります。倍増したときだけ鳴らせば、「まずい」状態では静かなまま、「明らかに悪化した」ときだけ声を上げます。
+
+期間の中では、**そこまでに通知した最大の段階**を覚えています。直近 24 時間の値が倍増 → 下がる → また上がる、と動いても、鳴るのは 1 回だけです。
+
+```powershell
+.\run-dashboard.ps1 -TestAlert    # 通知が出せるかの確認
+.\run-dashboard.ps1 -CheckAlert   # 現在値と閾値を表示。通知も状態更新もしない
+```
+
+通知は PowerShell 経由の Windows トースト API を使うので追加パッケージは不要です。トーストが出せなかった場合は標準出力に落とすため、握り潰されることはありません。
+
+**表示に失敗した通知は「送った」と見なしません。** 状態を進めるのは通知に成功したときだけなので、一時的な失敗は次回の収集で再試行されます。加えて、届けられなかったものはダッシュボードにバナーとして出ます。定期タスクは `--quiet` で動くので標準出力を誰も見ていませんが、それでも見落とさないようにするためです。`"alerts_enabled": false` で全体を止められます。
+
+重複抑制の状態はアーカイブの `meta` テーブル（`alert_state:*`）に保存されるので、再実行や再起動で鳴り直すことはありません。
+
+---
+
+## 10. 複数マシンをまとめて見る
+
+アーカイブはマシンごとに独立しています（各マシンが自分のローカルストアから収集するため）。合算して見たい場合は、片方のアーカイブをコピーして取り込みます。
+
+```powershell
+python aic_archive.py --merge-archive D:\from-laptop\archive.db
+python aic_archive.py --merge-archive D:\from-laptop\archive.db --origin laptop   # ラベルを明示
+```
+
+取り込みは**追記のみ・冪等**です。
+
+- `usage_events` の主キーは `(session_id, id, created_at)` で、**マシン名を含みません**。同じイベントが両方にあっても 1 件しか残らず、同じファイルを 2 回取り込んでも合計は増えません。
+- 既存行の UPDATE / DELETE は一切しません。新規に入った行にだけ origin が付きます。
+- `collect_runs.run_id` は AUTOINCREMENT なので採番し直し、`(origin, ran_at, status, source_path)` で重複排除します。
+
+欠測検出は**マシンごとに独立して**行います。これは見た目の問題ではありません。欠測の判定にはソース DB のファイル世代が実行間で変わったかを使っているため、2 台分の実行を 1 本の時系列に混ぜると世代が毎行入れ替わり、**すべての実行が高確度の欠測として誤検出**されます。origin で分割することが、この報告を意味のあるものに保つ条件です。
+
+2 台以上を取り込むと、ダッシュボードにマシン別の内訳が出て、各欠測にどのマシンのものかが表示されます。
+
+**ただし見えているのはスナップショットで、ライブビューではありません。** 取り込んだアーカイブは書き出した時点で固定されますが、相手のマシンはその後も消費し続けます。したがって、そのマシンの最終収集より後の期間は**このマシンの分しか入っていません**。合計もアラートもグラフも、実際より少なく出ます。ダッシュボードには各マシンの最終収集時刻を内訳の横に出しているので、どれだけ古いかは確認できます。最新化するには、向こうで収集してからもう一度マージしてください。
+
+同じ理由で、アラートは「いまアーカイブに入っているもの」に対して評価されます。複数マシンを本格的に使っていてアラートに頼るなら、統合したビュー 1 つを信用するのではなく、各マシンでアラートを動かしてください。
+
+> ラベルの既定値は取り込み元アーカイブのホスト名です。`docs/demo/` へは書き出されません（デモ生成時にパスと一緒に置き換えられます）。
+
+---
+
+## 11. 何が測れて、何が測れないか
 
 このダッシュボードが読むのはローカルの Copilot CLI ストアです。Copilot デスクトップアプリが worktree 内で起動する CLI も同じストアに入るので対象ですが、課金対象すべてを見ているわけではありません。
 
@@ -316,7 +377,7 @@ AI usage report の CSV 列: `date` / `model` / `username` / `quantity` / `gross
 | **Copilot Coding Agent** | **×** | GitHub のサーバー側で動く。ローカルに消費記録が存在しない |
 | **Copilot Code Review** | **×** | 同上（サーバー側） |
 | **VS Code Copilot Chat** | **×** | 別ストアで、usage テーブル自体が無い |
-| **他の PC** | **×** | 端末ごとに別のローカルストアを持つ |
+| **他の PC** | 取り込めば ○ | 端末ごとに別ストアを持つ。アーカイブを持ってくれば合算できる（[10. 複数マシン](#10-複数マシンをまとめて見る)） |
 
 これはローカル側の実装で直せる問題ではありません。サーバー側で動くエージェントは、読み取るべき消費記録がそもそもローカルに存在しないためです。**Coding Agent を多用している場合、実際の消費はこのダッシュボードの数字より多くなります。** その分は GitHub の Billing 画面でしか確認できません。
 
@@ -346,7 +407,7 @@ Copilot デスクトップアプリを使っている場合、`~/.copilot/data.d
 
 ---
 
-## 10. 制約
+## 12. 制約
 
 - **非公開の内部スキーマに依存しています。** `~/.copilot/session-store.db` は GitHub Copilot の実装詳細であり、テーブル構成も列名も `total_nano_aiu` の意味も公式には文書化されていません。Copilot の更新で予告なく変わったり無くなったりします。その場合は `unsupported_schema` として取り込みを停止します（既存のアーカイブは無傷ですが、ツールを更新するまで新しいデータは貯まりません）。
 - **アーカイブを始める前に消えた分は復元できません。** ローカル DB が既に刈り取っていた期間は取得できません。
@@ -357,7 +418,7 @@ Copilot デスクトップアプリを使っている場合、`~/.copilot/data.d
 
 ---
 
-## 11. 公式リファレンス
+## 13. 公式リファレンス
 
 - [Usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)
 - [Usage-based billing for individuals](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals)
