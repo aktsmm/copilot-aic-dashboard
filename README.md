@@ -261,13 +261,29 @@ The "doubles" rule matters: a fixed once-a-day notification is easy to ignore, a
 Note *what* doubles: the alert remembers the **amount you were using** when it last spoke, not how far over the line you were. The threshold is recomputed on every run and moves, so a ratio against it is not comparable between runs — and it moves in the worst possible direction. While you are having a heavy day, that day's own closed windows enter the trailing distribution and push the threshold up, so a ratio would stay flat or shrink exactly as your usage climbs. Remembering the raw amount keeps "it doubled" meaning "it doubled".
 
 ```powershell
-.\run-dashboard.ps1 -TestAlert    # verify notifications work at all
+.\run-dashboard.ps1 -TestAlert    # send a test notification, and say why if it cannot
 .\run-dashboard.ps1 -CheckAlert   # print baselines and current values, no notification, no state change
 ```
 
-Notifications use the Windows toast API through PowerShell — no extra packages. If a toast cannot be shown, the message is printed to stdout instead; it is never silently dropped.
+### What the notification looks like
 
-**A notification that fails to display is not counted as delivered.** The alert state is only advanced after a successful notification, so a transient failure is retried on the next run rather than swallowed — and the dashboard shows a banner listing anything that could not be delivered. Set `"alerts_enabled": false` to turn the whole thing off, or `"baseline_enabled": false` to go back to plain fixed thresholds.
+![Desktop notification](docs/demo/notification.png)
+
+It arrives under the name **PowerShell** rather than one of its own. Showing a Windows toast requires a registered AppUserModelID, and registering one means installing something; this tool installs nothing, so it borrows PowerShell's. Worth knowing, because that is also the name to look for in Settings when you want to silence it — or find out why it is silent.
+
+Notifications go through the Windows toast API via PowerShell. No extra packages, nothing to install.
+
+**A toast that Windows refuses counts as a failure.** The API will not tell you whether anything appeared: with notifications switched off, `Show()` succeeds and the screen stays empty. Taken at face value that is the worst possible outcome — the alert marks itself delivered and stays quiet until the next threshold, having never been seen once. So `ToastNotifier.Setting` is checked before sending, which is Windows answering for itself, and covers notifications being off for the app, off for the user, or forbidden by group policy. Any of those is treated as a failed send: the message goes to stdout, the dashboard raises a banner, and it is retried next run. `-TestAlert` names the one in the way:
+
+```
+[warn] 通知を表示できません: Windows の通知が全体でオフです（設定 > システム > 通知）
+```
+
+**A successful send still does not guarantee you saw it.** Focus assist, a full-screen app, the lock screen, and "show notification banners" being off individually all leave `Setting` reporting `Enabled` while nothing appears on screen. `Setting` does not cover them, and they are not checked. Most of the time the notification still lands in the notification centre, which is where to look when `-TestAlert` says it sent something you never saw.
+
+Desktop notifications are Windows-only. Elsewhere the thresholds are still evaluated and still surface in the dashboard; only the toast is skipped.
+
+**Nothing is quietly written off as delivered.** A send that fails outright does not advance the alert state, so it is retried on the next run rather than swallowed, and the dashboard lists it in a banner. Two other cases do go out, but without Windows ever answering whether the app is blocked: a machine where the WinRT toast could not be built (it falls back to an older balloon notification, which has no equivalent of `Setting`), and the very first send under this identifier, where `Setting` has not been initialised yet. Those *are* treated as sent for deduplication — otherwise the same alert would repeat every run on a machine that will never answer — but they are not treated as verified: they get their own dashboard banner saying the check could not be made, and they are printed to stdout even under `--quiet`. Set `"alerts_enabled": false` to turn the whole thing off, or `"baseline_enabled": false` to go back to plain fixed thresholds.
 
 Dedup state lives in the archive's `meta` table (`alert_state:*`), so restarting or re-running does not re-trigger.
 

@@ -577,13 +577,26 @@ function banners() {
   }
 
   const af = D.meta.alert_failures || [];
-  if (af.length) {
+  const afFailed = af.filter((f) => f.state !== "unconfirmed");
+  const afUnconf = af.filter((f) => f.state === "unconfirmed");
+  const afList = (rows) =>
+    `<ul>${rows.map((f) => `<li><span class="mono">${esc(f.kind)}</span> — ${esc(f.at)}</li>`).join("")}</ul>`;
+  if (afFailed.length) {
     out.push(`<div class="banner banner-warn">
-      <b>通知を表示できていません（${af.length} 件）</b>
-      <ul>${af.map((f) => `<li><span class="mono">${esc(f.kind)}</span> — ${esc(f.at)}</li>`).join("")}</ul>
+      <b>通知を表示できていません（${afFailed.length} 件）</b>
+      ${afList(afFailed)}
       閾値は超えていましたが、デスクトップ通知が出せませんでした。
       <span class="mono">.\\run-dashboard.ps1 -TestAlert</span> で通知経路を確認してください。
       通知が出ない＝消費が少ない、ではありません。
+    </div>`);
+  }
+  if (afUnconf.length) {
+    out.push(`<div class="banner banner-warn">
+      <b>通知を出せたか確認できていません（${afUnconf.length} 件）</b>
+      ${afList(afUnconf)}
+      通知は送りましたが、この環境では Windows に「通知がブロックされていないか」を確認できませんでした。
+      ブロックされていた場合、閾値を超えても気づけません。
+      <span class="mono">.\\run-dashboard.ps1 -TestAlert</span> で通知経路を確認してください。
     </div>`);
   }
 

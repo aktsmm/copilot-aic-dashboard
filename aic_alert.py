@@ -297,7 +297,17 @@ _NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0) if sys.platform == "win3
 
 
 def _powershell() -> str | None:
-    for exe in ("pwsh.exe", "powershell.exe"):
+    """通知を出すためのホストを選ぶ。Windows PowerShell を先に試す。
+
+    順序に意味がある。トーストは WinRT の型アクセラレータ
+    （`[Windows.UI.Notifications..., ContentType=WindowsRuntime]`）で組み立てるが、
+    これは Windows PowerShell 5.1 の機能で、PowerShell 7 では型が見つからない。
+    pwsh.exe を先に試すと必ず例外になり、黙ってバルーン通知に落ちる。
+    見た目が似ているので気づきにくく、実際しばらく気づかないままだった。
+    バルーンには Setting に相当するものがないため、落ちた時点で
+    「表示されるか」を確認する手段ごと失う。
+    """
+    for exe in ("powershell.exe", "pwsh.exe"):
         try:
             subprocess.run([exe, "-NoProfile", "-Command", "exit 0"],
                            capture_output=True, timeout=20, check=True,
@@ -310,12 +320,23 @@ def _powershell() -> str | None:
 
 # 値は環境変数で渡す。-Command に渡したスクリプトは param() に束縛されず、
 # 引数を文字列に埋め込むとクォートとインジェクションの問題も抱えるため。
+#
+# Show() は「表示された」ことを保証しない。通知が設定で切られていても例外を
+# 出さずに成功するので、素直に受け取ると、一度も見えていない通知が「通知済み」
+# として記録され、次に本当に危ないときまで黙る。このツールで最も避けたい壊れ方。
+# ToastNotifier.Setting はそれを OS に直接聞ける唯一の公開 API なので、
+# 送る前に必ず見る。レジストリを読んで当てにいくより正確で、企業端末の
+# グループポリシーも DisabledByGroupPolicy として同じ経路で分かる。
 _TOAST_PS = r"""
 $ErrorActionPreference = 'Stop'
 $Title = $env:AIC_TOAST_TITLE
 $Body  = $env:AIC_TOAST_BODY
+$blocked = $null
+$fallback = $false
+$unknown = $false
 try {
     # WinRT のトースト。追加モジュール不要で Windows 標準。
+    # ただし型アクセラレータが要るので Windows PowerShell でしか通らない。
     [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType=WindowsRuntime]
     [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType=WindowsRuntime]
     $tpl = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent(
@@ -326,11 +347,23 @@ try {
     # 自前の AppUserModelID は登録が要るので、PowerShell 自身のものを借りる。
     $aumid = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
     $toast = [Windows.UI.Notifications.ToastNotification]::new($tpl)
-    [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($aumid).Show($toast)
-    exit 0
+    $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($aumid)
+    $setting = $notifier.Setting
+    # $null は「この AUMID にまだ何も送っていないので分からない」。
+    # ブロックとは違うので送りにいく。0 と混ぜないよう $null を先に見る。
+    if ($null -ne $setting -and
+        $setting -ne [Windows.UI.Notifications.NotificationSetting]::Enabled) {
+        # Show() しても何も出ない。理由は呼び出し元に返して失敗として扱わせる。
+        $blocked = $setting.ToString()
+    } else {
+        if ($null -eq $setting) { $unknown = $true }
+        $notifier.Show($toast)
+    }
 } catch {
     try {
-        # トーストが使えない環境向けのバルーン通知。
+        # トーストが使えない環境向けのバルーン通知。ここには Setting に
+        # 相当するものがないので、送れたかどうかしか分からない。
+        $fallback = $true
         Add-Type -AssemblyName System.Windows.Forms
         Add-Type -AssemblyName System.Drawing
         $ni = New-Object System.Windows.Forms.NotifyIcon
@@ -339,19 +372,55 @@ try {
         $ni.ShowBalloonTip(10000, $Title, $Body, [System.Windows.Forms.ToolTipIcon]::Warning)
         Start-Sleep -Seconds 6
         $ni.Dispose()
-        exit 0
     } catch { exit 1 }
 }
+if ($blocked) { Write-Output "blocked:$blocked"; exit 3 }
+if ($fallback) { Write-Output "fallback" }
+elseif ($unknown) { Write-Output "unknown" }
+exit 0
 """
 
 
-def notify(title: str, body: str) -> bool:
-    """OS の通知を出す。出せなければ False（呼び出し側は標準出力で代替）。"""
+_TOAST_AUMID = r"{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe"
+
+# NotificationSetting のうち Enabled 以外。設定画面のどこを見ればいいかまで言う。
+# 逆に、ここに出てこない抑止（集中モード、全画面、バナーだけオフ）は Enabled の
+# ままなので検出できない。レジストリを読んで補おうとしたが、あの値は実際の
+# 通知動作を反映していなかった（AGENTS.md 参照）。検出できるのは「Windows が
+# はっきりブロックしている」場合だけで、それ以上を名乗ってはいけない。
+_BLOCK_REASONS = {
+    "DisabledForApplication":
+        "「Windows PowerShell」からの通知がオフです"
+        "（設定 > システム > 通知 > Windows PowerShell）",
+    "DisabledForUser":
+        "Windows の通知が全体でオフです（設定 > システム > 通知）",
+    "DisabledByGroupPolicy":
+        "グループポリシーで通知が禁止されています（管理された端末です）",
+    "DisabledByManifest":
+        "この AppUserModelID では通知を出せません",
+}
+
+
+def send_toast(title: str, body: str) -> tuple[bool, str | None]:
+    """トーストを送る。(送れたか, 補足) を返す。
+
+    補足が None のときだけ「Windows がブロックしていないと答えたうえで送った」
+    ＝配信を確認できた状態。それ以外は送れていても確認が取れていない:
+
+      "fallback" — WinRT が使えずバルーン通知で送った。Setting に相当する
+                   ものがないので、抑止されていても分からない。
+      "unknown"  — Setting が $null。この AUMID にまだ何も送っていないと
+                   いうだけでブロックではないので送りにいくが、
+                   Windows は表示可否を答えていない。
+
+    送れなかった場合は理由の文字列が入る。
+    """
     if sys.platform != "win32":
-        return False
+        return False, ("デスクトップ通知は Windows でのみ出せます。"
+                       "閾値超過は標準出力とダッシュボードのバナーに出ます")
     shell = _powershell()
     if not shell:
-        return False
+        return False, "powershell.exe / pwsh.exe が見つかりません"
     env = dict(os.environ, AIC_TOAST_TITLE=title, AIC_TOAST_BODY=body)
     try:
         r = subprocess.run(
@@ -359,9 +428,24 @@ def notify(title: str, body: str) -> bool:
             capture_output=True, timeout=60, env=env,
             creationflags=_NO_WINDOW,
         )
-        return r.returncode == 0
-    except (OSError, subprocess.SubprocessError):
-        return False
+    except (OSError, subprocess.SubprocessError) as exc:
+        return False, f"PowerShell の実行に失敗しました: {exc}"
+    out = (r.stdout or b"").decode("utf-8", "replace").strip()
+    if r.returncode == 0:
+        for marker in ("fallback", "unknown"):
+            if out.startswith(marker):
+                return True, marker
+        return True, None
+    if out.startswith("blocked:"):
+        name = out.split(":", 1)[1].strip()
+        return False, _BLOCK_REASONS.get(
+            name, f"Windows が通知を抑止しています（{name}）")
+    return False, "通知の送信に失敗しました"
+
+
+def notify(title: str, body: str) -> bool:
+    """OS の通知を出す。出せなければ False（呼び出し側は標準出力で代替）。"""
+    return send_toast(title, body)[0]
 
 
 def fire(arc, cfg: dict, quiet: bool = False) -> list:
@@ -408,31 +492,56 @@ def fire(arc, cfg: dict, quiet: bool = False) -> list:
             if prev_value is not None and a["value"] < prev_value * _ESCALATE:
                 continue      # 同じ期間で、まだ倍には増えていない
 
-        ok = notify(a["title"], a["body"])
+        ok, detail = send_toast(a["title"], a["body"])
+        # 「送れた」と「ブロックされていないと確認できた」は別。Setting が
+        # 答えたうえで送れた場合だけ確認済みとする。バルーンに落ちた場合と
+        # Setting が未初期化だった場合は、抑止されていても分からないので、
+        # 状態は進めつつ「未確認」としてダッシュボードに残す。黙って成功に
+        # すると、見えていない通知を見たことにしてしまう。
+        # なお確認できても表示の保証にはならない（集中モードなどは Setting の
+        # 守備範囲外）。ここで区別しているのはあくまで確認が取れたかどうか。
+        checked = ok and detail is None
         a["notified"] = ok
+        a["checked"] = checked
         if ok:
             # 知らせた時点の消費量を覚える。次はここから倍に増えたときだけ。
             _meta_set(arc, key, f"{a['period']}|v{a['value']:.6g}")
             _meta_set(arc, f"alert_last_fired:{a['kind']}", _iso(now))
-            _meta_set(arc, f"alert_delivery_failed:{a['kind']}", "")
+            _meta_set(arc, f"alert_delivery_failed:{a['kind']}",
+                      "" if checked else f"{_iso(now)}|unconfirmed")
         else:
             # 未達として残し、次回も再試行させる。ダッシュボードにも出す。
-            _meta_set(arc, f"alert_delivery_failed:{a['kind']}", _iso(now))
+            _meta_set(arc, f"alert_delivery_failed:{a['kind']}", f"{_iso(now)}|failed")
         sent.append(a)
-        if not quiet or not ok:
-            # 通知に失敗した場合は握り潰さず必ず標準出力に出す。
-            mark = "" if ok else "（通知の表示に失敗したため標準出力に出します）"
+        if not quiet or not checked:
+            # 確認できていない通知は握り潰さず必ず標準出力に出す。
+            if ok and not checked:
+                mark = "（送信しましたが、ブロックされていないかを確認できていません）"
+            elif not ok:
+                mark = "（通知を送れなかったため標準出力に出します）"
+            else:
+                mark = ""
             print(f"[alert] {a['title']} — {a['body']}{mark}")
     arc.commit()
     return sent
 
 
+def _split_failure(value: str) -> tuple[str, str]:
+    """meta に入れた "時刻|状態" を分ける。状態が無い古い値は failed 扱い。"""
+    at, _, state = value.partition("|")
+    return at, (state or "failed")
+
+
 def delivery_failures(arc) -> list:
-    """通知が届かなかった種類。ダッシュボードで表に出すために使う。"""
+    """送れなかった／確認が取れなかった通知。ダッシュボードで表に出す。"""
     rows = arc.execute(
         "SELECT key, value FROM meta WHERE key LIKE 'alert_delivery_failed:%' AND value <> ''"
     ).fetchall()
-    return [{"kind": k.split(":", 1)[1], "at": v} for k, v in rows]
+    out = []
+    for k, v in rows:
+        at, state = _split_failure(v)
+        out.append({"kind": k.split(":", 1)[1], "at": at, "state": state})
+    return out
 
 
 def tune(arc, cfg: dict, days: float, candidates: tuple) -> dict:
@@ -562,10 +671,36 @@ def main() -> int:
     args = ap.parse_args()
 
     if args.test:
-        ok = notify("Copilot AIC ダッシュボード", "通知のテストです。これが見えていれば設定は正常です。")
-        print("[ok] 通知を表示しました。" if ok else
-              "[warn] 通知を表示できませんでした。標準出力での警告に切り替わります。")
-        return 0 if ok else 1
+        # 通知が出ないときに一番困るのは「何が悪いのか分からない」こと。
+        # 出せなかった理由まで言う。
+        ok, detail = send_toast("Copilot AIC ダッシュボード",
+                                "通知のテストです。これが見えていれば設定は正常です。")
+        if not ok:
+            print(f"[warn] 通知を表示できません: {detail}\n"
+                  "       閾値超過は標準出力とダッシュボードのバナーに出ます。")
+            return 1
+        if detail == "fallback":
+            print("[ok] 通知を送信しました（バルーン通知）。\n"
+                  "     この環境では Windows 標準のトーストを組み立てられなかったため、"
+                  "古い形式で送っています。\n"
+                  "     この経路では通知がオフにされていても検出できません。"
+                  "見えなかった場合は Windows の通知設定を確認してください。")
+            return 0
+        if detail == "unknown":
+            print("[ok] 通知を送信しました。\n"
+                  "     ただし Windows は表示可否を答えていません"
+                  "（この識別子でまだ通知を出したことがないため）。\n"
+                  "     この 1 回は確認が取れません。もう一度 -TestAlert を実行すると"
+                  "判定できるようになります。")
+            return 0
+        print("[ok] 通知を送信しました。Windows はブロックしていないと答えています。\n"
+              "     画面右下に出なかった場合の容疑者は、集中モード（応答不可）、"
+              "全画面のアプリ、ロック画面、\n"
+              "     「バナーを表示する」だけがオフ、のいずれかです。"
+              "たいていは通知センターに残るので、そこを見てください。\n"
+              "     通知は「Windows PowerShell」の名前で届きます"
+              "（PowerShell の識別子を借りて出しているため）。")
+        return 0
 
     here = Path(__file__).resolve().parent
     cfg = aic_archive.load_config(here)
@@ -625,7 +760,11 @@ def main() -> int:
                 print(f"[over] {a['kind']:<10} {a['value']:>10,.0f} AIC "
                       f"(閾値 {a['threshold']:,.0f} / {a.get('basis', '')}) / 段位 {a['tier']}")
             for f in delivery_failures(arc):
-                print(f"[warn] {f['kind']} の通知が {f['at']} に届いていません。")
+                if f["state"] == "unconfirmed":
+                    print(f"[warn] {f['kind']} の通知は {f['at']} に送りましたが、"
+                          "ブロックされていないかを確認できていません。")
+                else:
+                    print(f"[warn] {f['kind']} の通知を {f['at']} に送れませんでした。")
             return 0
         # 手動実行と定期実行が重なると、両方が同じ超過を通知しうる。
         # アーカイブと同じロックで直列化する。

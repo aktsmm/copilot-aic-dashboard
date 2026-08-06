@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-08-07 00:36:29",
+  "generated_at": "2026-08-07 01:54:33",
   "tz_label": "JST",
   "tz_offset_hours": 9,
   "first_event": "2026-07-07 18:58",
@@ -22,43 +22,43 @@
   "archive_runs": 1,
   "archive_failed_runs": 0,
   "archive_quarantined": 0,
-  "archive_last_run_at": "2026-08-06T15:36:28Z",
+  "archive_last_run_at": "2026-08-06T16:54:33Z",
   "archive_last_run_status": "ok",
-  "archive_since": "2026-07-07T09:58:43.000Z",
-  "archive_local_since": "2026-07-07T09:58:43.000Z",
+  "archive_since": "2026-07-07T09:58:47.000Z",
+  "archive_local_since": "2026-07-07T09:58:47.000Z",
   "machines": [
    {
     "origin": "this machine",
     "is_local": true,
     "events": 2989,
-    "since": "2026-07-07T09:58:43.000Z",
-    "until": "2026-08-05T22:47:07.000Z",
+    "since": "2026-07-07T09:58:47.000Z",
+    "until": "2026-08-05T22:47:11.000Z",
     "aic": 15558.1,
-    "last_run_at": "2026-08-06T15:36:28Z",
+    "last_run_at": "2026-08-06T16:54:33Z",
     "last_run_status": "ok",
-    "last_ok_at": "2026-08-06T15:36:28Z"
+    "last_ok_at": "2026-08-06T16:54:33Z"
    }
   ],
   "alert_failures": [],
   "alert_baseline": {
    "hourly": {
-    "threshold": 213.7179744899995,
-    "samples": 974,
-    "days": 29.299907407407407,
+    "threshold": 218.01121749300182,
+    "samples": 970,
+    "days": 29.285775462962963,
     "percentile": 99.0,
     "enough": true
    },
    "rolling24h": {
     "threshold": 1857.6852104359969,
     "samples": 697,
-    "days": 29.231377314814814,
+    "days": 29.248310185185186,
     "percentile": 99.0,
     "enough": true
    }
   },
   "collect_cadence_min": null,
   "collect_cadence_source": null,
-  "archive_last_ok_local": "2026-08-07 00:36:28",
+  "archive_last_ok_local": "2026-08-07 01:54:33",
   "ingested": {
    "source_rows": 2989,
    "inserted": 2989,
@@ -66,8 +66,8 @@
    "existing": 0,
    "quarantined": 0,
    "archive_rows": 2989,
-   "live_min": "2026-07-07T09:58:43.000Z",
-   "live_max": "2026-08-05T22:47:07.000Z",
+   "live_min": "2026-07-07T09:58:47.000Z",
+   "live_max": "2026-08-05T22:47:11.000Z",
    "archive_max_before": null
   },
   "demo": true
@@ -78,7 +78,7 @@
   "yesterday": 116.1,
   "dod_pct": -100.0,
   "last_1h": 0.0,
-  "last_24h": 88.9,
+  "last_24h": 62.2,
   "last_7d": 2961.6,
   "avg_daily_7d": 408.5,
   "month": 2859.8,
@@ -92,15 +92,6 @@
   "avg_daily_7d_days": 7
  },
  "hourly": [
-  {
-   "label": "08/03 01:00",
-   "short": "01",
-   "date": "08/03",
-   "ts": "2026-08-03T01:00:00+09:00",
-   "aic": 0.0,
-   "calls": 0,
-   "top_model": null
-  },
   {
    "label": "08/03 02:00",
    "short": "02",
@@ -955,6 +946,15 @@
    "aic": 0.0,
    "calls": 0,
    "top_model": null
+  },
+  {
+   "label": "08/07 01:00",
+   "short": "01",
+   "date": "08/07",
+   "ts": "2026-08-07T01:00:00+09:00",
+   "aic": 0.0,
+   "calls": 0,
+   "top_model": null
   }
  ],
  "daily": [
@@ -1752,15 +1752,15 @@
    "weekday": 3,
    "weekday_label": "木",
    "hour": 4,
-   "aic": 36.9,
-   "calls": 5
+   "aic": 26.9,
+   "calls": 4
   },
   {
    "weekday": 3,
    "weekday_label": "木",
    "hour": 5,
-   "aic": 73.6,
-   "calls": 13
+   "aic": 83.6,
+   "calls": 14
   },
   {
    "weekday": 3,
@@ -2025,15 +2025,15 @@
    "weekday": 5,
    "weekday_label": "土",
    "hour": 18,
-   "aic": 62.0,
-   "calls": 9
+   "aic": 59.8,
+   "calls": 8
   },
   {
    "weekday": 5,
    "weekday_label": "土",
    "hour": 19,
-   "aic": 294.7,
-   "calls": 61
+   "aic": 296.8,
+   "calls": 62
   },
   {
    "weekday": 5,
@@ -2378,7 +2378,7 @@
  ],
  "sessions": [
   {
-   "id": "29f837ff",
+   "id": "eb54f99d",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -2412,7 +2412,7 @@
    ]
   },
   {
-   "id": "2ce6e376",
+   "id": "b1e87d33",
    "repository": "acme/mobile-app",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -2422,7 +2422,7 @@
    "in_tok": 2982943,
    "out_tok": 76115,
    "start": "07/13 04:49",
-   "end": "07/13 06:05",
+   "end": "07/13 06:06",
    "minutes": 76,
    "aic_per_hour": 121.6,
    "top_model": "demo-large",
@@ -2453,7 +2453,7 @@
    ]
   },
   {
-   "id": "49bab4e8",
+   "id": "c9e1795e",
    "repository": "acme/mobile-app",
    "branch": "feature/search",
    "host": "CLI",
@@ -2487,7 +2487,7 @@
    ]
   },
   {
-   "id": "d0c25c17",
+   "id": "f2626745",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2528,7 +2528,7 @@
    ]
   },
   {
-   "id": "d00851e1",
+   "id": "f3cbe01a",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2562,7 +2562,7 @@
    ]
   },
   {
-   "id": "52025f2f",
+   "id": "17b91366",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2589,7 +2589,7 @@
    ]
   },
   {
-   "id": "143a8748",
+   "id": "f5889c8d",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2630,7 +2630,7 @@
    ]
   },
   {
-   "id": "150a24f4",
+   "id": "ac75dd98",
    "repository": "acme/infra-terraform",
    "branch": "feature/search",
    "host": "CLI",
@@ -2671,7 +2671,7 @@
    ]
   },
   {
-   "id": "7b254260",
+   "id": "5e6fd4d9",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2705,7 +2705,7 @@
    ]
   },
   {
-   "id": "8d360880",
+   "id": "c335a710",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2732,7 +2732,7 @@
    ]
   },
   {
-   "id": "c5db39d7",
+   "id": "98a9a7c8",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2773,7 +2773,7 @@
    ]
   },
   {
-   "id": "d944e809",
+   "id": "f76373a5",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2814,7 +2814,7 @@
    ]
   },
   {
-   "id": "2b238f25",
+   "id": "ba1e9c19",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -2855,7 +2855,7 @@
    ]
   },
   {
-   "id": "51e4df18",
+   "id": "dfd6e42b",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -2889,7 +2889,7 @@
    ]
   },
   {
-   "id": "d6ff52b9",
+   "id": "0fabb18a",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -2930,7 +2930,7 @@
    ]
   },
   {
-   "id": "675bbec0",
+   "id": "5bef8334",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -2964,7 +2964,7 @@
    ]
   },
   {
-   "id": "3617c066",
+   "id": "d99d748e",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -2991,7 +2991,7 @@
    ]
   },
   {
-   "id": "e477c515",
+   "id": "f2cd43fe",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3025,7 +3025,7 @@
    ]
   },
   {
-   "id": "ac650fb4",
+   "id": "65c7f1bc",
    "repository": "acme/web-frontend",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3059,7 +3059,7 @@
    ]
   },
   {
-   "id": "30460929",
+   "id": "296e9222",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3069,7 +3069,7 @@
    "in_tok": 2486958,
    "out_tok": 82150,
    "start": "07/12 17:27",
-   "end": "07/12 18:41",
+   "end": "07/12 18:42",
    "minutes": 74,
    "aic_per_hour": 99.6,
    "top_model": "demo-large",
@@ -3093,7 +3093,7 @@
    ]
   },
   {
-   "id": "e971c771",
+   "id": "78f5d665",
    "repository": "acme/infra-terraform",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3134,7 +3134,7 @@
    ]
   },
   {
-   "id": "a7e3cf6d",
+   "id": "db004efe",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3175,7 +3175,7 @@
    ]
   },
   {
-   "id": "b2e38758",
+   "id": "434e7469",
    "repository": "acme/data-pipeline",
    "branch": "feature/search",
    "host": "CLI",
@@ -3202,7 +3202,7 @@
    ]
   },
   {
-   "id": "151419d8",
+   "id": "e4f115b6",
    "repository": "acme/data-pipeline",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3229,7 +3229,7 @@
    ]
   },
   {
-   "id": "016ca3a8",
+   "id": "9150a707",
    "repository": "acme/data-pipeline",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3256,7 +3256,7 @@
    ]
   },
   {
-   "id": "1b5e9b80",
+   "id": "604face3",
    "repository": "acme/web-frontend",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3290,7 +3290,7 @@
    ]
   },
   {
-   "id": "6bf8b583",
+   "id": "d7d665a7",
    "repository": "acme/data-pipeline",
    "branch": "main",
    "host": "CLI",
@@ -3324,7 +3324,7 @@
    ]
   },
   {
-   "id": "372dcd1b",
+   "id": "7630cbd4",
    "repository": "acme/api-gateway",
    "branch": "fix/login-redirect",
    "host": "CLI",
@@ -3358,7 +3358,7 @@
    ]
   },
   {
-   "id": "46e38251",
+   "id": "229e56b1",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3368,7 +3368,7 @@
    "in_tok": 1940193,
    "out_tok": 61999,
    "start": "07/13 00:14",
-   "end": "07/13 01:13",
+   "end": "07/13 01:14",
    "minutes": 59,
    "aic_per_hour": 117.2,
    "top_model": "demo-large",
@@ -3399,7 +3399,7 @@
    ]
   },
   {
-   "id": "177f56a0",
+   "id": "782154cd",
    "repository": "acme/infra-terraform",
    "branch": "main",
    "host": "CLI",
@@ -3440,7 +3440,7 @@
    ]
   },
   {
-   "id": "e2f49799",
+   "id": "591ea7e3",
    "repository": "acme/api-gateway",
    "branch": "feature/search",
    "host": "CLI",
@@ -3467,7 +3467,7 @@
    ]
   },
   {
-   "id": "4fd28a30",
+   "id": "0ec16dc0",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3508,7 +3508,7 @@
    ]
   },
   {
-   "id": "848a643f",
+   "id": "ea00627b",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3518,7 +3518,7 @@
    "in_tok": 2401636,
    "out_tok": 70814,
    "start": "07/26 01:17",
-   "end": "07/26 02:27",
+   "end": "07/26 02:28",
    "minutes": 70,
    "aic_per_hour": 93.4,
    "top_model": "demo-large",
@@ -3549,7 +3549,7 @@
    ]
   },
   {
-   "id": "db3f38ff",
+   "id": "b20b9bae",
    "repository": "acme/web-frontend",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3583,7 +3583,7 @@
    ]
   },
   {
-   "id": "c9daf120",
+   "id": "6f1cf31b",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",
@@ -3617,7 +3617,7 @@
    ]
   },
   {
-   "id": "c97d595c",
+   "id": "e75e81e1",
    "repository": "acme/web-frontend",
    "branch": "main",
    "host": "CLI",
@@ -3651,7 +3651,7 @@
    ]
   },
   {
-   "id": "ac1d3f6a",
+   "id": "d703b359",
    "repository": "acme/mobile-app",
    "branch": "main",
    "host": "CLI",
@@ -3678,7 +3678,7 @@
    ]
   },
   {
-   "id": "3fea9b0f",
+   "id": "645c67f7",
    "repository": "acme/mobile-app",
    "branch": "chore/deps",
    "host": "CLI",
@@ -3712,7 +3712,7 @@
    ]
   },
   {
-   "id": "b71f26c5",
+   "id": "617331c4",
    "repository": "acme/infra-terraform",
    "branch": "feature/checkout",
    "host": "CLI",
@@ -3746,7 +3746,7 @@
    ]
   },
   {
-   "id": "6893ab39",
+   "id": "22beca23",
    "repository": "(no repo)",
    "branch": "",
    "host": "CLI",

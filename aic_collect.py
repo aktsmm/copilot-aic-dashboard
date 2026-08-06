@@ -692,12 +692,13 @@ def main() -> int:
         arc.row_factory = sqlite3.Row
         rows = arc.execute(QUERY).fetchall()
         cov = aic_archive.coverage(arc)
-        alert_failures = [
-            {"kind": k.split(":", 1)[1], "at": v}
-            for k, v in arc.execute(
+        alert_failures = []
+        for k, v in arc.execute(
                 "SELECT key, value FROM meta "
-                "WHERE key LIKE 'alert_delivery_failed:%' AND value <> ''")
-        ]
+                "WHERE key LIKE 'alert_delivery_failed:%' AND value <> ''"):
+            at, _, state = v.partition("|")
+            alert_failures.append(
+                {"kind": k.split(":", 1)[1], "at": at, "state": state or "failed"})
         try:
             import aic_alert
             base = aic_alert.baseline(
@@ -751,6 +752,26 @@ def main() -> int:
 
     # 同ディレクトリの一時ファイルへ書いてから os.replace で差し替える。
     # 定期実行と手動実行がぶつかっても、ブラウザが半端な JS を読むことがない。
+    # 3) 閾値超過の通知。定期実行はこのスクリプトを叩くので、ここに置く。
+    #    書き出しより前に置くのは、通知の結果そのものが payload に載るから。
+    #    後ろに置くと、今回出せなかった／確認が取れなかった通知が
+    #    次の収集まで（＝3時間後まで）ダッシュボードに出ず、
+    #    通知が黙ったときの唯一の受け皿であるバナーが一周遅れる。
+    #    通知で落ちても集計は捨てない。この後の書き出しは必ず行う。
+    if not args.no_alert and not args.redact_paths:
+        try:
+            import aic_alert
+            arc = aic_archive.open_archive(archive_path)
+            try:
+                # 手動実行と定期実行が重なっても二重に鳴らさない。
+                with aic_archive.ProcessLock(archive_path.with_suffix(".alert.lock")):
+                    aic_alert.fire(arc, {**arc_cfg, **cfg}, quiet=args.quiet)
+                    payload["meta"]["alert_failures"] = aic_alert.delivery_failures(arc)
+            finally:
+                arc.close()
+        except Exception as exc:                       # noqa: BLE001
+            print(f"[warn] 通知の処理に失敗しました: {exc}", file=sys.stderr)
+
     write_atomic(args.out, json.dumps(payload, ensure_ascii=False, indent=1))
     # ダッシュボードを単体ファイルで開けるよう JS 版も出力する（file:// 対応）
     write_atomic(args.out.with_suffix(".js"),
@@ -765,21 +786,6 @@ def main() -> int:
         print(f"     ピーク 1h: {k['peak_1h']:,.1f} AIC @ {k['peak_1h_at']}")
         print(f"     ピーク 24h: {k['peak_24h']:,.1f} AIC @ {k['peak_24h_at']}")
         print(f"[ok] 出力: {args.out}")
-
-    # 3) 閾値超過の通知。定期実行はこのスクリプトを叩くので、ここに置く。
-    #    通知で落ちても集計結果は既に書き終わっているので、失敗しても 0 を返す。
-    if not args.no_alert and not args.redact_paths:
-        try:
-            import aic_alert
-            arc = aic_archive.open_archive(archive_path)
-            try:
-                # 手動実行と定期実行が重なっても二重に鳴らさない。
-                with aic_archive.ProcessLock(archive_path.with_suffix(".alert.lock")):
-                    aic_alert.fire(arc, {**arc_cfg, **cfg}, quiet=args.quiet)
-            finally:
-                arc.close()
-        except Exception as exc:                       # noqa: BLE001
-            print(f"[warn] 通知の処理に失敗しました: {exc}", file=sys.stderr)
     return 0
 
 
